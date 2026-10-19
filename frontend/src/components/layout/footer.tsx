@@ -16,7 +16,7 @@ export function Footer() {
                 </svg>
               </div>
               <span className="text-2xl font-bold tracking-tight text-white">
-                Agri<span className="text-teal-400">Market</span>
+                Agri<span className="text-teal-400">Marketplace</span>
               </span>
             </Link>
             <p className="text-slate-400 leading-relaxed max-w-sm">

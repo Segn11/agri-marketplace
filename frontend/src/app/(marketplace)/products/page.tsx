@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -9,96 +9,71 @@ import {
   ShoppingBag,
   CheckCircle,
   X,
-  Sparkles,
   SlidersHorizontal,
-  ArrowUpDown,
   ChevronRight,
   Award,
   ShieldCheck,
-  Building2,
-  TrendingUp,
+  ShoppingCart,
+  ExternalLink,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { getStoredProducts } from "@/lib/commodities";
+import { useCart } from "@/context/CartContext";
+import { Product } from "@/types";
 
 export default function AgriMarketplacePage() {
+  const { addToCart } = useCart();
+  const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [orderModalProduct, setOrderModalProduct] = useState<any | null>(null);
+  const [orderModalProduct, setOrderModalProduct] = useState<Product | null>(null);
   const [orderQuantity, setOrderQuantity] = useState(1);
   const [orderNote, setOrderNote] = useState("");
   const [orderSuccess, setOrderSuccess] = useState(false);
 
-  const mockProducts = [
-    {
-      id: "p1", name: "Premium White Teff (Magna Grade 1)", category: "cereals-grains",
-      categoryName: "Cereals & Grains",
-      description: "First-grade organic high-purity White Teff freshly harvested from highland fields.",
-      unitPrice: 9400, unit: "Quintal (100kg)", quantityAvailable: 45,
-      location: "East Highland Mandi", farmerName: "Gemechu Desta",
-      cooperative: "Oda Gida Agricultural Union",
-      farmerRating: 4.9, totalReviews: 28, assayGrade: "A+ (99.2% Purity)", badge: "Live Auction", status: "ACTIVE",
-    },
-    {
-      id: "p2", name: "Fresh Red Cooking Onions (Export Grade)", category: "vegetables",
-      categoryName: "Vegetables",
-      description: "Crisp, dry, high-grade red onions suited for commercial kitchen and bulk institutional use.",
-      unitPrice: 85, unit: "KG", quantityAvailable: 1200,
-      location: "Central River Basin", farmerName: "Chala Tolosa",
-      cooperative: "Valley Green Farmer Union",
-      farmerRating: 4.8, totalReviews: 42, assayGrade: "Fresh Harvest QC Assured", badge: "Spot Trade", status: "ACTIVE",
-    },
-    {
-      id: "p3", name: "Organic Forest Coffee (Wollega Grade 1)", category: "coffee-spices",
-      categoryName: "Coffee & Spices",
-      description: "Naturally dried specialty Arabica beans handpicked in highland shade groves.",
-      unitPrice: 420, unit: "KG", quantityAvailable: 350,
-      location: "Western Forest District", farmerName: "Tigist Bekele",
-      cooperative: "Highland Forest Organic Growers",
-      farmerRating: 5.0, totalReviews: 19, assayGrade: "Specialty Grade 1 (SCA 86+)", badge: "Specialty", status: "ACTIVE",
-    },
-    {
-      id: "p4", name: "Fresh Hass Avocados (Export Grade)", category: "fruits",
-      categoryName: "Fruits & Orchards",
-      description: "Creamy, naturally grown export-grade avocados ready for immediate dispatch.",
-      unitPrice: 90, unit: "KG", quantityAvailable: 500,
-      location: "Southern Fruit Belt", farmerName: "Abebe Megersa",
-      cooperative: "Southern Fruit Growers Association",
-      farmerRating: 4.7, totalReviews: 15, assayGrade: "Export Standard (Class 1)", badge: "Export Lot", status: "ACTIVE",
-    },
-    {
-      id: "p5", name: "Highland Durum Wheat Grain", category: "cereals-grains",
-      categoryName: "Cereals & Grains",
-      description: "Clean, dry, plump wheat kernel suitable for flour milling, bakeries, and pasta production.",
-      unitPrice: 4800, unit: "Quintal (100kg)", quantityAvailable: 80,
-      location: "Northern Plateau Mandi", farmerName: "Dinkisa Lema",
-      cooperative: "Plateau Grain Producers",
-      farmerRating: 4.6, totalReviews: 9, assayGrade: "13.5% Protein Certified", badge: "Mill Lot", status: "ACTIVE",
-    },
-    {
-      id: "p6", name: "Organic High-Potency Garlic Bulbs", category: "coffee-spices",
-      categoryName: "Coffee & Spices",
-      description: "Aromatic, potent high-oil garlic freshly harvested, well-cured, and graded.",
-      unitPrice: 220, unit: "KG", quantityAvailable: 280,
-      location: "Highland Foothills", farmerName: "Meron Assefa",
-      cooperative: "Foothills Spice Co-op",
-      farmerRating: 4.9, totalReviews: 31, assayGrade: "Grade A Cured", badge: "Direct Spot", status: "ACTIVE",
-    },
-  ];
+  useEffect(() => {
+    setProducts(getStoredProducts());
+  }, []);
 
-  const filtered = mockProducts.filter((p) => {
+  const filtered = products.filter((p) => {
     const matchesSearch =
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.description.toLowerCase().includes(searchTerm.toLowerCase());
+      p.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (p.cooperative && p.cooperative.toLowerCase().includes(searchTerm.toLowerCase()));
 
     const matchesCategory =
-      selectedCategory === "all" || p.category === selectedCategory;
+      selectedCategory === "all" || p.categoryId === selectedCategory;
 
     return matchesSearch && matchesCategory;
   });
 
   const handlePlaceOrder = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!orderModalProduct) return;
+
+    if (typeof window !== "undefined") {
+      const existing = localStorage.getItem("agri_buyer_orders");
+      const currentOrders = existing ? JSON.parse(existing) : [];
+      const newOrder = {
+        id: `ORD-${Date.now().toString().slice(-6)}`,
+        productName: orderModalProduct.name,
+        farmerName: orderModalProduct.farmerName,
+        cooperative: orderModalProduct.cooperative || "Agricultural Primary Union",
+        farmerPhone: orderModalProduct.farmerPhone || "0911876543",
+        farmerLocation: orderModalProduct.location,
+        quantity: orderQuantity,
+        unit: orderModalProduct.unit,
+        totalPrice: orderModalProduct.unitPrice * orderQuantity,
+        deliveryPreference: "PICKUP",
+        status: "PENDING",
+        assayGrade: orderModalProduct.assayGrade || "Grade 1 QC Certified",
+        createdAt: "Just now",
+        note: orderNote,
+      };
+      localStorage.setItem("agri_buyer_orders", JSON.stringify([newOrder, ...currentOrders]));
+    }
+
     setOrderSuccess(true);
     setTimeout(() => {
       setOrderSuccess(false);
@@ -120,13 +95,13 @@ export default function AgriMarketplacePage() {
       {/* ── AGRIMARKET PRODUCE EXCHANGE HEADER ── */}
       <div
         className="text-white py-12 border-b border-teal-900"
-        style={{ background: 'linear-gradient(135deg, #041d1c 0%, #073330 50%, #0a4843 100%)' }}
+        style={{ background: "linear-gradient(135deg, #041d1c 0%, #073330 50%, #0a4843 100%)" }}
       >
         <div className="container mx-auto px-4 sm:px-8">
           <div className="max-w-4xl">
             <div className="inline-flex items-center gap-2 bg-teal-900/80 text-teal-200 border border-teal-500/30 px-3 py-1 rounded text-xs font-semibold mb-3">
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>AgriMarket Produce Exchange & Spot Market</span>
+              <span>Agri Marketplace Produce Exchange & Spot Market</span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
@@ -200,18 +175,23 @@ export default function AgriMarketplacePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((p) => (
-            <div key={p.id} className="agri-card p-6 flex flex-col justify-between">
+            <div key={p.id} className="agri-card p-6 flex flex-col justify-between group">
               <div>
                 <div className="flex items-center justify-between gap-2 mb-3">
                   <span className="text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded bg-slate-100 text-slate-700">
                     {p.categoryName}
                   </span>
                   <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200">
-                    {p.badge}
+                    {p.badge || "Verified Lot"}
                   </span>
                 </div>
 
-                <h3 className="text-lg font-bold text-slate-900 leading-snug">{p.name}</h3>
+                <Link href={`/products/${p.id}`} className="block">
+                  <h3 className="text-lg font-bold text-slate-900 leading-snug group-hover:text-teal-700 transition flex items-center justify-between">
+                    <span>{p.name}</span>
+                    <ExternalLink className="h-4 w-4 text-slate-300 group-hover:text-teal-600 transition ml-1 flex-shrink-0" />
+                  </h3>
+                </Link>
 
                 <div className="mt-2 text-xs text-slate-500 flex items-center gap-1">
                   <MapPin className="h-3.5 w-3.5 text-slate-400 flex-shrink-0" />
@@ -219,14 +199,14 @@ export default function AgriMarketplacePage() {
                 </div>
 
                 <p className="text-xs text-slate-600 font-medium mt-1 truncate">
-                  Seller: <strong className="text-slate-800">{p.farmerName}</strong> ({p.cooperative})
+                  Seller: <strong className="text-slate-800">{p.farmerName}</strong> ({p.cooperative || "Cooperative Union"})
                 </p>
 
                 {/* Quality Assay Certification Box */}
                 <div className="mt-3.5 py-2 px-3 bg-emerald-50 rounded border border-emerald-200 text-xs font-semibold text-emerald-800 flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <Award className="h-4 w-4 text-emerald-600" />
-                    <span>{p.assayGrade}</span>
+                    <span>{p.assayGrade || "Grade 1 Standard"}</span>
                   </div>
                   <span className="text-[10px] bg-emerald-200/70 text-emerald-900 px-1.5 py-0.2 rounded font-bold">
                     LAB TESTED
@@ -251,26 +231,52 @@ export default function AgriMarketplacePage() {
 
               <div className="mt-5 pt-4 border-t border-slate-100 space-y-3">
                 <div className="flex items-center justify-between text-xs text-slate-500">
-                  <span>Seller Rating:</span>
+                  <Link href={`/products/${p.id}`} className="text-xs font-bold text-teal-700 hover:underline">
+                    View Specifications &rarr;
+                  </Link>
                   <div className="flex items-center gap-1 text-amber-600 font-bold">
                     <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
-                    <span>{p.farmerRating}</span>
-                    <span className="text-slate-400 font-normal">({p.totalReviews} trades)</span>
+                    <span>{p.averageRating || 4.9}</span>
+                    <span className="text-slate-400 font-normal">({p.totalReviews || 24})</span>
                   </div>
                 </div>
 
-                <button
-                  onClick={() => {
-                    setOrderModalProduct(p);
-                    setOrderQuantity(1);
-                    setOrderNote("");
-                    setOrderSuccess(false);
-                  }}
-                  className="w-full btn-brand py-2.5 rounded text-xs font-semibold flex items-center justify-center gap-2 shadow-sm"
-                >
-                  <ShoppingBag className="h-4 w-4" />
-                  Place Bid / Order Trade
-                </button>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() =>
+                      addToCart({
+                        productId: p.id,
+                        name: p.name,
+                        categoryName: p.categoryName,
+                        unitPrice: p.unitPrice,
+                        unit: p.unit,
+                        quantity: 1,
+                        farmerName: p.farmerName,
+                        cooperative: p.cooperative,
+                        location: p.location,
+                        assayGrade: p.assayGrade,
+                        maxQuantity: p.quantityAvailable,
+                      })
+                    }
+                    className="w-full bg-slate-100 hover:bg-teal-50 text-slate-800 hover:text-teal-800 border border-slate-200 py-2.5 rounded text-xs font-bold flex items-center justify-center gap-1.5 transition"
+                  >
+                    <ShoppingCart className="h-3.5 w-3.5" />
+                    Add to Cart
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setOrderModalProduct(p);
+                      setOrderQuantity(1);
+                      setOrderNote("");
+                      setOrderSuccess(false);
+                    }}
+                    className="w-full btn-brand py-2.5 rounded text-xs font-semibold flex items-center justify-center gap-1.5 shadow-sm"
+                  >
+                    <ShoppingBag className="h-3.5 w-3.5" />
+                    Place Bid / Buy
+                  </button>
+                </div>
               </div>
             </div>
           ))}

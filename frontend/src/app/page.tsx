@@ -148,52 +148,52 @@ export default function AgriMarketHomePage() {
   // Featured Marketplace Trades
   const featuredTrades = [
     {
-      id: "t1",
-      commodity: "Premium White Teff (Magna Grade 1)",
+      id: "teff-magna-01",
+      commodity: "Export Grade Pure White Teff (Magna)",
       category: "Grains & Cereals",
-      location: "East Highland Farming Zone",
-      seller: "Oda Gida Agricultural Cooperative",
+      location: "Debre Birhan Mandi Terminal",
+      seller: "Oda Gida Agricultural Farmers Union",
       price: 9400,
       unit: "Quintal (100kg)",
-      stock: 45,
-      assayGrade: "A+ (99.2% Purity)",
-      badge: "Live Exchange",
+      stock: 150,
+      assayGrade: "Grade 1 (99.2% Purity)",
+      badge: "Spot e-Auction",
     },
     {
-      id: "t2",
-      commodity: "Wollega Sun-Dried Arabica Coffee",
+      id: "coffee-sidama-02",
+      commodity: "Sidama Washed Specialty Green Coffee Beans",
       category: "Specialty & Spices",
-      location: "Western Forest District",
-      seller: "Highland Forest Organic Growers",
-      price: 420,
-      unit: "KG",
-      stock: 350,
-      assayGrade: "Grade 1 Specialty",
-      badge: "Spot Trade",
+      location: "Hawassa Central Dry Port",
+      seller: "Sidama Organic Coffee Producers Union",
+      price: 28500,
+      unit: "Bag (60kg)",
+      stock: 60,
+      assayGrade: "Q1 Specialty (SCA 87.5)",
+      badge: "Export Certified",
     },
     {
-      id: "t3",
-      commodity: "Commercial Grade Red Cooking Onions",
+      id: "onion-adama-04",
+      commodity: "Fresh Red Bombay Cooking Onions",
       category: "Fresh Vegetables",
-      location: "Central River Basin",
-      seller: "Valley Green Farmer Union",
+      location: "Adama Wholesale Mandi Distribution",
+      seller: "Meki-Batu Vegetable Growers Union",
       price: 85,
       unit: "KG",
-      stock: 1200,
-      assayGrade: "Export Quality",
+      stock: 5000,
+      assayGrade: "Grade 1 Export Standard",
       badge: "Direct Sourcing",
     },
     {
-      id: "t4",
-      commodity: "Durum Wheat Milling Grain",
+      id: "wheat-durum-03",
+      commodity: "Hard Amber Durum Wheat for Pasta Milling",
       category: "Grains & Cereals",
-      location: "Northern Plateau Plains",
-      seller: "Plateau Grain Producers Association",
-      price: 4800,
+      location: "Robe Grain Terminal Hub, Bale",
+      seller: "Arsi Bale Flour & Grain Cooperative",
+      price: 6200,
       unit: "Quintal (100kg)",
-      stock: 80,
-      assayGrade: "13.5% Protein Certified",
-      badge: "Bulk Lot",
+      stock: 280,
+      assayGrade: "14.2% Protein Certified",
+      badge: "High Volume Lot",
     },
   ];
 
@@ -507,9 +507,9 @@ export default function AgriMarketHomePage() {
               </div>
 
               <div className="mt-5 pt-4 border-t border-slate-100">
-                <Link href="/products">
+                <Link href={`/products/${t.id}`}>
                   <button className="w-full btn-brand py-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5">
-                    Order Produce
+                    View Specs & Trade
                     <ChevronRight className="h-3.5 w-3.5" />
                   </button>
                 </Link>

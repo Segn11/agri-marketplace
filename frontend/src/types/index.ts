@@ -32,6 +32,7 @@ export interface Product {
   id: string;
   farmerId: string;
   farmerName: string;
+  cooperative?: string;
   farmerPhone?: string;
   categoryId: string;
   categoryName: string;
@@ -40,12 +41,35 @@ export interface Product {
   unitPrice: number;
   unit: string;
   quantityAvailable: number;
+  minOrderQuantity?: number;
   location: string;
+  assayGrade?: string;
+  moistureContent?: string;
+  purity?: string;
+  harvestSeason?: string;
+  storageWarehouse?: string;
+  badge?: string;
   status: 'ACTIVE' | 'INACTIVE' | 'OUT_OF_STOCK';
   imageUrls: string[];
   averageRating?: number;
   totalReviews?: number;
   createdAt: string;
+}
+
+export interface CartItem {
+  id: string;
+  productId: string;
+  name: string;
+  categoryName: string;
+  unitPrice: number;
+  unit: string;
+  quantity: number;
+  farmerName: string;
+  cooperative?: string;
+  location: string;
+  assayGrade?: string;
+  maxQuantity: number;
+  image?: string;
 }
 
 export type OrderStatus = 'PENDING' | 'ACCEPTED' | 'READY' | 'COMPLETED' | 'REJECTED' | 'CANCELLED';

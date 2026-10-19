@@ -80,20 +80,25 @@ agri-marketplace/
 ├── frontend/                          # Next.js 14 (App Router) + TypeScript + Tailwind
 │   ├── src/
 │   │   ├── app/
-│   │   │   ├── (auth)/                # Login & Registration flows
-│   │   │   ├── (marketplace)/         # Product catalog, keyword search, details
+│   │   │   ├── (auth)/                # Login & Registration flows (Farmer, Buyer, Admin)
+│   │   │   ├── (marketplace)/         
+│   │   │   │   ├── products/          # Catalog with filters, search, and instant procurement
+│   │   │   │   │   └── [id]/          # Dedicated Product Details (Assay specs, moisture, growers)
+│   │   │   │   └── cart/              # Procurement Cart & Settlement with freight selection
 │   │   │   ├── (dashboard)/
-│   │   │   │   ├── farmer/            # Farmer crop stock & order fulfillment
-│   │   │   │   ├── buyer/             # Buyer order tracking & reviews
-│   │   │   │   └── admin/             # Platform oversight & moderation
+│   │   │   │   ├── farmer/            # Farmer crop inventory, price adjustments & fulfillment
+│   │   │   │   ├── buyer/             # Buyer 4-step order tracker, phone disclosure & reviews
+│   │   │   │   └── admin/             # Oversight, arbitration disputes & account moderation
 │   │   │   ├── globals.css
-│   │   │   ├── layout.tsx
-│   │   │   └── page.tsx               # High-converting landing page
+│   │   │   ├── layout.tsx             # Root layout with CartProvider and Procurement Drawer
+│   │   │   └── page.tsx               # AgriBazaar-inspired landing page with ticker & services
 │   │   ├── components/
+│   │   │   ├── cart/                  # Slide-over procurement cart drawer
 │   │   │   ├── ui/                    # Reusable Button, Card, Badge, Input primitives
-│   │   │   └── layout/                # Responsive Navbar & Footer
-│   │   ├── lib/                       # API fetch wrapper, currency (ETB), date formatters
-│   │   └── types/                     # Shared TypeScript interfaces
+│   │   │   └── layout/                # Responsive Navbar (Cart badge, user session) & Footer
+│   │   ├── context/                   # Global Cart Context & persistent state
+│   │   ├── lib/                       # API wrapper, centralized commodities repo, formatters
+│   │   └── types/                     # Shared TypeScript interfaces (Product, CartItem, Order)
 │   ├── package.json
 │   ├── tailwind.config.ts
 │   └── tsconfig.json
