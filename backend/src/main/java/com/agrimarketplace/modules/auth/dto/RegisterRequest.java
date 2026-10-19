@@ -27,7 +27,7 @@ public class RegisterRequest {
     @NotNull(message = "Role is required (ROLE_FARMER or ROLE_BUYER)")
     private Role role;
 
-    @NotBlank(message = "Location is required (e.g., Nekemte, Diga, Guto Gida)")
+    @NotBlank(message = "Location is required (e.g., City, District, Region)")
     private String location;
 
     // Optional fields if registering as Farmer

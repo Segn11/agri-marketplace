@@ -20,7 +20,7 @@ public class OpenApiConfig {
                 .info(new Info()
                         .title("Agricultural Marketplace REST API")
                         .version("1.0.0")
-                        .description("REST API documentation for Agricultural Marketplace connecting farmers and buyers in Nekemte and surrounding communities.")
+                        .description("REST API documentation for Agricultural Marketplace connecting farmers and buyers nationwide.")
                         .contact(new Contact().name("Agricultural Marketplace Team").email("support@agrimarketplace.local"))
                         .license(new License().name("Apache 2.0").url("http://springdoc.org")))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))

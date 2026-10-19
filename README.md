@@ -1,7 +1,6 @@
 # Agricultural Marketplace 🌾
 
-> **A Modern Web-Based Platform Connecting Farmers and Buyers**  
-
+> A unified nationwide platform connecting producers, cooperatives, and commercial/retail buyers.
 
 [![CI Pipeline](https://github.com/Segn11/agri-marketplace/actions/workflows/ci.yml/badge.svg)](https://github.com/Segn11/agri-marketplace/actions)
 ![Java](https://img.shields.io/badge/Java-17-orange.svg)

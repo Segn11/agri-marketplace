@@ -3,7 +3,7 @@
 ## 1. System Overview
 The **Agricultural Marketplace** is a robust three-tier web platform designed to directly connect local agricultural producers (farmers) with consumers, retailers, and restaurants. The platform eliminates intermediaries, stabilizes fair price discovery, provides real-time stock and order management, and establishes trust through reviews and transparent contact exchange upon order confirmation.
 
-Target deployment: **Nekemte and surrounding agricultural communities**.
+Scope: **National Agricultural Marketplace connecting farmers and buyers across all agricultural regions**.
 
 ---
 

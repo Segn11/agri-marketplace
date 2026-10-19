@@ -4,8 +4,8 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 
 export const metadata: Metadata = {
-  title: "Agricultural Marketplace | Connecting Farmers & Buyers",
-  description: "A centralized digital agricultural marketplace connecting local farmers and buyers in Nekemte and surrounding communities for direct, transparent produce trading.",
+  title: "AgriMarket | National Agricultural Trading Platform",
+  description: "A unified digital agricultural marketplace connecting local and regional farmers directly with commercial and household buyers for transparent, fair-price produce trade.",
 };
 
 export default function RootLayout({
@@ -15,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen flex flex-col bg-stone-50 font-sans text-gray-900 antialiased">
+      <body className="min-h-screen flex flex-col mesh-bg text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />
