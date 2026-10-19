@@ -94,6 +94,32 @@ export default function FarmerDashboard() {
     },
   ]);
 
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newProduce, setNewProduce] = useState({
+    name: "",
+    category: "Cereals & Grains",
+    unitPrice: 100,
+    quantityAvailable: 50,
+    unit: "KG",
+  });
+
+  const handleAddProduce = (e: React.FormEvent) => {
+    e.preventDefault();
+    const created = {
+      id: "l-" + Date.now(),
+      name: newProduce.name,
+      category: newProduce.category,
+      quantityAvailable: Number(newProduce.quantityAvailable),
+      unit: newProduce.unit,
+      unitPrice: Number(newProduce.unitPrice),
+      status: "ACTIVE",
+    };
+    setListings([created, ...listings]);
+    setShowAddModal(false);
+    setNewProduce({ name: "", category: "Cereals & Grains", unitPrice: 100, quantityAvailable: 50, unit: "KG" });
+    setActiveTab("listings");
+  };
+
   const handleUpdateStatus = (id: string, newStatus: string) => {
     setOrders((prev) =>
       prev.map((o) => (o.id === id ? { ...o, status: newStatus } : o))
@@ -118,7 +144,10 @@ export default function FarmerDashboard() {
           </p>
         </div>
 
-        <button className="btn-primary-gradient text-white font-semibold px-6 py-3 rounded-xl text-sm flex items-center justify-center gap-2 self-start md:self-auto shadow-glow-sm">
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="btn-primary-gradient text-white font-semibold px-6 py-3 rounded-xl text-sm flex items-center justify-center gap-2 self-start md:self-auto shadow-glow-sm"
+        >
           <PlusCircle className="h-4 w-4" />
           Add Produce Listing
         </button>
@@ -323,6 +352,117 @@ export default function FarmerDashboard() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* Add Produce Listing Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full shadow-2xl relative border border-slate-100 overflow-hidden">
+            <div className="h-1 w-full bg-gradient-to-r from-emerald-600 via-green-500 to-emerald-400" />
+            <div className="p-7 sm:p-8">
+              <div className="flex items-center justify-between mb-5">
+                <div>
+                  <span className="text-[10px] font-bold text-brand-700 uppercase tracking-widest bg-brand-50 px-2 py-0.5 rounded-full border border-brand-200">
+                    New Farm Listing
+                  </span>
+                  <h3 className="text-xl font-extrabold text-slate-900 mt-1">Add Produce Listing</h3>
+                </div>
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+                >
+                  <XCircle className="h-5 w-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleAddProduce} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Crop / Produce Name
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newProduce.name}
+                    onChange={(e) => setNewProduce({ ...newProduce, name: e.target.value })}
+                    placeholder="e.g. Organic Red Teff"
+                    className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                      Category
+                    </label>
+                    <select
+                      value={newProduce.category}
+                      onChange={(e) => setNewProduce({ ...newProduce, category: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    >
+                      <option value="Cereals & Grains">Cereals & Grains</option>
+                      <option value="Vegetables">Vegetables</option>
+                      <option value="Fruits & Orchards">Fruits & Orchards</option>
+                      <option value="Coffee & Spices">Coffee & Spices</option>
+                      <option value="Pulses & Seeds">Pulses & Seeds</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                      Measurement Unit
+                    </label>
+                    <select
+                      value={newProduce.unit}
+                      onChange={(e) => setNewProduce({ ...newProduce, unit: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    >
+                      <option value="KG">KG (Kilogram)</option>
+                      <option value="Quintal">Quintal (100 KG)</option>
+                      <option value="Liter">Liter</option>
+                      <option value="Box">Crate / Box</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                      Unit Price (ETB)
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      min={1}
+                      value={newProduce.unitPrice}
+                      onChange={(e) => setNewProduce({ ...newProduce, unitPrice: Number(e.target.value) })}
+                      className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                      Initial Stock Quantity
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      min={1}
+                      value={newProduce.quantityAvailable}
+                      onChange={(e) => setNewProduce({ ...newProduce, quantityAvailable: Number(e.target.value) })}
+                      className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full mt-2 btn-primary-gradient text-white font-semibold py-3 rounded-xl text-sm flex items-center justify-center gap-2 shadow-glow-sm"
+                >
+                  Publish Listing to Marketplace
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       )}
