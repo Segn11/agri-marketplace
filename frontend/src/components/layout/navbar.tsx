@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Search, Menu, X, PlusCircle, Sprout, ShoppingCart, LogOut, User as UserIcon } from "lucide-react";
+import { Search, Menu, X, Sprout, ShoppingCart, LogOut, User as UserIcon } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 
 export function Navbar() {
@@ -63,10 +63,6 @@ export function Navbar() {
               </Link>
             </div>
 
-            <Link href="/farmer" className="hidden lg:inline text-slate-200 hover:text-amber-300 font-medium whitespace-nowrap">
-              List Produce
-            </Link>
-            <span className="hidden lg:inline text-teal-800">|</span>
             {user ? (
               <span className="text-amber-300 font-semibold text-xs whitespace-nowrap flex items-center gap-1">
                 <UserIcon className="h-3 w-3" />
@@ -104,14 +100,13 @@ export function Navbar() {
           </Link>
 
           {/* Nav links */}
-          <nav className="hidden lg:flex items-center space-x-5 text-xs xl:text-sm font-semibold text-slate-600">
+          <nav className="hidden lg:flex items-center space-x-6 text-xs xl:text-sm font-semibold text-slate-600">
             <Link href="/" className="hover:text-teal-600 transition">Home</Link>
             <Link href="/products" className="hover:text-teal-600 transition">Spot Trading</Link>
             <Link href="/mandi" className="hover:text-teal-600 transition text-amber-700 font-bold">Mandi Rates</Link>
             <Link href="/auctions" className="hover:text-teal-600 transition">e-Auctions</Link>
             <Link href="/storage" className="hover:text-teal-600 transition">Warehouse Silos</Link>
             <Link href="/quality" className="hover:text-teal-600 transition">Quality Assay</Link>
-            <Link href="/farmer" className="hover:text-teal-600 transition">Farmer Portal</Link>
             <Link href="/buyer" className="hover:text-teal-600 transition">Buyer Tracking</Link>
           </nav>
 
@@ -130,13 +125,6 @@ export function Navbar() {
                 </span>
               )}
             </button>
-
-            <Link href="/farmer">
-              <button className="hidden xl:flex items-center gap-1.5 text-xs font-semibold text-teal-800 bg-teal-50 hover:bg-teal-100 border border-teal-200 px-3.5 py-2 rounded-lg transition">
-                <PlusCircle className="h-3.5 w-3.5 text-teal-600" />
-                List Produce
-              </button>
-            </Link>
 
             {user ? (
               <button
@@ -188,7 +176,6 @@ export function Navbar() {
           <Link href="/storage" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Warehouse Silos (e-NWR)</Link>
           <Link href="/quality" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Quality Assay & ECX Grading</Link>
           <Link href="/cart" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Shopping Cart ({totalItems})</Link>
-          <Link href="/farmer" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Farmer Inventory Portal</Link>
           <Link href="/buyer" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Buyer Order Tracking</Link>
           <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Admin Hub</Link>
           <div className="pt-3 border-t border-slate-100 flex gap-2">

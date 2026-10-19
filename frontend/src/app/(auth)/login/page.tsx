@@ -32,9 +32,7 @@ export default function AgriLoginPage() {
       localStorage.setItem("token", data.data.token);
       localStorage.setItem("user", JSON.stringify(data.data));
 
-      if (data.data.role === "ROLE_FARMER") {
-        router.push("/farmer");
-      } else if (data.data.role === "ROLE_ADMIN") {
+      if (data.data.role === "ROLE_ADMIN") {
         router.push("/admin");
       } else {
         router.push("/products");

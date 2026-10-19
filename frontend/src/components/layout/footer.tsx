@@ -42,12 +42,12 @@ export function Footer() {
           <div>
             <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-4">Our Products</h4>
             <ul className="space-y-2.5 text-slate-400">
-              <li><Link href="/" className="hover:text-teal-300 transition">AgriVision GIS</Link></li>
-              <li><Link href="/products" className="hover:text-teal-300 transition">Digital Auction Engine</Link></li>
-              <li><Link href="/products" className="hover:text-teal-300 transition">Direct Marketplace</Link></li>
-              <li><Link href="/" className="hover:text-teal-300 transition">AgriAdvisory Intelligence</Link></li>
-              <li><Link href="/register" className="hover:text-teal-300 transition">Escrow Settlements</Link></li>
-              <li><Link href="/farmer" className="hover:text-teal-300 transition">Farmer Growth Center</Link></li>
+              <li><Link href="/mandi" className="hover:text-teal-300 transition">Mandi Price Discovery</Link></li>
+              <li><Link href="/auctions" className="hover:text-teal-300 transition">Digital Auction Engine</Link></li>
+              <li><Link href="/products" className="hover:text-teal-300 transition">Spot Commodity Exchange</Link></li>
+              <li><Link href="/quality" className="hover:text-teal-300 transition">ECX Quality Assaying</Link></li>
+              <li><Link href="/cart" className="hover:text-teal-300 transition">Escrow Settlements</Link></li>
+              <li><Link href="/storage" className="hover:text-teal-300 transition">Certified Public Silos</Link></li>
             </ul>
           </div>
 
@@ -55,12 +55,12 @@ export function Footer() {
           <div>
             <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-4">Our Services</h4>
             <ul className="space-y-2.5 text-slate-400">
-              <li><Link href="/products" className="hover:text-teal-300 transition">Centralized Warehousing</Link></li>
-              <li><Link href="/products" className="hover:text-teal-300 transition">Quality Assay & Grading</Link></li>
-              <li><Link href="/register" className="hover:text-teal-300 transition">Corporate Procurement</Link></li>
-              <li><Link href="/farmer" className="hover:text-teal-300 transition">Farmer Cooperative Sourcing</Link></li>
+              <li><Link href="/storage" className="hover:text-teal-300 transition">Public Silos (e-NWR)</Link></li>
+              <li><Link href="/quality" className="hover:text-teal-300 transition">Quality Assay & Grading</Link></li>
+              <li><Link href="/auctions" className="hover:text-teal-300 transition">Corporate Procurement</Link></li>
+              <li><Link href="/mandi" className="hover:text-teal-300 transition">Regional Mandi Intelligence</Link></li>
               <li><Link href="/buyer" className="hover:text-teal-300 transition">Cold Chain & Logistics</Link></li>
-              <li><Link href="/register" className="hover:text-teal-300 transition">Trade Escrow Protection</Link></li>
+              <li><Link href="/cart" className="hover:text-teal-300 transition">Trade Escrow Protection</Link></li>
             </ul>
           </div>
 
@@ -68,7 +68,7 @@ export function Footer() {
           <div>
             <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-4">Portals & Links</h4>
             <ul className="space-y-2.5 text-slate-400">
-              <li><Link href="/farmer" className="hover:text-teal-300 transition">Farmer Portal</Link></li>
+              <li><Link href="/mandi" className="hover:text-teal-300 transition">Ethiopian Mandi Board</Link></li>
               <li><Link href="/buyer" className="hover:text-teal-300 transition">Buyer Procurement</Link></li>
               <li><Link href="/admin" className="hover:text-teal-300 transition">Admin Hub</Link></li>
               <li><Link href="/login" className="hover:text-teal-300 transition">Member Sign In</Link></li>
