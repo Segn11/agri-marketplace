@@ -1,180 +1,96 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --font-outfit: 'Outfit', sans-serif;
-  --font-body: 'Plus Jakarta Sans', sans-serif;
-}
-
 @layer base {
   body {
-    font-family: var(--font-body);
+    font-family: 'Poppins', 'Inter', sans-serif;
     color: #1e293b;
-    background-color: #fafdf7;
+    background-color: #f8fafc;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-outfit);
   }
 }
 
 @layer components {
-  /* Premium Glass Cards */
-  .glass-panel {
-    background: rgba(255, 255, 255, 0.72);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.03);
+  /* AgriBazaar Primary Red Button */
+  .btn-agri-red {
+    background-color: #d32f2f;
+    color: white;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+  .btn-agri-red:hover {
+    background-color: #b71c1c;
+    box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
   }
 
-  .glass-nav {
-    background: rgba(255, 255, 255, 0.88);
-    backdrop-filter: blur(24px) saturate(200%);
-    -webkit-backdrop-filter: blur(24px) saturate(200%);
-    border-bottom: 1px solid rgba(226, 232, 240, 0.5);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  /* AgriBazaar Orange/Amber Button */
+  .btn-agri-amber {
+    background-color: #e65100;
+    color: white;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+  .btn-agri-amber:hover {
+    background-color: #bf360c;
   }
 
-  /* Ultra Premium Product Cards */
-  .produce-card {
+  /* AgriBazaar Top Navy Strip */
+  .agri-topbar {
+    background-color: #20407d;
+    color: white;
+  }
+
+  /* Service Tab Ribbon */
+  .agri-ribbon-tab {
+    transition: all 0.2s ease;
+    border-bottom: 3px solid transparent;
+  }
+  .agri-ribbon-tab.active {
+    border-bottom-color: #d32f2f;
+    color: #d32f2f;
+    background-color: #fff;
+  }
+  .agri-ribbon-tab:hover {
+    background-color: #f8fafc;
+  }
+
+  /* Cards */
+  .agri-card {
     background: white;
-    border: 1px solid rgba(226, 232, 240, 0.7);
-    border-radius: 1.25rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    transition: all 0.25s ease;
   }
-
-  .produce-card:hover {
-    border-color: rgba(22, 163, 74, 0.4);
-    box-shadow:
-      0 0 0 1px rgba(22, 163, 74, 0.08),
-      0 8px 30px -6px rgba(22, 163, 74, 0.12),
-      0 2px 8px -2px rgba(0, 0, 0, 0.05);
+  .agri-card:hover {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
     transform: translateY(-2px);
   }
-
-  /* Category Card Hover Glass */
-  .cat-card {
-    background: white;
-    border: 1px solid rgba(226, 232, 240, 0.6);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .cat-card:hover {
-    background: rgba(255, 255, 255, 0.95);
-    border-color: rgba(22, 163, 74, 0.5);
-    box-shadow: 0 4px 20px -4px rgba(22, 163, 74, 0.15);
-    transform: translateY(-1px);
-  }
-
-  /* Premium Green Gradient Button */
-  .btn-primary-gradient {
-    background: linear-gradient(135deg, #15803d 0%, #16a34a 50%, #22c55e 100%);
-    box-shadow:
-      0 1px 2px rgba(22, 163, 74, 0.15),
-      0 4px 12px -2px rgba(22, 163, 74, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .btn-primary-gradient:hover {
-    box-shadow:
-      0 2px 4px rgba(22, 163, 74, 0.2),
-      0 8px 20px -3px rgba(22, 163, 74, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15);
-    filter: brightness(1.05);
-  }
-
-  /* Section divider gradient */
-  .gradient-divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(22, 163, 74, 0.2), transparent);
-  }
 }
 
-/* Mesh gradient background for hero sections */
-.mesh-bg {
-  background-color: #fafdf7;
-  background-image:
-    radial-gradient(at 8% 20%, rgba(34, 197, 94, 0.06) 0px, transparent 55%),
-    radial-gradient(at 92% 15%, rgba(245, 158, 11, 0.05) 0px, transparent 50%),
-    radial-gradient(at 50% 85%, rgba(16, 185, 129, 0.04) 0px, transparent 55%);
+/* Continuous Marquee Ticker for Commodity Prices */
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
-.hero-mesh {
-  background-image:
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(22, 163, 74, 0.08), transparent),
-    radial-gradient(ellipse 60% 50% at 80% 20%, rgba(245, 158, 11, 0.06), transparent),
-    radial-gradient(ellipse 50% 40% at 10% 60%, rgba(34, 197, 94, 0.05), transparent);
+.animate-ticker {
+  display: flex;
+  width: 200%;
+  animation: ticker 30s linear infinite;
 }
 
-/* Animated beacon indicator */
-@keyframes beacon {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+.animate-ticker:hover {
+  animation-play-state: paused;
 }
 
-.live-beacon {
-  animation: beacon 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
-}
-
-/* Animated floating particles */
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  33% { transform: translateY(-8px) rotate(2deg); }
-  66% { transform: translateY(4px) rotate(-1deg); }
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-.animate-float-delayed {
-  animation: float 8s ease-in-out infinite 2s;
-}
-
-/* Smooth count-up shimmer */
-@keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-
-.text-shimmer {
-  background: linear-gradient(90deg, #15803d 0%, #22c55e 40%, #15803d 80%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: shimmer 3s linear infinite;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.3);
-  border-radius: 100px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.5);
-}
-
-/* Selection highlight */
-::selection {
-  background-color: rgba(22, 163, 74, 0.15);
-  color: #14532d;
+/* WhatsApp Floating Button */
+.whatsapp-float {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
 }

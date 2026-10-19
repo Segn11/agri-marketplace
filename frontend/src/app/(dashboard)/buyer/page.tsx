@@ -11,14 +11,13 @@ import {
   Package,
   X,
   MessageSquare,
-  Sparkles,
+  ShieldCheck,
+  Award,
   ChevronRight,
-  Truck,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/utils";
 
-export default function BuyerDashboard() {
+export default function AgriBazaarBuyerDashboard() {
   const [reviewModalOrder, setReviewModalOrder] = useState<any | null>(null);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
@@ -27,21 +26,24 @@ export default function BuyerDashboard() {
   const [orders, setOrders] = useState([
     {
       id: "ord-201",
-      productName: "Premium White Teff (Magna)",
+      productName: "Premium White Teff (Magna Grade 1)",
       farmerName: "Gemechu Desta",
-      farmerPhone: "0911876543", // revealed once accepted
-      farmerLocation: "East Highland Cooperative",
+      cooperative: "Oda Gida Agricultural Union",
+      farmerPhone: "0911876543",
+      farmerLocation: "East Highland Mandi",
       quantity: 2,
       unit: "Quintal",
       totalPrice: 18800,
       deliveryPreference: "PICKUP",
       status: "ACCEPTED",
+      assayGrade: "A+ (99.2% Purity)",
       createdAt: "Yesterday, 2:30 PM",
     },
     {
       id: "ord-202",
       productName: "Fresh Red Cooking Onions",
       farmerName: "Chala Tolosa",
+      cooperative: "Valley Green Farmer Union",
       farmerPhone: "0922334455",
       farmerLocation: "Central River Basin",
       quantity: 50,
@@ -49,6 +51,7 @@ export default function BuyerDashboard() {
       totalPrice: 4250,
       deliveryPreference: "FARMER_DELIVERY",
       status: "COMPLETED",
+      assayGrade: "Fresh Harvest QC Assured",
       createdAt: "Oct 12, 2026",
     },
   ]);
@@ -63,176 +66,178 @@ export default function BuyerDashboard() {
   };
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      {/* Top Banner */}
-      <div className="glass-panel p-8 sm:p-10 rounded-3xl shadow-soft mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-40 bg-gradient-to-bl from-brand-300/20 via-emerald-200/10 to-transparent rounded-bl-full pointer-events-none -z-10" />
+    <div className="bg-slate-50 min-h-screen py-10">
+      <div className="container mx-auto px-4 sm:px-8">
+        {/* ── TOP BANNER ── */}
+        <div
+          className="text-white p-8 sm:p-10 rounded-2xl shadow-md mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6"
+          style={{ background: 'linear-gradient(135deg, #091a36 0%, #11284d 50%, #0d381e 100%)' }}
+        >
+          <div>
+            <div className="inline-flex items-center gap-2 bg-agriNavy-800 text-blue-200 border border-blue-400/30 px-3 py-1 rounded text-xs font-semibold mb-3">
+              <ShoppingCart className="h-3.5 w-3.5 text-amber-400" />
+              <span>AgriBazaar Buyer & Procurement Center</span>
+            </div>
+            <h1 className="text-3xl font-extrabold tracking-tight">
+              Commodity Purchase Orders
+            </h1>
+            <p className="text-sm text-slate-300 mt-1 max-w-xl">
+              Track live trade execution, coordinate delivery with verified grower cooperatives, and submit post-handover quality assay ratings.
+            </p>
+          </div>
 
-        <div>
-          <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-brand-700 bg-brand-50 px-3 py-1 rounded-full border border-brand-200/60 mb-3">
-            <ShoppingCart className="h-3.5 w-3.5" /> Buyer Order Hub
-          </span>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            My Produce Orders
-          </h1>
-          <p className="text-sm text-slate-500 mt-1 max-w-xl">
-            Monitor real-time fulfillment status, connect directly with producers via phone, and review completed orders.
-          </p>
+          <Link href="/products">
+            <button className="btn-agri-red px-6 py-3 rounded text-sm font-semibold flex items-center justify-center gap-2 shadow-md">
+              <ShoppingCart className="h-4 w-4" />
+              Procure More Lots
+            </button>
+          </Link>
         </div>
 
-        <Link href="/products">
-          <button className="btn-primary-gradient text-white font-semibold px-6 py-3 rounded-xl text-sm flex items-center justify-center gap-2 shadow-glow-sm">
-            <ShoppingCart className="h-4 w-4" />
-            Explore More Harvests
-          </button>
-        </Link>
-      </div>
-
-      {/* Orders List */}
-      <div className="space-y-4">
-        {orders.map((ord) => (
-          <div
-            key={ord.id}
-            className="produce-card p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6"
-          >
-            <div className="space-y-2.5">
-              <div className="flex items-center gap-3">
-                <h3 className="text-lg font-bold text-slate-900">{ord.productName}</h3>
-                <span
-                  className={`text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full ${
-                    ord.status === "COMPLETED"
-                      ? "bg-brand-50 text-brand-800 border border-brand-200"
-                      : ord.status === "ACCEPTED"
-                      ? "bg-blue-50 text-blue-800 border border-blue-200"
-                      : "bg-amber-50 text-amber-800 border border-amber-200"
-                  }`}
-                >
-                  {ord.status}
-                </span>
-              </div>
-
-              <p className="text-xs text-slate-500">
-                Farmer: <strong className="text-slate-800">{ord.farmerName}</strong> &bull; Quantity:{" "}
-                <strong className="text-slate-800">{ord.quantity} {ord.unit}</strong> &bull; Ordered: <span>{ord.createdAt}</span>
-              </p>
-
-              {ord.status !== "PENDING" ? (
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-brand-50 border border-brand-200/70 text-brand-900 text-xs font-semibold">
-                  <Phone className="h-3.5 w-3.5 text-brand-600" />
-                  <span>Direct Farmer Phone Line: <strong>{ord.farmerPhone}</strong></span>
-                </div>
-              ) : (
-                <p className="text-[11px] text-slate-400 italic">
-                  Farmer contact will be disclosed immediately upon order acceptance.
-                </p>
-              )}
-            </div>
-
-            <div className="flex items-center justify-between lg:justify-end gap-5 border-t lg:border-t-0 pt-4 lg:pt-0">
-              <div className="text-left lg:text-right">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Total</span>
-                <span className="text-2xl font-black text-brand-700">{formatCurrency(ord.totalPrice)}</span>
-              </div>
-
-              {ord.status === "COMPLETED" && (
-                <div>
-                  {reviewedOrders.includes(ord.id) ? (
-                    <span className="inline-flex items-center text-xs font-bold text-brand-700 bg-brand-50 px-3 py-2 rounded-xl border border-brand-200">
-                      <CheckCircle2 className="h-4 w-4 mr-1.5" /> Review Submitted
-                    </span>
-                  ) : (
-                    <button
-                      onClick={() => setReviewModalOrder(ord)}
-                      className="btn-primary-gradient text-white text-xs font-semibold px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-xs"
-                    >
-                      <Star className="h-3.5 w-3.5 fill-white" />
-                      Rate & Review
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Review Modal */}
-      {reviewModalOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl relative border border-slate-100 overflow-hidden">
-            <div className="h-1 w-full bg-gradient-to-r from-harvest-500 via-brand-500 to-brand-600" />
-
-            <div className="p-7 sm:p-8">
-              <button
-                onClick={() => setReviewModalOrder(null)}
-                className="absolute right-5 top-5 p-1.5 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
-              >
-                <X className="h-5 w-5" />
-              </button>
-
-              <form onSubmit={handleSubmitReview} className="space-y-5">
-                <div>
-                  <span className="text-[10px] font-bold text-brand-700 uppercase tracking-widest bg-brand-50 px-2 py-0.5 rounded-full border border-brand-200">
-                    Verified Purchase Review
+        {/* ── ORDERS LIST ── */}
+        <div className="space-y-4">
+          {orders.map((ord) => (
+            <div key={ord.id} className="agri-card p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div className="space-y-2.5">
+                <div className="flex items-center gap-3">
+                  <h3 className="text-lg font-bold text-slate-900">{ord.productName}</h3>
+                  <span
+                    className={`text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded ${
+                      ord.status === "COMPLETED"
+                        ? "bg-emerald-100 text-emerald-800"
+                        : ord.status === "ACCEPTED"
+                        ? "bg-blue-100 text-blue-800"
+                        : "bg-amber-100 text-amber-800"
+                    }`}
+                  >
+                    {ord.status}
                   </span>
-                  <h3 className="text-xl font-extrabold text-slate-900 mt-2">
-                    Review {reviewModalOrder.productName}
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Purchased from {reviewModalOrder.farmerName}
-                  </p>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
-                    Rating (1 to 5 Stars)
-                  </label>
-                  <div className="flex gap-2">
-                    {[1, 2, 3, 4, 5].map((s) => (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={() => setRating(s)}
-                        className="p-1 focus:outline-none transition-transform hover:scale-110"
-                      >
-                        <Star
-                          className={`h-7 w-7 transition ${
-                            s <= rating
-                              ? "fill-harvest-500 text-harvest-500"
-                              : "text-slate-200"
-                          }`}
-                        />
-                      </button>
-                    ))}
+                <p className="text-xs text-slate-600">
+                  Seller: <strong className="text-slate-900">{ord.farmerName}</strong> ({ord.cooperative}) &bull; Quantity:{" "}
+                  <strong>{ord.quantity} {ord.unit}</strong> &bull; Ordered: <span>{ord.createdAt}</span>
+                </p>
+
+                <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <Award className="h-3.5 w-3.5 text-emerald-600" />
+                  <span>QC Lab Assay: <strong className="text-slate-700">{ord.assayGrade}</strong></span>
+                </div>
+
+                {ord.status !== "PENDING" ? (
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold">
+                    <Phone className="h-3.5 w-3.5 text-emerald-600" />
+                    <span>Direct Grower Phone Line: <strong>{ord.farmerPhone}</strong></span>
                   </div>
+                ) : (
+                  <p className="text-[11px] text-slate-400 italic">
+                    Farmer direct contact will be disclosed immediately upon order acceptance.
+                  </p>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between lg:justify-end gap-5 border-t lg:border-t-0 pt-4 lg:pt-0">
+                <div className="text-left lg:text-right">
+                  <span className="text-[10px] font-bold uppercase text-slate-400 block">Total Settlement</span>
+                  <span className="text-2xl font-black text-slate-900">{formatCurrency(ord.totalPrice)}</span>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Your Feedback
-                  </label>
-                  <textarea
-                    rows={3}
-                    required
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    placeholder="Produce was fresh, accurate weight, and farmer was prompt with handover."
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition resize-none shadow-xs"
-                  />
-                </div>
+                {ord.status === "COMPLETED" && (
+                  <div>
+                    {reviewedOrders.includes(ord.id) ? (
+                      <span className="inline-flex items-center text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-2 rounded border border-emerald-200">
+                        <CheckCircle2 className="h-4 w-4 mr-1.5" /> QC Feedback Submitted
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => setReviewModalOrder(ord)}
+                        className="btn-agri-amber text-xs px-4 py-2.5 rounded font-semibold flex items-center gap-1.5 shadow-sm"
+                      >
+                        <Star className="h-3.5 w-3.5 fill-white" />
+                        Rate Quality & Handover
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
 
+        {/* ── REVIEW MODAL ── */}
+        {reviewModalOrder && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
+            <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl relative border border-slate-200 overflow-hidden">
+              <div className="h-1.5 w-full bg-agriRed" />
+              <div className="p-7">
                 <button
-                  type="submit"
-                  className="w-full btn-primary-gradient text-white font-semibold py-3 rounded-xl text-sm flex items-center justify-center gap-2 shadow-glow-sm"
+                  onClick={() => setReviewModalOrder(null)}
+                  className="absolute right-5 top-5 p-1 rounded text-slate-400 hover:text-slate-700"
                 >
-                  Submit Verified Review
-                  <ChevronRight className="h-4 w-4" />
+                  <X className="h-5 w-5" />
                 </button>
-              </form>
+
+                <form onSubmit={handleSubmitReview} className="space-y-4">
+                  <div>
+                    <span className="text-[10px] font-bold text-agriRed uppercase tracking-wider bg-red-50 px-2 py-0.5 rounded border border-red-200">
+                      Verified Trade Rating
+                    </span>
+                    <h3 className="text-xl font-bold text-slate-900 mt-2">
+                      Review {reviewModalOrder.productName}
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Procured from {reviewModalOrder.farmerName}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                      Rating (1 to 5 Stars)
+                    </label>
+                    <div className="flex gap-2">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => setRating(s)}
+                          className="p-1 focus:outline-none"
+                        >
+                          <Star
+                            className={`h-7 w-7 ${
+                              s <= rating ? "fill-amber-500 text-amber-500" : "text-slate-200"
+                            }`}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                      Assay & Quality Feedback
+                    </label>
+                    <textarea
+                      rows={3}
+                      required
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                      placeholder="Moisture level and bag purity strictly aligned with the lab assay certificate."
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-red-500"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full btn-agri-red py-2.5 rounded text-sm font-semibold shadow-sm"
+                  >
+                    Submit Verified Rating
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

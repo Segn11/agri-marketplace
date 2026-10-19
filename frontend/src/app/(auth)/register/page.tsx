@@ -3,10 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Sprout, ArrowRight, UserCheck, ShieldCheck, AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowRight, ShieldCheck, AlertCircle, Building2, User } from "lucide-react";
 
-export default function RegisterPage() {
+export default function AgriBazaarRegisterPage() {
   const router = useRouter();
   const [role, setRole] = useState<"ROLE_FARMER" | "ROLE_BUYER">("ROLE_FARMER");
   const [formData, setFormData] = useState({
@@ -54,51 +53,51 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="relative min-h-[90vh] flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-      {/* Decorative ambient background */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[450px] bg-gradient-to-tr from-brand-300/20 via-emerald-200/20 to-harvest-200/20 blur-[100px] rounded-full -z-10 pointer-events-none" />
-
-      <div className="w-full max-w-lg glass-panel p-8 sm:p-10 rounded-3xl shadow-soft-lg relative">
+    <div className="min-h-[90vh] flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8 bg-slate-100">
+      <div className="w-full max-w-lg bg-white p-8 sm:p-10 rounded-2xl shadow-md border border-slate-200">
         <div className="text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-700 via-green-600 to-emerald-500 text-white shadow-glow-sm">
-            <Sprout className="h-7 w-7 text-white" />
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-agriRed text-white shadow-sm">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="w-8 h-8">
+              <path d="M12 2a9 9 0 0 1 9 9c0 4.97-4.03 9-9 9A9 9 0 0 1 3 11c0-4.97 4.03-9 9-9z" />
+              <path d="M12 7c-2 2-3 4-3 6a3 3 0 0 0 6 0c0-2-1-4-3-6z" fill="currentColor" opacity="0.9" />
+            </svg>
           </div>
-          <h2 className="mt-5 text-3xl font-extrabold tracking-tight text-slate-900">
-            Create Your Account
+          <h2 className="mt-4 text-2xl font-bold tracking-tight text-slate-900">
+            Join <span className="text-agriRed">agribazaar</span>
           </h2>
-          <p className="mt-1.5 text-xs text-slate-500">
-            Join the digital direct agricultural trading network
+          <p className="mt-1 text-xs text-slate-500">
+            India's & East Africa's Leading Integrated Agritech Platform
           </p>
         </div>
 
-        {/* Role Toggle Selector */}
-        <div className="mt-6 flex rounded-2xl bg-slate-100/90 p-1.5 border border-slate-200/80">
+        {/* Role Switcher */}
+        <div className="mt-6 flex rounded-lg bg-slate-100 p-1 border border-slate-200">
           <button
             type="button"
             onClick={() => setRole("ROLE_FARMER")}
-            className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition duration-150 flex items-center justify-center gap-1.5 ${
+            className={`flex-1 py-2 text-xs font-bold rounded transition ${
               role === "ROLE_FARMER"
-                ? "bg-white text-brand-800 shadow-sm border border-slate-200/40"
-                : "text-slate-500 hover:text-slate-900"
+                ? "bg-white text-agriRed shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
             }`}
           >
-            <span>🌱</span> Farmer / Grower
+            🌾 Farmer / Producer
           </button>
           <button
             type="button"
             onClick={() => setRole("ROLE_BUYER")}
-            className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition duration-150 flex items-center justify-center gap-1.5 ${
+            className={`flex-1 py-2 text-xs font-bold rounded transition ${
               role === "ROLE_BUYER"
-                ? "bg-white text-brand-800 shadow-sm border border-slate-200/40"
-                : "text-slate-500 hover:text-slate-900"
+                ? "bg-white text-agriRed shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
             }`}
           >
-            <span>🛒</span> Buyer / Business
+            🏢 Miller / Corporate Trader
           </button>
         </div>
 
         {error && (
-          <div className="mt-5 p-3.5 text-xs text-red-700 bg-red-50/80 border border-red-200 rounded-2xl flex items-start gap-2.5">
+          <div className="mt-4 p-3 text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
             <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
             <span>{error}</span>
           </div>
@@ -106,22 +105,22 @@ export default function RegisterPage() {
 
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-              Full Name
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+              Full Legal Name / Entity Contact
             </label>
             <input
               type="text"
               required
               value={formData.fullName}
               onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-              placeholder="e.g. Gemechu Desta"
-              className="w-full px-4 py-2.5 bg-white border border-slate-200/80 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition shadow-xs"
+              placeholder="e.g. Gemechu Desta or Apex Mills Sourcing Ltd"
+              className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-red-500"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                 Email Address
               </label>
               <input
@@ -129,13 +128,13 @@ export default function RegisterPage() {
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="name@example.com"
-                className="w-full px-4 py-2.5 bg-white border border-slate-200/80 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition shadow-xs"
+                placeholder="trade@company.com"
+                className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-red-500"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Phone Number
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                Phone Number (for SMS & OTP)
               </label>
               <input
                 type="tel"
@@ -143,15 +142,15 @@ export default function RegisterPage() {
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="0911234567"
-                className="w-full px-4 py-2.5 bg-white border border-slate-200/80 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition shadow-xs"
+                className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-red-500"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Password
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                Account Password
               </label>
               <input
                 type="password"
@@ -160,39 +159,39 @@ export default function RegisterPage() {
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 placeholder="Min 6 characters"
-                className="w-full px-4 py-2.5 bg-white border border-slate-200/80 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition shadow-xs"
+                className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-red-500"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Farming Zone / City
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                Mandi / Operating Zone
               </label>
               <input
                 type="text"
                 required
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                placeholder="e.g. East Highland, Adama"
-                className="w-full px-4 py-2.5 bg-white border border-slate-200/80 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition shadow-xs"
+                placeholder="e.g. East Highland Mandi"
+                className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-red-500"
               />
             </div>
           </div>
 
           {role === "ROLE_FARMER" && (
-            <div className="border-t border-slate-200/70 pt-4 space-y-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-700 flex items-center gap-1.5">
-                <ShieldCheck className="h-4 w-4" /> Farm Details
+            <div className="border-t border-slate-200 pt-3 space-y-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-agriRed flex items-center gap-1">
+                <ShieldCheck className="h-4 w-4" /> Producer Cooperative / Farm Info
               </span>
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  Farm Name or Producer Cooperative
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Farm Name or Cooperative Society
                 </label>
                 <input
                   type="text"
                   value={formData.farmName}
                   onChange={(e) => setFormData({ ...formData, farmName: e.target.value })}
-                  placeholder="e.g. Green Valley Farm Cooperative"
-                  className="w-full px-4 py-2.5 bg-white border border-slate-200/80 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition shadow-xs"
+                  placeholder="e.g. Oda Gida Farmers Union Cooperative"
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-red-500"
                 />
               </div>
             </div>
@@ -201,16 +200,16 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-3 btn-primary-gradient text-white font-semibold py-3 rounded-xl text-sm flex items-center justify-center gap-2 shadow-glow-sm disabled:opacity-60 transition"
+            className="w-full btn-agri-red py-3 rounded text-sm font-semibold flex items-center justify-center gap-2 shadow-sm mt-3 disabled:opacity-50"
           >
-            {loading ? "Creating Account..." : `Register as ${role === "ROLE_FARMER" ? "Farmer" : "Buyer"}`}
+            {loading ? "Creating Account..." : `Register as ${role === "ROLE_FARMER" ? "Farmer / Producer" : "Corporate Trader"}`}
             <ArrowRight className="h-4 w-4" />
           </button>
         </form>
 
-        <div className="mt-6 pt-5 border-t border-slate-200/60 text-center text-xs text-slate-500">
-          Already registered?{" "}
-          <Link href="/login" className="font-bold text-brand-700 hover:text-brand-800 transition">
+        <div className="mt-6 pt-4 border-t border-slate-100 text-center text-xs text-slate-500">
+          Already have an account?{" "}
+          <Link href="/login" className="font-bold text-agriRed hover:underline">
             Sign In here
           </Link>
         </div>

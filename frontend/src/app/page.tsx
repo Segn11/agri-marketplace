@@ -3,351 +3,688 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  ArrowRight,
   Search,
-  ShieldCheck,
+  ArrowRight,
   TrendingUp,
-  Users,
-  MapPin,
-  Sparkles,
-  ShoppingBag,
-  Leaf,
-  Scale,
-  Award,
+  TrendingDown,
+  ShieldCheck,
+  Building2,
   ChevronRight,
+  ChevronDown,
   CheckCircle2,
-  Zap,
-  BarChart3,
-  Globe2,
+  PhoneCall,
+  MessageCircle,
+  ExternalLink,
+  Laptop,
+  Smartphone,
+  Sparkles,
+  MapPin,
+  Calendar,
+  Layers,
+  Award,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/utils";
 
-export default function HomePage() {
-  const [searchQuery, setSearchQuery] = useState("");
+export default function AgriBazaarHomePage() {
+  const [activeService, setActiveService] = useState<number>(0);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  const categories = [
-    { name: "Cereals & Grains", slug: "cereals-grains", items: "Teff, Wheat, Barley, Maize, Sorghum", icon: "🌾", count: 140 },
-    { name: "Fresh Vegetables", slug: "vegetables", items: "Red Onions, Tomatoes, Potatoes, Cabbage", icon: "🥦", count: 95 },
-    { name: "Fruits & Orchards", slug: "fruits", items: "Avocados, Mangoes, Bananas, Citrus", icon: "🥑", count: 70 },
-    { name: "Pulses & Oilseeds", slug: "pulses-oilseeds", items: "Red Beans, Chickpeas, Lentils, Sesame", icon: "🫘", count: 60 },
-    { name: "Coffee & Spices", slug: "coffee-spices", items: "Highland Arabica, Ginger, Korarima, Garlic", icon: "☕", count: 85 },
-    { name: "Dairy & Livestock", slug: "dairy-poultry", items: "Pure Butter, Fresh Honey, Eggs, Dairy", icon: "🍯", count: 45 },
+  // Live Mandi / Commodity Ticker Data
+  const tickerItems = [
+    { commodity: "White Teff (Magna)", price: "9,450 ETB/Qtl", change: "+2.4%", up: true, mandi: "East Highland Mandi" },
+    { commodity: "Arabica Forest Coffee", price: "420 ETB/KG", change: "+1.8%", up: true, mandi: "Western Hub" },
+    { commodity: "Red Cooking Onions", price: "85 ETB/KG", change: "-0.5%", up: false, mandi: "Central Basin" },
+    { commodity: "Highland Durum Wheat", price: "4,800 ETB/Qtl", change: "+3.1%", up: true, mandi: "Northern Plateau" },
+    { commodity: "Export Hass Avocados", price: "90 ETB/KG", change: "+1.2%", up: true, mandi: "Southern Belt" },
+    { commodity: "Humera White Sesame", price: "8,900 ETB/Qtl", change: "+4.0%", up: true, mandi: "Lowland Trading Post" },
+    { commodity: "Organic Garlic Bulbs", price: "220 ETB/KG", change: "-1.1%", up: false, mandi: "Foothills Mandi" },
   ];
 
-  const featuredProduce = [
+  // 6 Core Offerings in the Ribbon
+  const services = [
     {
-      id: "p1", name: "White Magna Teff (Grade 1)", category: "Cereals & Grains",
-      farmerName: "Gemechu Desta", farmName: "Oda Gida Cooperative", farmerRating: 4.9,
-      unitPrice: 9400, unit: "Quintal", quantityAvailable: 60,
-      location: "East Highland Zone", badge: "Organic",
+      id: 0,
+      title: "AgriBhumi",
+      subtitle: "Precision Agritech & GIS",
+      icon: "🛰️",
+      tagline: "Power of Satellite Imagery and Machine Learning taking Agriculture to new frontiers.",
+      description: "AgriBhumi integrates remote sensing, satellite radar, and spectral vegetation indices to provide farm boundary mapping, real-time crop health monitoring, and harvest estimation for thousands of smallholders and farmer cooperatives.",
+      features: [
+        "High-resolution polygon farm boundary mapping",
+        "NDVI vegetation index and moisture stress analytics",
+        "Yield estimation algorithms for institutional buyers",
+        "Pest & disease early alert telemetry",
+      ],
+      badge: "GIS & AI Technology",
+      cta: "Explore AgriBhumi",
+      link: "/products",
     },
     {
-      id: "p2", name: "Fresh Red Cooking Onions", category: "Vegetables",
-      farmerName: "Chala Tolosa", farmName: "Valley Green Gardens", farmerRating: 4.8,
-      unitPrice: 85, unit: "KG", quantityAvailable: 1500,
-      location: "River Basin District", badge: "Fresh Harvest",
+      id: 1,
+      title: "Online Auction Engine",
+      subtitle: "e-Auctions & Price Discovery",
+      icon: "⚖️",
+      tagline: "Transparent digital bidding platform connecting farmers directly with bulk buyers.",
+      description: "Our proprietary auction mechanism supports Forward Auctions, Reverse Auctions, and Bulk Procurement Tenders, ensuring farmers receive maximum competitive pricing while institutional buyers procure standardized lots.",
+      features: [
+        "Dynamic live price bidding engine with anti-overselling",
+        "Verified digital cataloging of produce lots",
+        "Automated winner declaration & margin allocation",
+        "Comprehensive electronic contract generation",
+      ],
+      badge: "Trading Platform",
+      cta: "View Live Auctions",
+      link: "/products",
     },
     {
-      id: "p3", name: "Sun-Dried Arabica Coffee", category: "Coffee & Spices",
-      farmerName: "Tigist Bekele", farmName: "Highland Forest Cooperative", farmerRating: 5.0,
-      unitPrice: 420, unit: "KG", quantityAvailable: 400,
-      location: "Western Highlands", badge: "Specialty Grade",
+      id: 2,
+      title: "e-Mandi",
+      subtitle: "Physical & Digital Spot Trading",
+      icon: "🌾",
+      tagline: "India's & Africa's fastest-growing digital agricultural produce marketplace.",
+      description: "Connect directly with thousands of verified growers. Buy and sell cereals, pulses, oilseeds, spices, and fresh vegetables at true farm-gate origin prices without intermediary brokerage markups.",
+      features: [
+        "100% verified farmer & cooperative grower profiles",
+        "Real-time atomic stock reservation and order locks",
+        "Transparent quality grades and moisture disclosures",
+        "Flexible logistics coordination: Farmgate or Warehouse",
+      ],
+      badge: "Spot Market",
+      cta: "Explore e-Mandi Trades",
+      link: "/products",
+    },
+    {
+      id: 3,
+      title: "AgriKnow (GAP)",
+      subtitle: "Good Agricultural Practices & Advisory",
+      icon: "📰",
+      tagline: "Hyper-local weather forecasts, mandi rate trends, and crop advisory.",
+      description: "AgriKnow delivers tailored agronomy intelligence directly to farmers' mobile devices, advising on optimal sowing windows, crop protection, mandi arrival trends, and post-harvest storage techniques.",
+      features: [
+        "Micro-climate hyper-local 7-day weather alerts",
+        "Historical mandi price comparison & arrival trends",
+        "Organic fertilization & IPM disease guides",
+        "Multilingual farmer SMS and voice support",
+      ],
+      badge: "Farmer Advisory",
+      cta: "Access AgriKnow",
+      link: "/products",
+    },
+    {
+      id: 4,
+      title: "AgriPay",
+      subtitle: "Settlement & Escrow Financial Services",
+      icon: "💳",
+      tagline: "Safe, automated digital payments with instant settlement upon quality acceptance.",
+      description: "AgriPay guarantees financial peace of mind. Buyer funds are held in secure escrow upon trade creation, and released instantaneously to the farmer's mobile money or bank account once delivery handover is approved.",
+      features: [
+        "Escrow-secured buyer payments with atomic verification",
+        "Instant settlement to Telebirr, CBE, or commercial banks",
+        "Invoice factoring & trade credit options for millers",
+        "Tamper-proof digital ledger of trade transactions",
+      ],
+      badge: "Fintech & Escrow",
+      cta: "Learn About AgriPay",
+      link: "/register",
+    },
+    {
+      id: 5,
+      title: "Corporate Buying",
+      subtitle: "Institutional Bulk Procurement",
+      icon: "🏢",
+      tagline: "End-to-end supply chain sourcing for flour mills, food processors, and exporters.",
+      description: "We partner with leading food corporations, consumer goods companies, and regional grain boards to aggregate, assay, store, and transport thousands of metric tons with verified lab quality certifications.",
+      features: [
+        "WDRA-compliant scientific warehousing & pest control",
+        "Third-party lab assaying (protein, moisture, purity)",
+        "Scheduled milestone deliveries & dedicated logistics",
+        "Formal corporate procurement tenders & tax compliance",
+      ],
+      badge: "B2B Enterprise",
+      cta: "Partner With Us",
+      link: "/register",
+    },
+  ];
+
+  // Featured Marketplace Trades
+  const featuredTrades = [
+    {
+      id: "t1",
+      commodity: "Premium White Teff (Magna Grade 1)",
+      category: "Grains & Cereals",
+      location: "East Highland Farming Zone",
+      seller: "Oda Gida Agricultural Cooperative",
+      price: 9400,
+      unit: "Quintal (100kg)",
+      stock: 45,
+      assayGrade: "A+ (99.2% Purity)",
+      badge: "Live Auction",
+    },
+    {
+      id: "t2",
+      commodity: "Wollega Sun-Dried Arabica Coffee",
+      category: "Specialty & Spices",
+      location: "Western Forest District",
+      seller: "Highland Forest Organic Growers",
+      price: 420,
+      unit: "KG",
+      stock: 350,
+      assayGrade: "Grade 1 Specialty",
+      badge: "Spot Trade",
+    },
+    {
+      id: "t3",
+      commodity: "Commercial Grade Red Cooking Onions",
+      category: "Fresh Vegetables",
+      location: "Central River Basin",
+      seller: "Valley Green Farmer Union",
+      price: 85,
+      unit: "KG",
+      stock: 1200,
+      assayGrade: "Export Quality",
+      badge: "Direct Sourcing",
+    },
+    {
+      id: "t4",
+      commodity: "Durum Wheat Milling Grain",
+      category: "Grains & Cereals",
+      location: "Northern Plateau Plains",
+      seller: "Plateau Grain Producers Association",
+      price: 4800,
+      unit: "Quintal (100kg)",
+      stock: 80,
+      assayGrade: "13.5% Protein Certified",
+      badge: "Bulk Lot",
+    },
+  ];
+
+  // Testimonials
+  const testimonials = [
+    {
+      quote: "agribazaar has kept me updated with live fluctuations in mandi prices and all current business updates. I received full payment in my account within minutes of delivery.",
+      author: "Suneel Gemechu",
+      role: "Grain Trader & Wholesaler",
+      location: "Highland Central Hub",
+    },
+    {
+      quote: "Even during difficult seasons, agribazaar has been working great and provided me convenience and ease in trading. We sold over 200 quintals of wheat directly to millers.",
+      author: "Kamlesh Tolosa",
+      role: "Farmer Cooperative Leader",
+      location: "East Farming Zone",
+    },
+    {
+      quote: "The quality assay reports and escrow payment system eliminate all counterparty risk. Our processing factory now procures 40% of our raw materials through agribazaar.",
+      author: "Sanath Bekele",
+      role: "Procurement Director, Apex Milling",
+      location: "National Logistics Park",
+    },
+  ];
+
+  // FAQ Items
+  const faqs = [
+    {
+      q: "Which agricultural commodities can I buy or sell on agribazaar?",
+      a: "You can trade a wide variety of commodities including Grains & Cereals (White & Red Teff, Wheat, Barley, Maize), Pulses & Oilseeds (Sesame, Chickpeas, Red Kidney Beans), Cash Crops (Arabica Coffee, Spices, Garlic), and Fresh Produce (Red Onions, Avocados, Tomatoes).",
+    },
+    {
+      q: "How does agribazaar help farmers get better prices?",
+      a: "By eliminating multiple tiers of speculative brokers and middlemen, agribazaar gives farmers direct access to millers, food processors, and wholesale buyers. Real-time competitive bidding and transparent mandi prices ensure growers receive 100% fair market value.",
+    },
+    {
+      q: "What is AgriBhumi?",
+      a: "AgriBhumi is our proprietary satellite GIS and AI engine. It provides farm boundary tagging, vegetative health indexing (NDVI), soil moisture telemetry, and yield prediction to support modern precision agriculture.",
+    },
+    {
+      q: "What services does agribazaar offer?",
+      a: "Our integrated agritech suite includes e-Mandi spot trading, Online Reverse & Forward Auctions, AgriBhumi GIS farm tracking, AgriKnow agronomy advisories, AgriPay instant settlement, scientific warehousing, and third-party quality assay testing.",
+    },
+    {
+      q: "What is crop monitoring, and why is it important?",
+      a: "Crop monitoring uses satellite sensors to detect water stress, pest infestations, and growth anomalies before they become visible to the naked eye. This allows proactive interventions, prevents harvest loss, and certifies crop quality for prospective buyers.",
     },
   ];
 
   return (
-    <div className="flex flex-col">
-      {/* ═══════ HERO ═══════ */}
-      <section className="relative overflow-hidden hero-mesh pt-10 pb-20 sm:pt-16 sm:pb-28 lg:pt-20 lg:pb-36">
-        {/* Decorative blobs */}
-        <div className="absolute top-[-80px] left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-gradient-to-tr from-brand-400/10 via-emerald-300/15 to-harvest-300/10 blur-[80px] rounded-full -z-10 pointer-events-none animate-float" />
-        <div className="absolute bottom-[-40px] right-[-100px] w-[300px] h-[300px] bg-gradient-to-br from-brand-500/8 to-emerald-400/6 blur-[60px] rounded-full -z-10 pointer-events-none animate-float-delayed" />
-
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            {/* Status Pill */}
-            <div className="inline-flex items-center gap-2.5 rounded-full bg-white/80 backdrop-blur-md px-5 py-2 shadow-sm border border-brand-200/50 text-xs font-semibold">
-              <span className="relative flex h-2 w-2">
-                <span className="live-beacon absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-500" />
-              </span>
-              <span className="text-brand-800">Live Marketplace</span>
-              <span className="h-3 w-px bg-slate-300" />
-              <span className="text-slate-500 font-medium">500+ Active Farmers Trading Now</span>
-            </div>
-
-            {/* Primary Heading */}
-            <h1 className="text-5xl sm:text-6xl lg:text-[4.5rem] font-extrabold tracking-tight leading-[1.08] text-slate-900">
-              Trade Fresh Harvest{" "}
-              <br className="hidden sm:block" />
-              <span className="text-shimmer">
-                Direct From The Grower
-              </span>
-            </h1>
-
-            {/* Subtitle */}
-            <p className="max-w-2xl mx-auto text-base sm:text-lg text-slate-500 leading-relaxed">
-              Zero middlemen. Transparent pricing. Atomic stock tracking. Connect directly with verified agricultural producers across all farming regions.
-            </p>
-
-            {/* Search Console */}
-            <div className="pt-2 max-w-3xl mx-auto">
-              <div className="glass-panel p-2 sm:p-2.5 rounded-2xl flex flex-col sm:flex-row items-center gap-2">
-                <div className="flex items-center flex-1 w-full px-4 py-2.5 bg-white/80 rounded-xl border border-slate-200/80 focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20 transition-all">
-                  <Search className="h-[18px] w-[18px] text-slate-400 mr-2.5 flex-shrink-0" />
-                  <input
-                    type="text"
-                    placeholder="Search Teff, Coffee, Onions, Avocado..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full text-sm text-slate-900 placeholder-slate-400 bg-transparent focus:outline-none"
-                  />
+    <div className="flex flex-col bg-slate-50 min-h-screen">
+      {/* ══════════ LIVE COMMODITY MANDI TICKER ══════════ */}
+      <div className="bg-slate-900 text-white overflow-hidden py-2 border-b border-slate-800 text-xs">
+        <div className="flex items-center">
+          <div className="bg-agriRed px-4 py-1 font-bold uppercase tracking-wider text-[11px] z-10 flex items-center gap-1.5 flex-shrink-0 shadow-md">
+            <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
+            Live Mandi Rates
+          </div>
+          <div className="overflow-hidden whitespace-nowrap w-full">
+            <div className="animate-ticker flex items-center gap-8 pl-4">
+              {[...tickerItems, ...tickerItems].map((item, idx) => (
+                <div key={idx} className="flex items-center gap-2 font-medium">
+                  <span className="text-slate-200">{item.commodity}:</span>
+                  <span className="font-bold text-white">{item.price}</span>
+                  <span className={`text-[11px] font-bold flex items-center ${item.up ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {item.up ? <TrendingUp className="h-3 w-3 mr-0.5 inline" /> : <TrendingDown className="h-3 w-3 mr-0.5 inline" />}
+                    {item.change}
+                  </span>
+                  <span className="text-[10px] text-slate-400">({item.mandi})</span>
+                  <span className="text-slate-600 font-bold">•</span>
                 </div>
-                <Link href={`/products?q=${searchQuery}`} className="w-full sm:w-auto">
-                  <button className="w-full sm:w-auto btn-primary-gradient text-white font-semibold px-7 py-2.5 rounded-xl text-sm flex items-center justify-center gap-1.5">
-                    Search Harvest
-                    <ChevronRight className="h-4 w-4" />
-                  </button>
-                </Link>
-              </div>
-
-              {/* Quick Tags */}
-              <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-xs">
-                <span className="text-slate-400 font-medium">Popular:</span>
-                {["White Teff", "Red Onions", "Sun-Dried Coffee", "Highland Barley", "Hass Avocados"].map((tag) => (
-                  <Link
-                    key={tag}
-                    href={`/products?q=${tag}`}
-                    className="px-3 py-1 rounded-full bg-white/90 border border-slate-200/70 text-slate-600 font-medium hover:border-brand-400 hover:text-brand-700 hover:bg-brand-50/50 transition-all shadow-xs"
-                  >
-                    {tag}
-                  </Link>
-                ))}
-              </div>
+              ))}
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* KPI Metrics */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-14 max-w-4xl mx-auto">
-            {[
-              { label: "Verified Farmers", value: "500+", accent: "text-slate-900" },
-              { label: "Tons Traded", value: "1,200+", accent: "text-shimmer" },
-              { label: "Direct Farm Price", value: "100%", accent: "text-slate-900" },
-              { label: "Middlemen Fees", value: "0%", accent: "text-harvest-600" },
-            ].map((kpi, i) => (
-              <div key={i} className="glass-panel rounded-2xl p-5 text-center">
-                <span className={`text-3xl sm:text-4xl font-extrabold ${kpi.accent}`}>{kpi.value}</span>
-                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mt-1">{kpi.label}</p>
-              </div>
+      {/* ══════════ HERO SECTION (AGRIBAZAAR STYLE) ══════════ */}
+      <section
+        className="relative text-white py-16 sm:py-24 overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #091a36 0%, #11284d 50%, #0d381e 100%)' }}
+      >
+        {/* Subtle agricultural background texture */}
+        <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
+
+        <div className="container mx-auto px-4 sm:px-8 relative z-10">
+          <div className="max-w-3xl">
+            {/* Status Pill */}
+            <div className="inline-flex items-center gap-2 bg-agriNavy-800/80 border border-blue-400/30 px-3.5 py-1.5 rounded-full text-xs font-semibold text-blue-200 mb-6">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+              <span>National Commodity E-Trading & Sourcing Exchange</span>
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.12]">
+              India's & East Africa's Leading Integrated <span className="text-amber-400">Agritech Platform</span>
+            </h1>
+
+            <p className="mt-5 text-base sm:text-lg text-slate-300 leading-relaxed font-light">
+              Putting the power into small farmowners' and institutional buyers' hands with state-of-the-art auction engines, satellite GIS monitoring, and guaranteed instant digital settlements.
+            </p>
+
+            {/* Hero CTAs */}
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <Link href="/products">
+                <button className="btn-agri-amber px-8 py-3.5 rounded text-sm font-bold shadow-lg flex items-center gap-2">
+                  Click Here for Live Trades
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              </Link>
+              <Link href="/register">
+                <button className="btn-agri-red px-8 py-3.5 rounded text-sm font-bold shadow-lg flex items-center gap-2">
+                  Register as Miller / Trader
+                </button>
+              </Link>
+            </div>
+
+            {/* Note bar */}
+            <div className="mt-8 pt-6 border-t border-blue-800/60 text-xs text-blue-200 flex items-center gap-2">
+              <span className="font-bold text-amber-300">Notice:</span>
+              <span>All certified agricultural cooperatives and institutional buyers can participate in open forward auctions.</span>
+            </div>
+
+            {/* Carousel Dots Indicator */}
+            <div className="flex items-center gap-2 mt-6">
+              <span className="h-2.5 w-7 rounded-full bg-white transition-all" />
+              <span className="h-2 w-2 rounded-full bg-white/40" />
+              <span className="h-2 w-2 rounded-full bg-white/40" />
+              <span className="h-2 w-2 rounded-full bg-white/40" />
+              <span className="h-2 w-2 rounded-full bg-white/40" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════ THE ICONIC AGRIBAZAAR SERVICE RIBBON ══════════ */}
+      <section id="services" className="bg-white border-b border-slate-200 shadow-sm sticky top-[72px] z-30">
+        <div className="container mx-auto px-4 sm:px-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 divide-x divide-slate-100 text-center">
+            {services.map((s) => (
+              <button
+                key={s.id}
+                onClick={() => setActiveService(s.id)}
+                className={`agri-ribbon-tab py-4 px-2 flex flex-col items-center justify-center gap-1.5 focus:outline-none ${
+                  activeService === s.id ? "active font-bold" : "text-slate-600 font-medium"
+                }`}
+              >
+                <span className="text-2xl">{s.icon}</span>
+                <span className="text-xs sm:text-sm tracking-tight leading-snug">{s.title}</span>
+              </button>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ═══════ CATEGORIES ═══════ */}
-      <section className="py-20 container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-4">
-          <div>
-            <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-brand-700 bg-brand-50 px-3 py-1 rounded-full border border-brand-200/60 mb-3">
-              <Sparkles className="h-3 w-3" /> Browse Catalog
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Explore By Crop Category</h2>
-            <p className="text-sm text-slate-500 mt-1.5">Sourced fresh from certified regional harvest locations.</p>
-          </div>
-          <Link href="/products" className="inline-flex items-center text-sm font-bold text-brand-700 hover:text-brand-800 group">
-            Browse all harvests
-            <ArrowRight className="h-4 w-4 ml-1.5 group-hover:translate-x-1 transition" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {categories.map((cat) => (
-            <Link
-              key={cat.slug}
-              href={`/products?category=${cat.slug}`}
-              className="cat-card group p-6 rounded-2xl flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-5">
-                  <span className="text-3xl p-3 rounded-2xl bg-slate-50 border border-slate-100 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                    {cat.icon}
-                  </span>
-                  <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-slate-100 text-slate-500">
-                    {cat.count}+ Listings
-                  </span>
+      {/* ══════════ DYNAMIC SERVICE SHOWCASE SECTION ══════════ */}
+      <section className="py-16 bg-gradient-to-b from-white to-slate-100">
+        <div className="container mx-auto px-4 sm:px-8">
+          <div className="agri-card p-8 sm:p-12 border-slate-200">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+              {/* Left Mockup visual */}
+              <div className="lg:col-span-6 bg-slate-900 rounded-2xl p-6 sm:p-8 text-white relative shadow-xl overflow-hidden">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-5">
+                  <div className="flex items-center gap-2">
+                    <span className="h-3 w-3 rounded-full bg-red-500" />
+                    <span className="h-3 w-3 rounded-full bg-amber-500" />
+                    <span className="h-3 w-3 rounded-full bg-emerald-500" />
+                  </div>
+                  <span className="text-[11px] font-mono text-slate-400">agribazaar://{services[activeService].title.toLowerCase()}</span>
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 group-hover:text-brand-700 transition">{cat.name}</h3>
-                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">{cat.items}</p>
-              </div>
-              <div className="mt-6 pt-4 border-t border-slate-100/80 flex items-center justify-between text-xs font-bold text-brand-700 opacity-0 group-hover:opacity-100 transition-opacity">
-                <span>View listings</span>
-                <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition" />
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
 
-      {/* ═══════ FEATURED PRODUCE ═══════ */}
-      <section className="py-20 bg-white/50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="gradient-divider mb-16" />
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-4">
-            <div>
-              <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-harvest-700 bg-harvest-50 px-3 py-1 rounded-full border border-harvest-200/60 mb-3">
-                <Zap className="h-3 w-3" /> Available Now
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Featured Farm Harvests</h2>
-              <p className="text-sm text-slate-500 mt-1.5">Ready for immediate booking and delivery coordination.</p>
-            </div>
-            <Link href="/products">
-              <Button variant="outline" size="sm" className="font-semibold">View All Stock</Button>
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {featuredProduce.map((p) => (
-              <div key={p.id} className="produce-card group p-6 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between gap-2 mb-4">
-                    <span className="text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full bg-brand-50 text-brand-800 border border-brand-200/60">
-                      {p.category}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
+                      {services[activeService].badge}
                     </span>
-                    <span className="text-[10px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-harvest-50 text-harvest-800 border border-harvest-200/60">
-                      {p.badge}
+                    <span className="text-[10px] bg-emerald-900/60 text-emerald-300 border border-emerald-700 px-2 py-0.5 rounded">
+                      STATUS: ONLINE
                     </span>
                   </div>
 
-                  <h3 className="text-xl font-bold text-slate-900 group-hover:text-brand-700 transition">{p.name}</h3>
+                  <h4 className="text-xl font-bold text-white">{services[activeService].title} Dashboard</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Live telemetry, auction rates, polygon mapping, and contract settlements in progress.
+                  </p>
 
-                  <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
-                    <MapPin className="h-3.5 w-3.5 text-slate-400 flex-shrink-0" />
-                    <span>{p.location}</span>
-                    <span className="h-3 w-px bg-slate-200" />
-                    <span className="font-medium text-slate-700">{p.farmName}</span>
-                  </div>
-
-                  <div className="mt-6 pt-5 border-t border-slate-100 flex items-baseline justify-between">
-                    <div>
-                      <span className="text-3xl font-black text-brand-700 tracking-tight">{formatCurrency(p.unitPrice)}</span>
-                      <span className="text-xs font-medium text-slate-400 ml-1.5">/ {p.unit}</span>
+                  {/* Simulated metric board */}
+                  <div className="grid grid-cols-2 gap-3 pt-2">
+                    <div className="bg-slate-800/80 p-3 rounded border border-slate-700">
+                      <span className="text-[10px] text-slate-400 uppercase">Trading Volume</span>
+                      <p className="text-lg font-bold text-amber-400 mt-0.5">2,480 Metric Tons</p>
                     </div>
-                    <span className="text-xs font-bold text-slate-600">{p.quantityAvailable} {p.unit} avail.</span>
+                    <div className="bg-slate-800/80 p-3 rounded border border-slate-700">
+                      <span className="text-[10px] text-slate-400 uppercase">Settlement Rate</span>
+                      <p className="text-lg font-bold text-emerald-400 mt-0.5">100% Instant</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-800/50 p-3 rounded border border-slate-700/60 text-[11px] text-slate-300 flex items-center gap-2">
+                    <ShieldCheck className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                    <span>ISO 9001:2015 Certified AgTech & WDRA Warehousing Standard</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Description */}
+              <div className="lg:col-span-6 space-y-6">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-agriRed bg-red-50 px-3 py-1 rounded border border-red-200 mb-3">
+                    <span>{services[activeService].icon}</span>
+                    <span>{services[activeService].subtitle}</span>
+                  </div>
+                  <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+                    {services[activeService].title}
+                  </h2>
+                  <p className="text-base font-medium text-slate-700 mt-2">
+                    {services[activeService].tagline}
+                  </p>
+                </div>
+
+                <p className="text-sm text-slate-500 leading-relaxed">
+                  {services[activeService].description}
+                </p>
+
+                <div className="space-y-2.5">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-800">Key Capabilities:</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-600">
+                    {services[activeService].features.map((feat, i) => (
+                      <div key={i} className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-agriRed mt-0.5 flex-shrink-0" />
+                        <span>{feat}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
-                <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <Award className="h-4 w-4 text-harvest-500" />
-                    <span className="text-sm font-black text-slate-800">{p.farmerRating}</span>
-                    <span className="text-[11px] text-slate-400 font-medium">by {p.farmerName}</span>
-                  </div>
-                  <Link href="/products">
-                    <button className="btn-primary-gradient text-white text-xs font-semibold px-5 py-2 rounded-xl">
-                      Order Now
+                <div className="pt-2">
+                  <Link href={services[activeService].link}>
+                    <button className="btn-agri-red px-7 py-3 rounded text-sm font-semibold flex items-center gap-2 shadow-sm">
+                      {services[activeService].cta}
+                      <ArrowRight className="h-4 w-4" />
                     </button>
                   </Link>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ═══════ FOR FARMERS & BUYERS ═══════ */}
-      <section className="py-20 container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-brand-700 bg-brand-50 px-3 py-1 rounded-full border border-brand-200/60 mb-3">
-            <Globe2 className="h-3 w-3" /> Platform Ecosystem
+      {/* ══════════ LIVE COMMODITY AUCTION & TRADING BOARD ══════════ */}
+      <section className="py-16 container mx-auto px-4 sm:px-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-wider text-agriRed bg-red-50 px-3 py-1 rounded border border-red-200">
+              National e-Mandi Market
+            </span>
+            <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight mt-2">
+              Featured Agricultural Trades
+            </h2>
+            <p className="text-sm text-slate-500 mt-1">
+              Real-time available harvest lots direct from verified farmers and regional cooperatives.
+            </p>
+          </div>
+
+          <Link href="/products">
+            <button className="btn-agri-red px-5 py-2.5 rounded text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+              View All Mandi Trades
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          {featuredTrades.map((t) => (
+            <div key={t.id} className="agri-card p-6 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+                    {t.category}
+                  </span>
+                  <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-red-50 text-agriRed border border-red-100">
+                    {t.badge}
+                  </span>
+                </div>
+
+                <h3 className="text-base font-bold text-slate-900 leading-snug">{t.commodity}</h3>
+
+                <div className="mt-2 text-xs text-slate-500 flex items-center gap-1">
+                  <MapPin className="h-3.5 w-3.5 text-slate-400 flex-shrink-0" />
+                  <span>{t.location}</span>
+                </div>
+
+                <p className="text-xs text-slate-600 font-medium mt-1 truncate">
+                  By {t.seller}
+                </p>
+
+                {/* Quality Grade */}
+                <div className="mt-3 py-1.5 px-2.5 bg-emerald-50 rounded border border-emerald-200/60 text-[11px] font-semibold text-emerald-800 flex items-center gap-1.5">
+                  <Award className="h-3.5 w-3.5 text-emerald-600" />
+                  <span>Assay: {t.assayGrade}</span>
+                </div>
+
+                <div className="mt-5 pt-4 border-t border-slate-100 flex items-baseline justify-between">
+                  <div>
+                    <span className="text-2xl font-black text-slate-900">{formatCurrency(t.price)}</span>
+                    <span className="text-[11px] font-medium text-slate-400 ml-1">/{t.unit}</span>
+                  </div>
+                  <span className="text-xs font-bold text-emerald-700">{t.stock} {t.unit}</span>
+                </div>
+              </div>
+
+              <div className="mt-5 pt-4 border-t border-slate-100">
+                <Link href="/products">
+                  <button className="w-full btn-agri-red py-2.5 rounded text-xs font-semibold flex items-center justify-center gap-1.5">
+                    Bid / Place Order
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </button>
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ══════════ LOOKING FOR CORPORATE BUYING? ══════════ */}
+      <section className="py-16 bg-white border-y border-slate-200">
+        <div className="container mx-auto px-4 sm:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            <div className="lg:col-span-5 space-y-5">
+              <span className="text-xs font-bold uppercase tracking-wider text-agriNavy font-semibold bg-blue-50 px-3 py-1 rounded border border-blue-200">
+                Enterprise & Food Processing
+              </span>
+              <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                Looking for <span className="text-agriRed">Corporate Buying?</span>
+              </h2>
+              <p className="text-sm text-slate-600 leading-relaxed">
+                Source directly from verified farm cooperatives with complete quality assay certification, WDRA scientific warehousing, and guaranteed contract fulfillment.
+              </p>
+
+              <div className="space-y-3 text-xs text-slate-700 font-medium">
+                {[
+                  "Standardized lab assay tests for purity, moisture, and protein content",
+                  "Escrow-protected fund transfers with automated dispute resolution",
+                  "Dedicated logistics coordination and cold chain freight dispatch",
+                  "Custom forward procurement contracts for food manufacturers and millers",
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 flex-shrink-0" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="pt-3 flex gap-3">
+                <Link href="/register">
+                  <button className="btn-agri-red px-6 py-3 rounded text-sm font-semibold shadow-sm">
+                    Register as Corporate Buyer
+                  </button>
+                </Link>
+                <Link href="/products">
+                  <button className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold px-6 py-3 rounded text-sm transition">
+                    Browse Bulk Lots
+                  </button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Visual Screen Mockup */}
+            <div className="lg:col-span-7 bg-slate-100 rounded-3xl p-6 sm:p-10 border border-slate-200/80 shadow-soft">
+              <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6 space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div className="flex items-center gap-2">
+                    <Building2 className="h-5 w-5 text-agriNavy" />
+                    <span className="font-bold text-sm text-slate-900">Institutional Procurement Terminal</span>
+                  </div>
+                  <span className="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded">
+                    ENTERPRISE TENDER
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3 text-center">
+                  <div className="p-3 bg-slate-50 rounded border border-slate-100">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase">Settled Volume</span>
+                    <p className="text-lg font-bold text-slate-900 mt-1">12,500 MT</p>
+                  </div>
+                  <div className="p-3 bg-slate-50 rounded border border-slate-100">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase">Verified Lots</span>
+                    <p className="text-lg font-bold text-agriRed mt-1">450+ Lots</p>
+                  </div>
+                  <div className="p-3 bg-slate-50 rounded border border-slate-100">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase">QC Assured</span>
+                    <p className="text-lg font-bold text-emerald-600 mt-1">100%</p>
+                  </div>
+                </div>
+
+                <p className="text-xs text-slate-500 italic pt-1">
+                  "AgriBazaar enables large buyers to procure consistent quality grain directly from thousands of farmholders without speculative risk."
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════ WHAT PEOPLE SAY ABOUT AGRIBAZAAR ══════════ */}
+      <section className="py-16 container mx-auto px-4 sm:px-8">
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <span className="text-xs font-bold uppercase tracking-wider text-agriRed bg-red-50 px-3 py-1 rounded border border-red-200">
+            Real Impact Stories
           </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            Built For Both Sides Of The Harvest
+          <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight mt-2">
+            What People Say About <span className="text-agriRed">AGRIBAZAAR</span>
           </h2>
-          <p className="text-sm text-slate-500 mt-2">
-            Whether you grow crops or procure for businesses, AgriMarket makes trade seamless.
+          <p className="text-sm text-slate-500 mt-1">
+            Empowering growers, millers, and agricultural trade partners across the nation.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Farmer */}
-          <div className="rounded-3xl border border-brand-200/50 bg-gradient-to-br from-brand-50/40 via-white to-brand-50/30 p-8 sm:p-10 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-            <div>
-              <div className="h-14 w-14 rounded-2xl bg-gradient-to-tr from-brand-700 to-brand-500 text-white flex items-center justify-center shadow-glow-sm mb-8">
-                <Leaf className="h-7 w-7" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {testimonials.map((t, i) => (
+            <div key={i} className="agri-card p-6 flex flex-col justify-between">
+              <div>
+                <span className="text-3xl text-agriRed font-serif leading-none">“</span>
+                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed mt-2">
+                  {t.quote}
+                </p>
               </div>
-              <h3 className="text-2xl font-extrabold text-slate-900">For Farmers & Cooperatives</h3>
-              <p className="text-sm text-slate-500 mt-3 leading-relaxed">
-                Set your own fair prices, manage real-time stock inventory, and receive instant notifications when buyers place orders.
-              </p>
-              <ul className="mt-6 space-y-3 text-sm text-slate-700 font-medium">
-                {["Free product listings with multi-image support", "Anti-overselling atomic stock reservation", "Direct buyer phone on order acceptance"].map((item) => (
-                  <li key={item} className="flex items-start gap-2.5">
-                    <CheckCircle2 className="h-4 w-4 text-brand-600 mt-0.5 flex-shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <Link href="/register" className="mt-8">
-              <button className="btn-primary-gradient w-full sm:w-auto text-white font-semibold px-7 py-3 rounded-xl text-sm flex items-center justify-center gap-2">
-                Start Selling Your Harvest
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            </Link>
-          </div>
-
-          {/* Buyer */}
-          <div className="rounded-3xl border border-slate-200/60 bg-gradient-to-br from-slate-50/50 via-white to-slate-50/30 p-8 sm:p-10 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-            <div>
-              <div className="h-14 w-14 rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-600 text-white flex items-center justify-center shadow-soft mb-8">
-                <ShoppingBag className="h-7 w-7" />
+              <div className="mt-6 pt-4 border-t border-slate-100">
+                <p className="text-sm font-bold text-slate-900">{t.author}</p>
+                <p className="text-xs text-agriRed font-semibold">{t.role}</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">{t.location}</p>
               </div>
-              <h3 className="text-2xl font-extrabold text-slate-900">For Buyers & Businesses</h3>
-              <p className="text-sm text-slate-500 mt-3 leading-relaxed">
-                Find the freshest farm harvests at origin prices. Compare listings across multiple regions and coordinate delivery directly.
-              </p>
-              <ul className="mt-6 space-y-3 text-sm text-slate-700 font-medium">
-                {["Transparent regional price comparison", "Real-time status: Pending → Accepted → Ready", "Verified review ratings from completed orders"].map((item) => (
-                  <li key={item} className="flex items-start gap-2.5">
-                    <CheckCircle2 className="h-4 w-4 text-brand-600 mt-0.5 flex-shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
             </div>
-            <Link href="/products" className="mt-8">
-              <button className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-semibold px-7 py-3 rounded-xl text-sm flex items-center justify-center gap-2 shadow-sm transition">
-                Explore All Produce
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            </Link>
-          </div>
+          ))}
         </div>
       </section>
 
-      {/* ═══════ TRUST BAR ═══════ */}
-      <section className="py-12 border-t border-slate-200/60 bg-white/40">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-            {[
-              { icon: ShieldCheck, title: "Anti-Overselling Guard", desc: "Atomic inventory locks prevent duplicate stock sales with version-controlled transactions." },
-              { icon: Scale, title: "Fair Price Discovery", desc: "Farmers control pricing. No hidden fees, commissions, or broker cuts. 100% direct margin." },
-              { icon: BarChart3, title: "Verified Trust Ratings", desc: "Only verified buyers who completed orders can submit ratings, building authentic trust." },
-            ].map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="flex items-start gap-4 p-5 rounded-2xl hover:bg-white/80 transition">
-                <div className="h-11 w-11 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center flex-shrink-0 border border-brand-100">
-                  <Icon className="h-5 w-5" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-slate-900">{title}</h4>
-                  <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{desc}</p>
-                </div>
+      {/* ══════════ FAQ ACCORDION (AGRIBAZAAR STYLE) ══════════ */}
+      <section className="py-16 bg-slate-100 border-t border-slate-200">
+        <div className="container mx-auto px-4 sm:px-8 max-w-4xl">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-sm text-slate-500 mt-1">
+              Everything you need to know about trading, quality assay, and settlements on AgriBazaar.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {faqs.map((faq, idx) => (
+              <div key={idx} className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
+                <button
+                  onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                  className="w-full text-left p-5 font-semibold text-sm text-slate-800 flex items-center justify-between hover:bg-slate-50 transition"
+                >
+                  <span>{faq.q}</span>
+                  <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${openFaq === idx ? 'rotate-180 text-agriRed' : ''}`} />
+                </button>
+                {openFaq === idx && (
+                  <div className="px-5 pb-5 text-xs text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+                    {faq.a}
+                  </div>
+                )}
               </div>
             ))}
           </div>
         </div>
       </section>
+
+      {/* ══════════ FLOATING WHATSAPP & SUPPORT WIDGET ══════════ */}
+      <div className="whatsapp-float flex items-center gap-2">
+        <a
+          href="https://wa.me/251911234567"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="h-12 w-12 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg hover:bg-emerald-600 transition hover:scale-105"
+          title="Chat with AgriBazaar Support"
+        >
+          <MessageCircle className="h-6 w-6" />
+        </a>
+
+        <a
+          href="/register"
+          className="btn-agri-red px-4 py-2.5 rounded-full text-xs font-semibold shadow-lg flex items-center gap-2 hover:scale-105 transition"
+        >
+          <PhoneCall className="h-3.5 w-3.5" />
+          <span>Connect With Us</span>
+        </a>
+      </div>
     </div>
   );
 }
