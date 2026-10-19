@@ -55,6 +55,27 @@ public class Product {
     @Builder.Default
     private String status = "ACTIVE"; // ACTIVE, INACTIVE, OUT_OF_STOCK
 
+    @Column(length = 150)
+    private String assayGrade;
+
+    @Column(length = 100)
+    private String moistureContent;
+
+    @Column(length = 100)
+    private String purity;
+
+    @Column(length = 120)
+    private String harvestSeason;
+
+    @Column(length = 200)
+    private String storageWarehouse;
+
+    @Column(length = 200)
+    private String cooperative;
+
+    @Column(length = 100)
+    private String badge;
+
     @Version
     @Builder.Default
     private Integer version = 0; // Optimistic locking to prevent overselling (FR-5.4)

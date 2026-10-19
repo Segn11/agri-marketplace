@@ -1,0 +1,9 @@
+-- Migration V3: Add Ethiopian Commodity Assay and Specifications
+ALTER TABLE products
+ADD COLUMN IF NOT EXISTS assay_grade VARCHAR(150),
+ADD COLUMN IF NOT EXISTS moisture_content VARCHAR(100),
+ADD COLUMN IF NOT EXISTS purity VARCHAR(100),
+ADD COLUMN IF NOT EXISTS harvest_season VARCHAR(120),
+ADD COLUMN IF NOT EXISTS storage_warehouse VARCHAR(200),
+ADD COLUMN IF NOT EXISTS cooperative VARCHAR(200),
+ADD COLUMN IF NOT EXISTS badge VARCHAR(100);

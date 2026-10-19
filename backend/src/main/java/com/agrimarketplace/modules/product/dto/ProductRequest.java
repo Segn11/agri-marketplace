@@ -36,5 +36,13 @@ public class ProductRequest {
     @NotBlank(message = "Location is required")
     private String location;
 
+    private String assayGrade;
+    private String moistureContent;
+    private String purity;
+    private String harvestSeason;
+    private String storageWarehouse;
+    private String cooperative;
+    private String badge;
+
     private List<String> imageUrls;
 }

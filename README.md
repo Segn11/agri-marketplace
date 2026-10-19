@@ -118,12 +118,11 @@ agri-marketplace/
 ## ⚡ Quick Start Guide (Local Setup)
 
 ### Prerequisites
-- **Java 17+** (JDK) & **Maven 3.8+**
-  > If `mvn` is not recognized on Windows, install it instantly via Windows Package Manager:
+- **Java 17+** (JDK)
+  > If Java 17 is not yet installed on Windows, install it via:
   > ```powershell
-  > winget install Apache.Maven
+  > winget install EclipseAdoptium.Temurin.17.JDK
   > ```
-  > (After installing, restart your terminal or PowerShell window)
 - **Node.js 20+** & **npm**
 - **PostgreSQL 14+** running locally
 
@@ -136,13 +135,18 @@ GRANT ALL PRIVILEGES ON DATABASE agri_marketplace TO agri_user;
 ```
 
 ### 2. Backend Setup (Spring Boot 3)
-```bash
+A self-provisioning Maven Wrapper (`mvnw.cmd`) is included in the project:
+```powershell
 cd backend
-mvn clean install
-mvn spring-boot:run
+.\mvnw clean install
+.\mvnw spring-boot:run
 ```
 - API will be accessible at: `http://localhost:8080/api`
 - Swagger OpenAPI documentation: `http://localhost:8080/swagger-ui.html`
+- **Pre-Seeded Demo Accounts**:
+  - **Admin**: `admin@agri.com` / `password`
+  - **Farmer**: `farmer@agri.com` / `password`
+  - **Buyer**: `buyer@agri.com` / `password`
 
 ### 3. Frontend Setup (Next.js 14)
 ```bash

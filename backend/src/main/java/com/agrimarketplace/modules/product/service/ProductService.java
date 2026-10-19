@@ -69,6 +69,13 @@ public class ProductService {
                 .quantityAvailable(request.getQuantityAvailable())
                 .location(request.getLocation())
                 .status(request.getQuantityAvailable() > 0 ? "ACTIVE" : "OUT_OF_STOCK")
+                .assayGrade(request.getAssayGrade())
+                .moistureContent(request.getMoistureContent())
+                .purity(request.getPurity())
+                .harvestSeason(request.getHarvestSeason())
+                .storageWarehouse(request.getStorageWarehouse())
+                .cooperative(request.getCooperative())
+                .badge(request.getBadge())
                 .images(new ArrayList<>())
                 .build();
 
@@ -106,6 +113,13 @@ public class ProductService {
         product.setUnit(request.getUnit());
         product.setQuantityAvailable(request.getQuantityAvailable());
         product.setLocation(request.getLocation());
+        product.setAssayGrade(request.getAssayGrade());
+        product.setMoistureContent(request.getMoistureContent());
+        product.setPurity(request.getPurity());
+        product.setHarvestSeason(request.getHarvestSeason());
+        product.setStorageWarehouse(request.getStorageWarehouse());
+        product.setCooperative(request.getCooperative());
+        product.setBadge(request.getBadge());
 
         if (product.getQuantityAvailable() == 0) {
             product.setStatus("OUT_OF_STOCK");
@@ -135,6 +149,13 @@ public class ProductService {
                 .quantityAvailable(product.getQuantityAvailable())
                 .location(product.getLocation())
                 .status(product.getStatus())
+                .assayGrade(product.getAssayGrade())
+                .moistureContent(product.getMoistureContent())
+                .purity(product.getPurity())
+                .harvestSeason(product.getHarvestSeason())
+                .storageWarehouse(product.getStorageWarehouse())
+                .cooperative(product.getCooperative())
+                .badge(product.getBadge())
                 .imageUrls(images)
                 .createdAt(product.getCreatedAt())
                 .build();
