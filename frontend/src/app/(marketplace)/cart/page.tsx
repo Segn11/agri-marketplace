@@ -288,6 +288,51 @@ export default function CartPage() {
                   />
                 </div>
               </div>
+
+              {/* Ethiopian Payment Rails & Escrow Options */}
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                    AgriPay Escrow • Ethiopian Payment Channel
+                  </h3>
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    National Bank Verified
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                  {[
+                    { id: "telebirr", name: "Telebirr", badge: "Ethio Telecom", color: "bg-blue-50 text-blue-800 border-blue-200" },
+                    { id: "cbe", name: "CBE Birr", badge: "Commercial Bank", color: "bg-purple-50 text-purple-800 border-purple-200" },
+                    { id: "awash", name: "Awash Birr", badge: "Awash Bank", color: "bg-orange-50 text-orange-800 border-orange-200" },
+                    { id: "escrow", name: "Bank Escrow", badge: "ECX Clearing", color: "bg-teal-50 text-teal-800 border-teal-200" },
+                  ].map((pm) => (
+                    <div
+                      key={pm.id}
+                      className="p-3 rounded-xl border border-slate-200 bg-slate-50/70 hover:border-teal-500 cursor-pointer transition text-left"
+                    >
+                      <div className="text-xs font-black text-slate-900">{pm.name}</div>
+                      <div className="text-[10px] text-slate-500 font-medium">{pm.badge}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">
+                    Payer Mobile Money Number or Bank Account
+                  </label>
+                  <input
+                    type="tel"
+                    defaultValue="0911 234 567"
+                    placeholder="e.g. 0911 234 567 (Telebirr / CBE Birr ID)"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  />
+                  <span className="text-[10px] text-slate-400 mt-1 block">
+                    Secured by 2-Factor Authorization upon farmer order acceptance.
+                  </span>
+                </div>
+              </div>
             </div>
 
             {/* Settlement Summary (4 cols) */}

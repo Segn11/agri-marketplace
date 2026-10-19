@@ -82,22 +82,26 @@ agri-marketplace/
 │   │   ├── app/
 │   │   │   ├── (auth)/                # Login & Registration flows (Farmer, Buyer, Admin)
 │   │   │   ├── (marketplace)/         
-│   │   │   │   ├── products/          # Catalog with filters, search, and instant procurement
+│   │   │   │   ├── products/          # Spot trading catalog with filters & instant procurement
 │   │   │   │   │   └── [id]/          # Dedicated Product Details (Assay specs, moisture, growers)
-│   │   │   │   └── cart/              # Procurement Cart & Settlement with freight selection
+│   │   │   │   ├── mandi/             # Live Ethiopian Mandi & ECX regional terminal rates
+│   │   │   │   ├── auctions/          # Institutional e-Auctions & bulk reverse tenders (EGTE, Kaliti)
+│   │   │   │   ├── storage/           # Certified public silos (e-NWR) & storage fee calculator
+│   │   │   │   ├── quality/           # ECX Standard Quality Assay & certificate verification
+│   │   │   │   └── cart/              # Procurement Cart & Settlement with Telebirr / CBE Birr
 │   │   │   ├── (dashboard)/
 │   │   │   │   ├── farmer/            # Farmer crop inventory, price adjustments & fulfillment
 │   │   │   │   ├── buyer/             # Buyer 4-step order tracker, phone disclosure & reviews
 │   │   │   │   └── admin/             # Oversight, arbitration disputes & account moderation
 │   │   │   ├── globals.css
 │   │   │   ├── layout.tsx             # Root layout with CartProvider and Procurement Drawer
-│   │   │   └── page.tsx               # AgriBazaar-inspired landing page with ticker & services
+│   │   │   └── page.tsx               # Ethiopian AgriBazaar landing page with ticker & services
 │   │   ├── components/
 │   │   │   ├── cart/                  # Slide-over procurement cart drawer
 │   │   │   ├── ui/                    # Reusable Button, Card, Badge, Input primitives
 │   │   │   └── layout/                # Responsive Navbar (Cart badge, user session) & Footer
 │   │   ├── context/                   # Global Cart Context & persistent state
-│   │   ├── lib/                       # API wrapper, centralized commodities repo, formatters
+│   │   ├── lib/                       # Commodities repo, ethiopia-data (Mandi, auctions, silos), formatters
 │   │   └── types/                     # Shared TypeScript interfaces (Product, CartItem, Order)
 │   ├── package.json
 │   ├── tailwind.config.ts
@@ -115,6 +119,11 @@ agri-marketplace/
 
 ### Prerequisites
 - **Java 17+** (JDK) & **Maven 3.8+**
+  > If `mvn` is not recognized on Windows, install it instantly via Windows Package Manager:
+  > ```powershell
+  > winget install Apache.Maven
+  > ```
+  > (After installing, restart your terminal or PowerShell window)
 - **Node.js 20+** & **npm**
 - **PostgreSQL 14+** running locally
 
@@ -126,16 +135,16 @@ CREATE USER agri_user WITH ENCRYPTED PASSWORD 'agri_password';
 GRANT ALL PRIVILEGES ON DATABASE agri_marketplace TO agri_user;
 ```
 
-### 2. Backend Setup
+### 2. Backend Setup (Spring Boot 3)
 ```bash
 cd backend
 mvn clean install
 mvn spring-boot:run
 ```
-- API will be accessible at: `http://localhost:8080`
+- API will be accessible at: `http://localhost:8080/api`
 - Swagger OpenAPI documentation: `http://localhost:8080/swagger-ui.html`
 
-### 3. Frontend Setup
+### 3. Frontend Setup (Next.js 14)
 ```bash
 cd frontend
 npm install
