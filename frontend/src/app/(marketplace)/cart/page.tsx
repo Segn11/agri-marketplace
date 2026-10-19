@@ -12,13 +12,13 @@ import {
   Truck,
   ArrowRight,
   CheckCircle,
-  Building2,
   ChevronRight,
   AlertCircle,
-  Boxes,
+  LogIn,
 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { formatCurrency } from "@/lib/utils";
+import { fetchApi } from "@/lib/api";
 
 export default function CartPage() {
   const router = useRouter();
@@ -28,49 +28,52 @@ export default function CartPage() {
   const [logisticsNote, setLogisticsNote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
-  const [orderId, setOrderId] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [placedOrderIds, setPlacedOrderIds] = useState<string[]>([]);
 
   const freightCost = deliveryMethod === "FREIGHT" ? 1200 : 0;
   const grandTotal = subtotal + freightCost;
 
-  const handleCheckout = (e: React.FormEvent) => {
+  const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     if (cart.length === 0) return;
 
     setIsSubmitting(true);
+    setErrorMessage("");
 
-    const generatedOrderId = `ORD-${Date.now().toString().slice(-6)}`;
-    setOrderId(generatedOrderId);
-
-    // Save to buyer orders in localStorage
-    if (typeof window !== "undefined") {
-      const existing = localStorage.getItem("agri_buyer_orders");
-      const currentOrders = existing ? JSON.parse(existing) : [];
-      const newOrders = cart.map((item) => ({
-        id: `${generatedOrderId}-${item.productId.slice(0, 4)}`,
-        productName: item.name,
-        farmerName: item.farmerName,
-        cooperative: item.cooperative || "Agricultural Primary Union",
-        farmerPhone: "0911876543",
-        farmerLocation: item.location,
-        quantity: item.quantity,
-        unit: item.unit,
-        totalPrice: item.unitPrice * item.quantity + (deliveryMethod === "FREIGHT" ? 600 : 0),
-        deliveryPreference: deliveryMethod,
-        status: "PENDING",
-        assayGrade: item.assayGrade || "Grade 1 QC Certified",
-        createdAt: "Just now",
-        note: logisticsNote,
-      }));
-
-      localStorage.setItem("agri_buyer_orders", JSON.stringify([...newOrders, ...currentOrders]));
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (!token) {
+      setErrorMessage("Please sign in with a Buyer account to submit database orders.");
+      setIsSubmitting(false);
+      return;
     }
 
-    setTimeout(() => {
+    try {
+      const orderIds: string[] = [];
+      // Submit orders for each commodity item to the real Spring Boot API
+      for (const item of cart) {
+        const res = await fetchApi<{ id: string }>("/orders", {
+          method: "POST",
+          body: JSON.stringify({
+            productId: item.productId,
+            quantity: item.quantity,
+            deliveryPreference: deliveryMethod,
+            note: logisticsNote,
+          }),
+        });
+        if (res.data?.id) {
+          orderIds.push(res.data.id);
+        }
+      }
+
+      setPlacedOrderIds(orderIds);
       clearCart();
-      setIsSubmitting(false);
       setOrderComplete(true);
-    }, 1200);
+    } catch (err: any) {
+      setErrorMessage(err.message || "Failed to submit procurement orders. Ensure you are signed in as a Buyer.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -91,16 +94,18 @@ export default function CartPage() {
               <CheckCircle className="h-9 w-9" />
             </div>
 
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold">
-              <span>Order Reference: {orderId}</span>
-            </div>
+            {placedOrderIds.length > 0 && (
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold">
+                <span>Database Orders Placed: {placedOrderIds.length}</span>
+              </div>
+            )}
 
             <h2 className="text-2xl font-black text-slate-900">
               Procurement Order Placed!
             </h2>
 
             <p className="text-xs text-slate-500 leading-relaxed max-w-md mx-auto">
-              Your trade orders have been submitted in <strong>PENDING</strong> status. Funds are safeguarded in AgriPay Escrow and the growers have received dispatch alerts.
+              Your trade orders have been submitted to the database in <strong>PENDING</strong> status. Funds are safeguarded in AgriPay Escrow and the cooperative sellers have been notified.
             </p>
 
             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-left text-xs space-y-2">
@@ -109,8 +114,8 @@ export default function CartPage() {
                 <strong className="text-teal-700">Protected in Escrow</strong>
               </div>
               <div className="flex justify-between text-slate-600">
-                <span>Handover Protocol:</span>
-                <strong className="text-slate-800">Assay Verified on Handover</strong>
+                <span>Database Sync:</span>
+                <strong className="text-slate-800">Confirmed</strong>
               </div>
             </div>
 
@@ -136,7 +141,7 @@ export default function CartPage() {
             </div>
             <h2 className="text-2xl font-black text-slate-900">Your Cart is Empty</h2>
             <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-              You haven't added any commodity lots to your procurement order. Explore live mandi trades and verified cooperative lots.
+              You haven't added any commodity lots to your procurement order. Explore live mandi trades and verified cooperative lots from the database.
             </p>
             <Link
               href="/products"
@@ -150,6 +155,26 @@ export default function CartPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Cart Items (8 cols) */}
             <div className="lg:col-span-8 space-y-4">
+              {errorMessage && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-2xl flex items-start justify-between gap-3 text-xs text-red-700">
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold text-red-900">Order Submission Failed</p>
+                      <p className="mt-0.5">{errorMessage}</p>
+                    </div>
+                  </div>
+                  {errorMessage.includes("sign in") && (
+                    <Link
+                      href="/login"
+                      className="px-3 py-1.5 bg-red-600 text-white rounded-lg font-bold flex items-center gap-1.5 flex-shrink-0"
+                    >
+                      <LogIn className="h-3.5 w-3.5" /> Sign In
+                    </Link>
+                  )}
+                </div>
+              )}
+
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
                 <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
                   <h1 className="text-lg font-black text-slate-900 flex items-center gap-2">
@@ -286,51 +311,6 @@ export default function CartPage() {
                     placeholder="Provide gate entry instructions, preferred receiving hours, or warehouse bay specifications."
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500"
                   />
-                </div>
-              </div>
-
-              {/* Ethiopian Payment Rails & Escrow Options */}
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                    <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                    AgriPay Escrow • Ethiopian Payment Channel
-                  </h3>
-                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    National Bank Verified
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                  {[
-                    { id: "telebirr", name: "Telebirr", badge: "Ethio Telecom", color: "bg-blue-50 text-blue-800 border-blue-200" },
-                    { id: "cbe", name: "CBE Birr", badge: "Commercial Bank", color: "bg-purple-50 text-purple-800 border-purple-200" },
-                    { id: "awash", name: "Awash Birr", badge: "Awash Bank", color: "bg-orange-50 text-orange-800 border-orange-200" },
-                    { id: "escrow", name: "Bank Escrow", badge: "ECX Clearing", color: "bg-teal-50 text-teal-800 border-teal-200" },
-                  ].map((pm) => (
-                    <div
-                      key={pm.id}
-                      className="p-3 rounded-xl border border-slate-200 bg-slate-50/70 hover:border-teal-500 cursor-pointer transition text-left"
-                    >
-                      <div className="text-xs font-black text-slate-900">{pm.name}</div>
-                      <div className="text-[10px] text-slate-500 font-medium">{pm.badge}</div>
-                    </div>
-                  ))}
-                </div>
-
-                <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1">
-                    Payer Mobile Money Number or Bank Account
-                  </label>
-                  <input
-                    type="tel"
-                    defaultValue="0911 234 567"
-                    placeholder="e.g. 0911 234 567 (Telebirr / CBE Birr ID)"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
-                  <span className="text-[10px] text-slate-400 mt-1 block">
-                    Secured by 2-Factor Authorization upon farmer order acceptance.
-                  </span>
                 </div>
               </div>
             </div>

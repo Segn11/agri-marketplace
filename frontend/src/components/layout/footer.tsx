@@ -40,40 +40,40 @@ export function Footer() {
 
           {/* Products */}
           <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-4">Our Products</h4>
+            <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-4">Commodity Categories</h4>
             <ul className="space-y-2.5 text-slate-400">
-              <li><Link href="/mandi" className="hover:text-teal-300 transition">Mandi Price Discovery</Link></li>
-              <li><Link href="/auctions" className="hover:text-teal-300 transition">Digital Auction Engine</Link></li>
-              <li><Link href="/products" className="hover:text-teal-300 transition">Spot Commodity Exchange</Link></li>
-              <li><Link href="/quality" className="hover:text-teal-300 transition">ECX Quality Assaying</Link></li>
-              <li><Link href="/cart" className="hover:text-teal-300 transition">Escrow Settlements</Link></li>
-              <li><Link href="/storage" className="hover:text-teal-300 transition">Certified Public Silos</Link></li>
+              <li><Link href="/products" className="hover:text-teal-300 transition">All Commodities</Link></li>
+              <li><Link href="/products?q=Teff" className="hover:text-teal-300 transition">Cereals & Grains</Link></li>
+              <li><Link href="/products?q=Coffee" className="hover:text-teal-300 transition">Coffee & Spices</Link></li>
+              <li><Link href="/products?q=Sesame" className="hover:text-teal-300 transition">Pulses & Oilseeds</Link></li>
+              <li><Link href="/products?q=Onion" className="hover:text-teal-300 transition">Fresh Vegetables</Link></li>
+              <li><Link href="/products" className="hover:text-teal-300 transition">Live Market Catalog</Link></li>
             </ul>
           </div>
 
           {/* Services */}
           <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-4">Our Services</h4>
+            <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-4">Platform Services</h4>
             <ul className="space-y-2.5 text-slate-400">
-              <li><Link href="/storage" className="hover:text-teal-300 transition">Public Silos (e-NWR)</Link></li>
-              <li><Link href="/quality" className="hover:text-teal-300 transition">Quality Assay & Grading</Link></li>
-              <li><Link href="/auctions" className="hover:text-teal-300 transition">Corporate Procurement</Link></li>
-              <li><Link href="/mandi" className="hover:text-teal-300 transition">Regional Mandi Intelligence</Link></li>
-              <li><Link href="/buyer" className="hover:text-teal-300 transition">Cold Chain & Logistics</Link></li>
-              <li><Link href="/cart" className="hover:text-teal-300 transition">Trade Escrow Protection</Link></li>
+              <li><Link href="/cart" className="hover:text-teal-300 transition">Procurement Cart & Settlement</Link></li>
+              <li><Link href="/cart" className="hover:text-teal-300 transition">AgriPay Escrow Guarantee</Link></li>
+              <li><Link href="/buyer" className="hover:text-teal-300 transition">4-Step Order Tracking</Link></li>
+              <li><Link href="/products" className="hover:text-teal-300 transition">Assayed Commodity Lots</Link></li>
+              <li><Link href="/register" className="hover:text-teal-300 transition">Cooperative Onboarding</Link></li>
+              <li><Link href="/cart" className="hover:text-teal-300 transition">Freight & Delivery Protocol</Link></li>
             </ul>
           </div>
 
           {/* Portals & Legal */}
           <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-4">Portals & Links</h4>
+            <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-4">Portals & Access</h4>
             <ul className="space-y-2.5 text-slate-400">
-              <li><Link href="/mandi" className="hover:text-teal-300 transition">Ethiopian Mandi Board</Link></li>
-              <li><Link href="/buyer" className="hover:text-teal-300 transition">Buyer Procurement</Link></li>
-              <li><Link href="/admin" className="hover:text-teal-300 transition">Admin Hub</Link></li>
+              <li><Link href="/buyer" className="hover:text-teal-300 transition">Buyer Order Tracking</Link></li>
+              <li><Link href="/admin" className="hover:text-teal-300 transition">Admin Dashboard</Link></li>
               <li><Link href="/login" className="hover:text-teal-300 transition">Member Sign In</Link></li>
               <li><Link href="/register" className="hover:text-teal-300 transition">Create Trade Account</Link></li>
-              <li><Link href="/products" className="hover:text-teal-300 transition">Commodity Index</Link></li>
+              <li><Link href="/products" className="hover:text-teal-300 transition">Search Database Lots</Link></li>
+              <li><Link href="/" className="hover:text-teal-300 transition">Home</Link></li>
             </ul>
           </div>
         </div>

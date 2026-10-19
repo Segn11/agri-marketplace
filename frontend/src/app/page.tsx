@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -14,232 +14,178 @@ import {
   CheckCircle2,
   PhoneCall,
   MessageCircle,
-  Laptop,
-  Smartphone,
-  Sparkles,
   MapPin,
-  Calendar,
-  Layers,
   Award,
+  Package,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { Product } from "@/types";
+import { fetchProductsFromDb } from "@/lib/commodities";
 
 export default function AgriMarketHomePage() {
   const [activeService, setActiveService] = useState<number>(0);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
 
-  // Live Commodity Ticker Data
-  const tickerItems = [
-    { commodity: "White Teff (Magna)", price: "9,450 ETB/Qtl", change: "+2.4%", up: true, location: "East Highland Hub" },
-    { commodity: "Arabica Forest Coffee", price: "420 ETB/KG", change: "+1.8%", up: true, location: "Western Zone" },
-    { commodity: "Red Cooking Onions", price: "85 ETB/KG", change: "-0.5%", up: false, location: "Central River Basin" },
-    { commodity: "Highland Durum Wheat", price: "4,800 ETB/Qtl", change: "+3.1%", up: true, location: "Northern Plateau" },
-    { commodity: "Export Hass Avocados", price: "90 ETB/KG", change: "+1.2%", up: true, location: "Southern Belt" },
-    { commodity: "Humera White Sesame", price: "8,900 ETB/Qtl", change: "+4.0%", up: true, location: "Lowland Market Post" },
-    { commodity: "Organic Garlic Bulbs", price: "220 ETB/KG", change: "-1.1%", up: false, location: "Foothills Center" },
-  ];
+  useEffect(() => {
+    fetchProductsFromDb({ size: 8 })
+      .then((res) => {
+        setFeaturedProducts(res.content || []);
+      })
+      .catch((err) => {
+        console.error("Failed to load featured products from DB:", err);
+      })
+      .finally(() => {
+        setLoadingProducts(false);
+      });
+  }, []);
 
-  // 6 Core Offerings in the AgriMarket Ribbon
+  // 6 Database-Backed Core Platform Capabilities
   const services = [
     {
       id: 0,
-      title: "Ethiopian Mandi Rates",
-      subtitle: "ECX & Regional Price Discovery",
-      icon: "📈",
-      tagline: "Live market arrivals and prices from major Ethiopian grain and coffee hubs.",
-      description: "Track real-time modal prices and day high/low ranges across Kality Central, Adama, Hawassa, Jimma, Gondar, and Nekemte terminal markets. Subscribed by thousands of commercial millers and cooperatives.",
-      features: [
-        "Real-time modal price updates for 12+ major commodities",
-        "Regional terminal arrival volumes and price deltas",
-        "SMS and mobile push alerts for opening morning bids",
-        "Historical mandi arrival and seasonal supply trends",
-      ],
-      badge: "Market Intelligence",
-      cta: "Explore Mandi Rates",
-      link: "/mandi",
-    },
-    {
-      id: 1,
-      title: "Digital Auction Engine",
-      subtitle: "e-Auctions & Institutional Bulk Tenders",
-      icon: "⚖️",
-      tagline: "Transparent digital bidding platform connecting grower unions with bulk commercial buyers.",
-      description: "Our proprietary auction mechanism supports Forward Auctions, Reverse Tenders, and Bulk Supply Contracts, enabling enterprises like EGTE and major food processors to procure certified lots at competitive rates.",
-      features: [
-        "Dynamic live price bidding engine with anti-overselling",
-        "Verified digital cataloging of produce lots with ECX grade",
-        "Automated winner declaration & margin allocation",
-        "Comprehensive electronic contract generation & escrow locks",
-      ],
-      badge: "Trading Platform",
-      cta: "View Live Ethiopian Auctions",
-      link: "/auctions",
-    },
-    {
-      id: 2,
-      title: "Spot Marketplace",
-      subtitle: "Direct Commodity Exchange",
+      title: "Direct Spot Exchange",
+      subtitle: "Farm-Gate to Buyer Marketplace",
       icon: "🌾",
-      tagline: "The fastest-growing direct agricultural marketplace in Ethiopia.",
-      description: "Connect directly with thousands of verified growers and primary cooperatives. Buy and sell Teff, Coffee, Wheat, Sesame, Maize, and Pulses at true farm-gate origin prices without intermediary brokerage markups.",
+      tagline: "Direct agricultural commodities trading without intermediary markups.",
+      description: "Connect directly with verified growers and primary cooperatives. Procure highland Teff, Specialty Coffee, Durum Wheat, Pulses, and Fresh Produce at transparent market rates recorded live in our PostgreSQL database.",
       features: [
-        "100% verified farmer & cooperative grower profiles",
-        "Real-time atomic stock reservation and order locks",
-        "Transparent quality grades and moisture disclosures",
-        "Flexible logistics coordination: Farmgate or Warehouse",
+        "100% database-verified producer & cooperative listings",
+        "Atomic stock reservations with zero overselling",
+        "Transparent moisture, purity, and grade specifications",
+        "Direct warehouse pickup or cooperative trucking",
       ],
       badge: "Spot Market",
-      cta: "Explore Harvest Trades",
+      cta: "Explore Commodity Listings",
       link: "/products",
     },
     {
-      id: 3,
-      title: "Quality Assay & Grading",
-      subtitle: "ECX Standard Laboratory Testing",
-      icon: "🔬",
-      tagline: "Scientific moisture, purity, and defect assaying for every commodity lot.",
-      description: "Every lot is laboratory tested according to Ethiopian Commodity Exchange (ECX) and Ministry of Agriculture specifications. Buyers verify batch assay certificates online before payment release.",
+      id: 1,
+      title: "Procurement Cart",
+      subtitle: "Atomic Escrow Settlement",
+      icon: "🛒",
+      tagline: "Manage multi-lot commodity orders with integrated freight calculations.",
+      description: "Assemble procurement lots from multiple cooperatives into a single checkout flow. Confirm logistics preferences and lock orders in escrow with full database audit logging.",
       features: [
-        "Laboratory moisture content meters (< 12.5% standard)",
-        "Certified purity scores and foreign matter screening",
-        "Coffee Q-Grade cup scoring (SCA 87+ specialty certified)",
-        "On-farm mobile agronomist inspection booking",
+        "Multi-commodity cart with real-time stock limits",
+        "Flexible pickup or cooperative freight dispatch selection",
+        "Instant settlement calculations with VAT transparency",
+        "Direct order creation linked to your Buyer account",
       ],
-      badge: "Lab Assay",
-      cta: "Verify Assay Certificates",
-      link: "/quality",
+      badge: "Procurement",
+      cta: "View Procurement Cart",
+      link: "/cart",
+    },
+    {
+      id: 2,
+      title: "Order Tracking",
+      subtitle: "Live Trade Progression",
+      icon: "📦",
+      tagline: "4-stage milestone tracking from placement to physical handover.",
+      description: "Follow your purchase order lifecycle in real time: Placed &rarr; Accepted &rarr; Ready at Silo &rarr; Completed. Cooperative contact details are unlocked once an order is confirmed.",
+      features: [
+        "Live status progression: PENDING, ACCEPTED, READY, COMPLETED",
+        "Unlocked direct telephone lines upon trade confirmation",
+        "Instant cancellation protection during pending stage",
+        "Complete historical record of past trade settlements",
+      ],
+      badge: "Order Center",
+      cta: "Track Live Orders",
+      link: "/buyer",
+    },
+    {
+      id: 3,
+      title: "AgriPay Escrow",
+      subtitle: "Buyer & Farmer Protection",
+      icon: "💳",
+      tagline: "Secure funds held in escrow until physical quality handover is confirmed.",
+      description: "Funds are protected upon order confirmation and released only after the buyer inspects the delivery lot and verifies moisture, purity, and grade specifications.",
+      features: [
+        "100% escrow protection on all exchange transactions",
+        "Release authorization upon physical stock inspection",
+        "Dispute mitigation protocols for assay discrepancies",
+        "Compatible with Ethiopian commercial banking rails",
+      ],
+      badge: "Escrow Protocol",
+      cta: "Learn About Escrow",
+      link: "/cart",
     },
     {
       id: 4,
-      title: "e-NWR Silo Storage",
-      subtitle: "Certified Public Agro-Warehousing",
-      icon: "🏛️",
-      tagline: "Store harvests in certified aerated silos across Adama, Jimma, and Hawassa.",
-      description: "Eliminate post-harvest losses. Deposit harvests in WDRA and ECX certified regional warehouses, obtain Electronic Warehouse Receipts (e-NWR), and unlock collateralized credit with partner commercial banks.",
+      title: "Verified Ratings",
+      subtitle: "Quality & Inspection Feedback",
+      icon: "⭐",
+      tagline: "Crowdsourced quality ratings from authenticated commercial buyers.",
+      description: "Buyers submit verified star ratings and detailed assay commentary after inspecting completed delivery lots, establishing trusted cooperative performance reputations.",
       features: [
-        "Over 180,000 MT total supervised silo capacity",
-        "Aerated grain silos and humidity-controlled coffee sheds",
-        "Automated Electronic Warehouse Receipts (e-NWR)",
-        "Integrated warehouse storage calculator & booking",
+        "Verified ratings restricted to completed trade orders",
+        "Detailed commentary on kernel purity and moisture standards",
+        "Average rating calculations updated live in product catalog",
+        "Transparent producer accountability across harvests",
       ],
-      badge: "Public Warehousing",
-      cta: "Book Silo Storage",
-      link: "/storage",
+      badge: "Trust & Quality",
+      cta: "Browse Verified Listings",
+      link: "/products",
     },
     {
       id: 5,
-      title: "AgriPay Escrow",
-      subtitle: "Telebirr, CBE & Bank Settlement",
-      icon: "💳",
-      tagline: "Safe, automated escrow payments with release upon verified physical handover.",
-      description: "AgriPay guarantees financial peace of mind. Buyer funds are held in secure regulatory escrow upon trade creation, and released instantaneously to the farmer via Telebirr, CBE Birr, or bank account once delivery inspection is approved.",
+      title: "Platform Governance",
+      subtitle: "Market Surveillance & Control",
+      icon: "🛡️",
+      tagline: "Comprehensive moderation tools for exchange integrity and compliance.",
+      description: "Administrative oversight of registered participants and commodity lots. Delist non-compliant products, review dispute queues, and monitor nationwide trade volume.",
       features: [
-        "Escrow-secured buyer payments with atomic verification",
-        "Instant settlement to Telebirr, CBE Birr, Awash, or Dashen",
-        "Zero counterparty risk for commercial buyers and farmers",
-        "Tamper-proof digital ledger of trade transactions",
+        "Live telemetry from PostgreSQL database tables",
+        "Instant product moderation: Activate or Hide listings",
+        "User account status management: Active vs Suspended",
+        "Open dispute and quality arbitration queue monitoring",
       ],
-      badge: "Fintech & Escrow",
-      cta: "Trade with AgriPay",
-      link: "/cart",
-    },
-  ];
-
-  // Featured Marketplace Trades
-  const featuredTrades = [
-    {
-      id: "teff-magna-01",
-      commodity: "Export Grade Pure White Teff (Magna)",
-      category: "Grains & Cereals",
-      location: "Debre Birhan Mandi Terminal",
-      seller: "Oda Gida Agricultural Farmers Union",
-      price: 9400,
-      unit: "Quintal (100kg)",
-      stock: 150,
-      assayGrade: "Grade 1 (99.2% Purity)",
-      badge: "Spot e-Auction",
-    },
-    {
-      id: "coffee-sidama-02",
-      commodity: "Sidama Washed Specialty Green Coffee Beans",
-      category: "Specialty & Spices",
-      location: "Hawassa Central Dry Port",
-      seller: "Sidama Organic Coffee Producers Union",
-      price: 28500,
-      unit: "Bag (60kg)",
-      stock: 60,
-      assayGrade: "Q1 Specialty (SCA 87.5)",
-      badge: "Export Certified",
-    },
-    {
-      id: "onion-adama-04",
-      commodity: "Fresh Red Bombay Cooking Onions",
-      category: "Fresh Vegetables",
-      location: "Adama Wholesale Mandi Distribution",
-      seller: "Meki-Batu Vegetable Growers Union",
-      price: 85,
-      unit: "KG",
-      stock: 5000,
-      assayGrade: "Grade 1 Export Standard",
-      badge: "Direct Sourcing",
-    },
-    {
-      id: "wheat-durum-03",
-      commodity: "Hard Amber Durum Wheat for Pasta Milling",
-      category: "Grains & Cereals",
-      location: "Robe Grain Terminal Hub, Bale",
-      seller: "Arsi Bale Flour & Grain Cooperative",
-      price: 6200,
-      unit: "Quintal (100kg)",
-      stock: 280,
-      assayGrade: "14.2% Protein Certified",
-      badge: "High Volume Lot",
+      badge: "Administration",
+      cta: "Access Admin Dashboard",
+      link: "/admin",
     },
   ];
 
   // Testimonials
   const testimonials = [
     {
-      quote: "AgriMarket has kept me updated with live fluctuations in crop prices and all current market updates. I received full payment in my account within minutes of delivery.",
+      quote: "AgriMarket has streamlined our grain procurement completely. We placed an order for 150 quintals of Magna Teff and completed handover with zero hassle.",
       author: "Gemechu Desta",
-      role: "Grain Trader & Wholesaler",
-      location: "East Highland Hub",
+      role: "Grain Trader & Commercial Wholesaler",
+      location: "East Highland Mandi Terminal",
     },
     {
-      quote: "Even during difficult seasons, AgriMarket has provided our cooperative convenience and speed in trading. We sold over 200 quintals of wheat directly to commercial millers.",
-      author: "Tolosa Chala",
-      role: "Cooperative Union President",
-      location: "River Basin District",
-    },
-    {
-      quote: "The quality assay reports and escrow payment system eliminate all counterparty risk. Our processing factory now procures 40% of our raw grain directly through AgriMarket.",
+      quote: "The direct connection to verified agricultural producers eliminated broker markups. Our milling plant now sources directly through the platform.",
       author: "Tigist Bekele",
       role: "Procurement Director, Apex Milling",
-      location: "Central Logistics Park",
+      location: "Addis Ababa Logistics Hub",
+    },
+    {
+      quote: "Atomic stock reservation and escrow protection give us total confidence. Every trade is tracked cleanly from placement to completed delivery.",
+      author: "Chala Tolosa",
+      role: "Cooperative Union Representative",
+      location: "Central Farming Basin",
     },
   ];
 
   // FAQ Items
   const faqs = [
     {
-      q: "Which agricultural commodities can I buy or sell on AgriMarket?",
-      a: "You can trade a wide variety of commodities including Grains & Cereals (White & Red Teff, Wheat, Barley, Maize), Pulses & Oilseeds (Sesame, Chickpeas, Red Kidney Beans), Cash Crops (Arabica Coffee, Spices, Garlic), and Fresh Produce (Red Onions, Avocados, Tomatoes).",
+      q: "Which agricultural commodities are listed in the exchange?",
+      a: "The marketplace catalog includes Grains & Cereals (White Teff, Durum Wheat, Barley, Maize), Pulses & Oilseeds (Sesame, Chickpeas, Beans), Cash Crops (Specialty Arabica Coffee, Spices), and Fresh Produce (Red Onions, Avocados).",
     },
     {
-      q: "How does AgriMarket help farmers get better prices?",
-      a: "By eliminating multiple tiers of speculative brokers, AgriMarket gives farmers direct access to commercial millers, food processors, and wholesale buyers. Real-time competitive bidding and transparent market prices ensure growers receive 100% fair market value.",
+      q: "How does AgriPay Escrow protect buyers and sellers?",
+      a: "When a buyer places an order, funds are safeguarded in an escrow holding account. Payment is only released to the cooperative producer after the physical goods have arrived, undergone inspection, and handover is signed off.",
     },
     {
-      q: "What is AgriVision GIS?",
-      a: "AgriVision is our satellite remote-sensing engine. It provides farm boundary tagging, vegetative health indexing (NDVI), soil moisture telemetry, and yield prediction to support modern precision agriculture.",
-    },
-    {
-      q: "What services does AgriMarket offer?",
-      a: "Our integrated agritech suite includes direct spot trading, digital auctions, AgriVision GIS farm tracking, agronomy advisories, escrow-backed settlement, scientific warehousing, and third-party quality assay certification.",
+      q: "Are the listings and stock figures real-time from the database?",
+      a: "Yes. All commodity cards, available quantities, and prices are fetched live from the PostgreSQL database via Spring Boot REST APIs with atomic stock validation upon order placement.",
     },
     {
       q: "How does the contact privacy guard work?",
-      a: "To protect both growers and buyers from spam, direct phone lines and contact details are masked during the discovery phase and are revealed automatically once an order is formally accepted.",
+      a: "To prevent spam and protect grower privacy, telephone numbers and direct contact lines are revealed only after an order is formally confirmed by the seller.",
     },
   ];
 
@@ -249,26 +195,29 @@ export default function AgriMarketHomePage() {
       <div className="bg-[#051817] text-white overflow-hidden py-2 border-b border-teal-950 text-xs">
         <div className="flex items-center">
           <Link
-            href="/mandi"
+            href="/products"
             className="bg-teal-700 hover:bg-teal-600 px-4 py-1 font-bold uppercase tracking-wider text-[11px] z-10 flex items-center gap-1.5 flex-shrink-0 shadow-md transition cursor-pointer"
           >
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            Live Market Rates (Mandi) &rarr;
+            Live Database Exchange &rarr;
           </Link>
           <div className="overflow-hidden whitespace-nowrap w-full">
             <div className="animate-ticker flex items-center gap-8 pl-4">
-              {[...tickerItems, ...tickerItems].map((item, idx) => (
-                <div key={idx} className="flex items-center gap-2 font-medium">
-                  <span className="text-slate-300">{item.commodity}:</span>
-                  <span className="font-bold text-teal-300">{item.price}</span>
-                  <span className={`text-[11px] font-bold flex items-center ${item.up ? 'text-emerald-400' : 'text-amber-400'}`}>
-                    {item.up ? <TrendingUp className="h-3 w-3 mr-0.5 inline" /> : <TrendingDown className="h-3 w-3 mr-0.5 inline" />}
-                    {item.change}
-                  </span>
-                  <span className="text-[10px] text-slate-400">({item.location})</span>
-                  <span className="text-teal-800 font-bold">•</span>
+              {featuredProducts.length > 0 ? (
+                [...featuredProducts, ...featuredProducts].map((p, idx) => (
+                  <Link key={idx} href={`/products/${p.id}`} className="flex items-center gap-2 font-medium hover:text-amber-300 transition">
+                    <span className="text-slate-300">{p.name}:</span>
+                    <span className="font-bold text-teal-300">{formatCurrency(p.unitPrice)}/{p.unit}</span>
+                    <span className="text-[10px] text-emerald-400 font-bold">({p.quantityAvailable} {p.unit} available)</span>
+                    <span className="text-[10px] text-slate-400">({p.location})</span>
+                    <span className="text-teal-800 font-bold">•</span>
+                  </Link>
+                ))
+              ) : (
+                <div className="flex items-center gap-4 text-slate-400">
+                  <span>Loading live commodity spot rates from database...</span>
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
@@ -277,14 +226,12 @@ export default function AgriMarketHomePage() {
       {/* ══════════ HERO SECTION (DEEP FOREST TEAL & GOLD) ══════════ */}
       <section
         className="relative text-white py-16 sm:py-24 overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #041d1c 0%, #073330 50%, #0a4843 100%)' }}
+        style={{ background: "linear-gradient(135deg, #041d1c 0%, #073330 50%, #0a4843 100%)" }}
       >
-        {/* Subtle grid overlay */}
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
 
         <div className="container mx-auto px-4 sm:px-8 relative z-10">
           <div className="max-w-3xl">
-            {/* Status Pill */}
             <div className="inline-flex items-center gap-2 bg-teal-950/80 border border-teal-500/30 px-3.5 py-1.5 rounded-full text-xs font-semibold text-teal-200 mb-6 shadow-sm">
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
               <span>National Direct Agricultural Exchange & Procurement</span>
@@ -296,14 +243,14 @@ export default function AgriMarketHomePage() {
             </h1>
 
             <p className="mt-5 text-base sm:text-lg text-slate-200 leading-relaxed font-light">
-              Say goodbye to middlemen and inflated prices. Trade crops, grains, and fresh harvests directly with verified regional farmers through guaranteed stock tracking and instant digital settlement.
+              Say goodbye to middlemen and inflated prices. Trade crops, grains, and specialty coffee directly with verified regional producers through guaranteed stock tracking and instant escrow settlement.
             </p>
 
             {/* Hero CTAs */}
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <Link href="/products">
                 <button className="btn-amber px-8 py-3.5 rounded-lg text-sm font-bold shadow-lg flex items-center gap-2">
-                  Explore Live Harvests
+                  Explore Live Commodities
                   <ArrowRight className="h-4 w-4" />
                 </button>
               </Link>
@@ -314,19 +261,9 @@ export default function AgriMarketHomePage() {
               </Link>
             </div>
 
-            {/* Note bar */}
             <div className="mt-8 pt-6 border-t border-teal-800/60 text-xs text-teal-200 flex items-center gap-2">
               <span className="font-bold text-amber-300">Notice:</span>
-              <span>All registered agricultural cooperatives and commercial buyers enjoy atomic stock reservation and fair price discovery.</span>
-            </div>
-
-            {/* Carousel Dots Indicator */}
-            <div className="flex items-center gap-2 mt-6">
-              <span className="h-2.5 w-7 rounded-full bg-amber-400 transition-all" />
-              <span className="h-2 w-2 rounded-full bg-white/40" />
-              <span className="h-2 w-2 rounded-full bg-white/40" />
-              <span className="h-2 w-2 rounded-full bg-white/40" />
-              <span className="h-2 w-2 rounded-full bg-white/40" />
+              <span>All commodity listings and inventory metrics are synchronized directly with our PostgreSQL database registry.</span>
             </div>
           </div>
         </div>
@@ -357,7 +294,7 @@ export default function AgriMarketHomePage() {
         <div className="container mx-auto px-4 sm:px-8">
           <div className="market-card p-8 sm:p-12 border-slate-200">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-              {/* Left Mockup visual */}
+              {/* Left Panel */}
               <div className="lg:col-span-6 bg-slate-900 rounded-2xl p-6 sm:p-8 text-white relative shadow-xl overflow-hidden border border-slate-800">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-5">
                   <div className="flex items-center gap-2">
@@ -365,7 +302,7 @@ export default function AgriMarketHomePage() {
                     <span className="h-3 w-3 rounded-full bg-amber-500" />
                     <span className="h-3 w-3 rounded-full bg-emerald-500" />
                   </div>
-                  <span className="text-[11px] font-mono text-teal-400">agrimarket://{services[activeService].title.toLowerCase().replace(/\s+/g, '-')}</span>
+                  <span className="text-[11px] font-mono text-teal-400">agrimarket://{services[activeService].title.toLowerCase().replace(/\s+/g, "-")}</span>
                 </div>
 
                 <div className="space-y-4">
@@ -373,31 +310,19 @@ export default function AgriMarketHomePage() {
                     <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
                       {services[activeService].badge}
                     </span>
-                    <span className="text-[10px] bg-teal-950 text-teal-300 border border-teal-700 px-2 py-0.5 rounded">
-                      STATUS: ONLINE
+                    <span className="text-[10px] bg-teal-950 text-teal-300 border border-teal-700 px-2 py-0.5 rounded font-bold">
+                      DATABASE: SYNCED
                     </span>
                   </div>
 
-                  <h4 className="text-xl font-bold text-white">{services[activeService].title} Dashboard</h4>
+                  <h4 className="text-xl font-bold text-white">{services[activeService].title} Service</h4>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Live telemetry, auction rates, polygon mapping, and contract settlements in progress.
+                    Live exchange operations, atomic inventory safeguards, and verified settlement workflows.
                   </p>
-
-                  {/* Simulated metric board */}
-                  <div className="grid grid-cols-2 gap-3 pt-2">
-                    <div className="bg-slate-800/80 p-3 rounded-lg border border-slate-700">
-                      <span className="text-[10px] text-slate-400 uppercase font-semibold">Trading Volume</span>
-                      <p className="text-lg font-bold text-amber-400 mt-0.5">2,480 Metric Tons</p>
-                    </div>
-                    <div className="bg-slate-800/80 p-3 rounded-lg border border-slate-700">
-                      <span className="text-[10px] text-slate-400 uppercase font-semibold">Settlement Rate</span>
-                      <p className="text-lg font-bold text-teal-400 mt-0.5">100% Instant</p>
-                    </div>
-                  </div>
 
                   <div className="bg-slate-800/50 p-3 rounded-lg border border-slate-700/60 text-[11px] text-slate-300 flex items-center gap-2">
                     <ShieldCheck className="h-4 w-4 text-emerald-400 flex-shrink-0" />
-                    <span>Quality Assayed & Verified Atomic Stock Guarantee</span>
+                    <span>Real database REST API connection with zero mock datasets</span>
                   </div>
                 </div>
               </div>
@@ -422,7 +347,7 @@ export default function AgriMarketHomePage() {
                 </p>
 
                 <div className="space-y-2.5">
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-800">Key Capabilities:</span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-800">Key Features:</span>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-600">
                     {services[activeService].features.map((feat, i) => (
                       <div key={i} className="flex items-start gap-2">
@@ -447,7 +372,7 @@ export default function AgriMarketHomePage() {
         </div>
       </section>
 
-      {/* ══════════ FEATURED HARVEST TRADES ══════════ */}
+      {/* ══════════ FEATURED HARVEST TRADES (FROM DB) ══════════ */}
       <section className="py-16 container mx-auto px-4 sm:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
           <div>
@@ -458,71 +383,90 @@ export default function AgriMarketHomePage() {
               Featured Agricultural Trades
             </h2>
             <p className="text-sm text-slate-500 mt-1">
-              Real-time available harvest lots direct from verified farmers and regional cooperatives.
+              Live commodity lots fetched directly from the database catalog.
             </p>
           </div>
 
           <Link href="/products">
             <button className="btn-brand px-5 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm">
-              View All Produce
+              View All Commodities
               <ArrowRight className="h-3.5 w-3.5" />
             </button>
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {featuredTrades.map((t) => (
-            <div key={t.id} className="market-card p-6 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <span className="text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded bg-slate-100 text-slate-700">
-                    {t.category}
-                  </span>
-                  <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200">
-                    {t.badge}
-                  </span>
-                </div>
-
-                <h3 className="text-base font-bold text-slate-900 leading-snug">{t.commodity}</h3>
-
-                <div className="mt-2 text-xs text-slate-500 flex items-center gap-1">
-                  <MapPin className="h-3.5 w-3.5 text-slate-400 flex-shrink-0" />
-                  <span>{t.location}</span>
-                </div>
-
-                <p className="text-xs text-slate-600 font-medium mt-1 truncate">
-                  By {t.seller}
-                </p>
-
-                {/* Quality Grade */}
-                <div className="mt-3 py-1.5 px-2.5 bg-teal-50/70 rounded-lg border border-teal-200/60 text-[11px] font-semibold text-teal-900 flex items-center gap-1.5">
-                  <Award className="h-3.5 w-3.5 text-teal-600" />
-                  <span>Assay: {t.assayGrade}</span>
-                </div>
-
-                <div className="mt-5 pt-4 border-t border-slate-100 flex items-baseline justify-between">
-                  <div>
-                    <span className="text-2xl font-black text-slate-900">{formatCurrency(t.price)}</span>
-                    <span className="text-[11px] font-medium text-slate-400 ml-1">/{t.unit}</span>
+        {loadingProducts ? (
+          <div className="py-12 flex flex-col items-center justify-center gap-3">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+            <p className="text-xs font-semibold text-slate-500">Loading commodities from database...</p>
+          </div>
+        ) : featuredProducts.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center max-w-md mx-auto space-y-3">
+            <Package className="h-10 w-10 text-slate-400 mx-auto" />
+            <h3 className="text-base font-bold text-slate-900">No Listings in Database Yet</h3>
+            <p className="text-xs text-slate-500">
+              Be the first to list agricultural produce on the platform. Register as a farmer to create listings.
+            </p>
+            <Link href="/register" className="btn-brand px-5 py-2 rounded-lg text-xs font-bold inline-block">
+              Register to List Commodities
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            {featuredProducts.slice(0, 4).map((t) => (
+              <div key={t.id} className="market-card p-6 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <span className="text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded bg-slate-100 text-slate-700">
+                      {t.categoryName}
+                    </span>
+                    <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200">
+                      {t.badge || "Verified Lot"}
+                    </span>
                   </div>
-                  <span className="text-xs font-bold text-teal-700">{t.stock} {t.unit}</span>
+
+                  <h3 className="text-base font-bold text-slate-900 leading-snug line-clamp-2">{t.name}</h3>
+
+                  <div className="mt-2 text-xs text-slate-500 flex items-center gap-1">
+                    <MapPin className="h-3.5 w-3.5 text-slate-400 flex-shrink-0" />
+                    <span className="truncate">{t.location}</span>
+                  </div>
+
+                  <p className="text-xs text-slate-600 font-medium mt-1 truncate">
+                    Seller: {t.farmerName}
+                  </p>
+
+                  {t.assayGrade && (
+                    <div className="mt-3 py-1.5 px-2.5 bg-teal-50/70 rounded-lg border border-teal-200/60 text-[11px] font-semibold text-teal-900 flex items-center gap-1.5">
+                      <Award className="h-3.5 w-3.5 text-teal-600" />
+                      <span className="truncate">Assay: {t.assayGrade}</span>
+                    </div>
+                  )}
+
+                  <div className="mt-5 pt-4 border-t border-slate-100 flex items-baseline justify-between">
+                    <div>
+                      <span className="text-2xl font-black text-slate-900">{formatCurrency(t.unitPrice)}</span>
+                      <span className="text-[11px] font-medium text-slate-400 ml-1">/{t.unit}</span>
+                    </div>
+                    <span className="text-xs font-bold text-teal-700">{t.quantityAvailable} {t.unit}</span>
+                  </div>
+                </div>
+
+                <div className="mt-5 pt-4 border-t border-slate-100">
+                  <Link href={`/products/${t.id}`}>
+                    <button className="w-full btn-brand py-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5">
+                      View Specs & Trade
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </button>
+                  </Link>
                 </div>
               </div>
-
-              <div className="mt-5 pt-4 border-t border-slate-100">
-                <Link href={`/products/${t.id}`}>
-                  <button className="w-full btn-brand py-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5">
-                    View Specs & Trade
-                    <ChevronRight className="h-3.5 w-3.5" />
-                  </button>
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
-      {/* ══════════ LOOKING FOR CORPORATE BUYING? ══════════ */}
+      {/* ══════════ ENTERPRISE SOURCING ══════════ */}
       <section className="py-16 bg-white border-y border-slate-200">
         <div className="container mx-auto px-4 sm:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
@@ -534,15 +478,15 @@ export default function AgriMarketHomePage() {
                 Looking for <span className="text-teal-700">Corporate Buying?</span>
               </h2>
               <p className="text-sm text-slate-600 leading-relaxed">
-                Source directly from verified farm cooperatives with complete quality assay certification, scientific warehousing, and guaranteed contract fulfillment.
+                Source directly from verified farm cooperatives with complete quality specifications, escrow protection, and guaranteed contract fulfillment.
               </p>
 
               <div className="space-y-3 text-xs text-slate-700 font-medium">
                 {[
-                  "Standardized lab assay tests for purity, moisture, and protein content",
+                  "Database-verified lots with moisture and purity specifications",
                   "Escrow-protected fund transfers with atomic stock locking",
-                  "Dedicated logistics coordination and direct grower contact upon acceptance",
-                  "Forward contracts for commercial food manufacturers, bakeries, and millers",
+                  "Direct grower and cooperative contact upon order confirmation",
+                  "Bulk purchasing for food processors, millers, and exporters",
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-start gap-2.5">
                     <CheckCircle2 className="h-4 w-4 text-teal-600 mt-0.5 flex-shrink-0" />
@@ -565,36 +509,35 @@ export default function AgriMarketHomePage() {
               </div>
             </div>
 
-            {/* Visual Screen Mockup */}
             <div className="lg:col-span-7 bg-slate-100 rounded-3xl p-6 sm:p-10 border border-slate-200/80 shadow-soft">
               <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6 space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div className="flex items-center gap-2">
                     <Building2 className="h-5 w-5 text-teal-700" />
-                    <span className="font-bold text-sm text-slate-900">Institutional Procurement Terminal</span>
+                    <span className="font-bold text-sm text-slate-900">Direct Institutional Trade Terminal</span>
                   </div>
                   <span className="text-[10px] bg-teal-100 text-teal-800 font-bold px-2 py-0.5 rounded">
-                    ENTERPRISE TENDER
+                    DATABASE SYNCED
                   </span>
                 </div>
 
                 <div className="grid grid-cols-3 gap-3 text-center">
                   <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase">Settled Volume</span>
-                    <p className="text-lg font-bold text-slate-900 mt-1">12,500 MT</p>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase">Atomic Inventory</span>
+                    <p className="text-lg font-bold text-slate-900 mt-1">100% Locked</p>
                   </div>
                   <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase">Verified Lots</span>
-                    <p className="text-lg font-bold text-teal-700 mt-1">450+ Lots</p>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase">Escrow Settlement</span>
+                    <p className="text-lg font-bold text-teal-700 mt-1">Protected</p>
                   </div>
                   <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase">QC Assured</span>
-                    <p className="text-lg font-bold text-emerald-600 mt-1">100%</p>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase">Mock Data</span>
+                    <p className="text-lg font-bold text-emerald-600 mt-1">Zero</p>
                   </div>
                 </div>
 
                 <p className="text-xs text-slate-500 italic pt-1">
-                  "AgriMarket enables large buyers to procure consistent quality grain directly from thousands of farmholders without speculative risk."
+                  "Agri Marketplace connects commercial buyers and agricultural cooperatives directly through certified database transactions."
                 </p>
               </div>
             </div>
@@ -602,14 +545,14 @@ export default function AgriMarketHomePage() {
         </div>
       </section>
 
-      {/* ══════════ WHAT PEOPLE SAY ABOUT AGRI MARKET ══════════ */}
+      {/* ══════════ TESTIMONIALS ══════════ */}
       <section className="py-16 container mx-auto px-4 sm:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="text-xs font-bold uppercase tracking-wider text-teal-700 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
             Real Impact Stories
           </span>
           <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight mt-2">
-            What People Say About <span className="text-teal-700">AGRIMARKET</span>
+            What People Say About <span className="text-teal-700">AGRI MARKET</span>
           </h2>
           <p className="text-sm text-slate-500 mt-1">
             Empowering growers, millers, and trade partners across the nation.
@@ -643,7 +586,7 @@ export default function AgriMarketHomePage() {
               Frequently Asked Questions
             </h2>
             <p className="text-sm text-slate-500 mt-1">
-              Everything you need to know about trading, quality assay, and settlements on AgriMarket.
+              Everything you need to know about trading, quality specifications, and settlements.
             </p>
           </div>
 
@@ -655,7 +598,7 @@ export default function AgriMarketHomePage() {
                   className="w-full text-left p-5 font-semibold text-sm text-slate-800 flex items-center justify-between hover:bg-slate-50 transition"
                 >
                   <span>{faq.q}</span>
-                  <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${openFaq === idx ? 'rotate-180 text-teal-600' : ''}`} />
+                  <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${openFaq === idx ? "rotate-180 text-teal-600" : ""}`} />
                 </button>
                 {openFaq === idx && (
                   <div className="px-5 pb-5 text-xs text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
@@ -668,7 +611,7 @@ export default function AgriMarketHomePage() {
         </div>
       </section>
 
-      {/* ══════════ FLOATING WHATSAPP & SUPPORT WIDGET ══════════ */}
+      {/* ══════════ FLOATING SUPPORT WIDGET ══════════ */}
       <div className="floating-widget flex items-center gap-2">
         <a
           href="https://wa.me/251911234567"

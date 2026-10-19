@@ -100,14 +100,12 @@ export function Navbar() {
           </Link>
 
           {/* Nav links */}
-          <nav className="hidden lg:flex items-center space-x-6 text-xs xl:text-sm font-semibold text-slate-600">
+          <nav className="hidden lg:flex items-center space-x-7 text-sm font-semibold text-slate-600">
             <Link href="/" className="hover:text-teal-600 transition">Home</Link>
-            <Link href="/products" className="hover:text-teal-600 transition">Spot Trading</Link>
-            <Link href="/mandi" className="hover:text-teal-600 transition text-amber-700 font-bold">Mandi Rates</Link>
-            <Link href="/auctions" className="hover:text-teal-600 transition">e-Auctions</Link>
-            <Link href="/storage" className="hover:text-teal-600 transition">Warehouse Silos</Link>
-            <Link href="/quality" className="hover:text-teal-600 transition">Quality Assay</Link>
-            <Link href="/buyer" className="hover:text-teal-600 transition">Buyer Tracking</Link>
+            <Link href="/products" className="hover:text-teal-600 transition">Commodities</Link>
+            <Link href="/cart" className="hover:text-teal-600 transition">Procurement Cart</Link>
+            <Link href="/buyer" className="hover:text-teal-600 transition">Order Tracking</Link>
+            <Link href="/admin" className="hover:text-teal-600 transition">Admin Dashboard</Link>
           </nav>
 
           {/* Action buttons & Cart */}
@@ -170,14 +168,10 @@ export function Navbar() {
       {mobileMenuOpen && (
         <div className="lg:hidden bg-white border-b border-slate-200 px-6 py-4 space-y-3">
           <Link href="/" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Home</Link>
-          <Link href="/products" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-teal-700 font-bold">Spot Trading Marketplace</Link>
-          <Link href="/mandi" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-amber-700 font-bold">Ethiopian Mandi Rates</Link>
-          <Link href="/auctions" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">e-Auctions & Tenders</Link>
-          <Link href="/storage" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Warehouse Silos (e-NWR)</Link>
-          <Link href="/quality" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Quality Assay & ECX Grading</Link>
+          <Link href="/products" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-teal-700 font-bold">Commodities Marketplace</Link>
           <Link href="/cart" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Shopping Cart ({totalItems})</Link>
           <Link href="/buyer" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Buyer Order Tracking</Link>
-          <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Admin Hub</Link>
+          <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Admin Dashboard</Link>
           <div className="pt-3 border-t border-slate-100 flex gap-2">
             {user ? (
               <button onClick={handleLogout} className="w-full bg-red-50 text-red-700 py-2 rounded-lg text-xs font-semibold">

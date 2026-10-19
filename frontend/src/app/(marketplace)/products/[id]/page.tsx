@@ -7,26 +7,20 @@ import {
   ArrowLeft,
   MapPin,
   ShieldCheck,
-  Award,
   Star,
   CheckCircle,
   ShoppingBag,
-  Building2,
-  Calendar,
-  Layers,
   ChevronRight,
   ShoppingCart,
-  Boxes,
-  Truck,
-  FileText,
-  Lock,
   Plus,
   Minus,
+  AlertCircle,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
-import { getStoredProducts, INITIAL_PRODUCTS } from "@/lib/commodities";
+import { fetchProductByIdFromDb, fetchProductsFromDb } from "@/lib/commodities";
 import { useCart } from "@/context/CartContext";
 import { Product } from "@/types";
+import { fetchApi } from "@/lib/api";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -35,25 +29,79 @@ export default function ProductDetailPage() {
   const { addToCart } = useCart();
 
   const [product, setProduct] = useState<Product | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [quantity, setQuantity] = useState<number>(1);
   const [orderModalOpen, setOrderModalOpen] = useState(false);
   const [deliveryNote, setDeliveryNote] = useState("");
+  const [orderLoading, setOrderLoading] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderError, setOrderError] = useState("");
   const [activeTab, setActiveTab] = useState<"specs" | "cooperative" | "escrow">("specs");
 
   useEffect(() => {
-    const all = getStoredProducts();
-    const found = all.find((p) => p.id === productId) || INITIAL_PRODUCTS[0];
-    setProduct(found);
-    if (found?.minOrderQuantity) {
-      setQuantity(found.minOrderQuantity);
-    }
+    if (!productId) return;
+
+    let isMounted = true;
+    setLoading(true);
+    setError("");
+
+    fetchProductByIdFromDb(productId)
+      .then((data) => {
+        if (!isMounted) return;
+        setProduct(data);
+        if (data.minOrderQuantity) {
+          setQuantity(data.minOrderQuantity);
+        } else {
+          setQuantity(1);
+        }
+        // Fetch related products from DB
+        return fetchProductsFromDb({ size: 4 });
+      })
+      .then((paged) => {
+        if (!isMounted || !paged) return;
+        setRelatedProducts(paged.content.filter((p) => p.id !== productId).slice(0, 3));
+      })
+      .catch((err) => {
+        if (!isMounted) return;
+        setError(err.message || "Failed to load commodity specifications from database.");
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, [productId]);
 
-  if (!product) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-teal-600"></div>
+      <div className="min-h-[70vh] flex flex-col items-center justify-center bg-slate-50 gap-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+        <p className="text-sm font-semibold text-slate-600">Loading commodity specifications from database...</p>
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center bg-slate-50 px-4 text-center">
+        <div className="h-16 w-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4">
+          <AlertCircle className="h-8 w-8" />
+        </div>
+        <h2 className="text-xl font-bold text-slate-900 mb-2">Commodity Lot Not Found</h2>
+        <p className="text-sm text-slate-500 max-w-md mb-6">
+          {error || "The requested agricultural commodity is not available in the database exchange registry."}
+        </p>
+        <Link
+          href="/products"
+          className="btn-brand px-6 py-2.5 rounded-xl text-sm font-semibold inline-flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Commodities Exchange
+        </Link>
       </div>
     );
   }
@@ -77,17 +125,34 @@ export default function ProductDetailPage() {
     );
   };
 
-  const handleInstantOrder = (e: React.FormEvent) => {
+  const handleInstantOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-    setOrderSuccess(true);
-    setTimeout(() => {
-      setOrderModalOpen(false);
-      setOrderSuccess(false);
-      router.push("/buyer");
-    }, 1800);
-  };
+    setOrderLoading(true);
+    setOrderError("");
 
-  const related = INITIAL_PRODUCTS.filter((p) => p.id !== product.id).slice(0, 3);
+    try {
+      await fetchApi("/orders", {
+        method: "POST",
+        body: JSON.stringify({
+          productId: product.id,
+          quantity: quantity,
+          deliveryPreference: "PICKUP",
+          note: deliveryNote,
+        }),
+      });
+
+      setOrderSuccess(true);
+      setTimeout(() => {
+        setOrderModalOpen(false);
+        setOrderSuccess(false);
+        router.push("/buyer");
+      }, 1800);
+    } catch (err: any) {
+      setOrderError(err.message || "Failed to place trade order. Please sign in as a Buyer first.");
+    } finally {
+      setOrderLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 py-8">
@@ -114,7 +179,7 @@ export default function ProductDetailPage() {
                     {product.categoryName}
                   </span>
                   <span className="text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded bg-amber-400 text-slate-900 shadow-xs">
-                    {product.badge || "Verified Spot Lot"}
+                    {product.badge || "Verified Lot"}
                   </span>
                 </div>
 
@@ -125,7 +190,7 @@ export default function ProductDetailPage() {
                 </div>
 
                 <div className="z-10 flex items-center justify-between text-[11px] text-slate-300 pt-3 border-t border-white/10">
-                  <span>Assay Grade: <strong className="text-white">{product.assayGrade}</strong></span>
+                  <span>Assay Grade: <strong className="text-white">{product.assayGrade || "Standard Grade"}</strong></span>
                   <span className="flex items-center gap-1 text-emerald-400">
                     <ShieldCheck className="h-3.5 w-3.5" />
                     Tested Lot
@@ -137,7 +202,7 @@ export default function ProductDetailPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
                   <span className="text-[10px] uppercase font-bold text-slate-400 block">Moisture Ratio</span>
-                  <p className="font-bold text-slate-800 mt-0.5">{product.moistureContent || "11.5% Certified"}</p>
+                  <p className="font-bold text-slate-800 mt-0.5">{product.moistureContent || "11.2% Certified"}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
                   <span className="text-[10px] uppercase font-bold text-slate-400 block">Assay Purity</span>
@@ -153,11 +218,13 @@ export default function ProductDetailPage() {
                   <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
                     <CheckCircle className="h-3.5 w-3.5" /> Direct Cooperative Listing
                   </span>
-                  <div className="flex items-center gap-1 text-xs text-amber-600 font-bold ml-2">
-                    <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
-                    <span>{product.averageRating || 4.9}</span>
-                    <span className="text-slate-400 font-normal">({product.totalReviews || 64} trade reviews)</span>
-                  </div>
+                  {product.averageRating && product.averageRating > 0 ? (
+                    <div className="flex items-center gap-1 text-xs text-amber-600 font-bold ml-2">
+                      <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
+                      <span>{product.averageRating.toFixed(1)}</span>
+                      <span className="text-slate-400 font-normal">({product.totalReviews || 0} reviews)</span>
+                    </div>
+                  ) : null}
                 </div>
 
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
@@ -166,12 +233,14 @@ export default function ProductDetailPage() {
 
                 <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
                   <MapPin className="h-4 w-4 text-slate-400 flex-shrink-0" />
-                  <span>Mandi Location: <strong className="text-slate-700">{product.location}</strong></span>
+                  <span>Location: <strong className="text-slate-700">{product.location}</strong></span>
                 </div>
 
                 <div className="mt-2 text-xs text-slate-600">
-                  Seller: <strong className="text-slate-900">{product.farmerName}</strong> &bull;{" "}
-                  <span className="text-teal-700 font-semibold">{product.cooperative || "Agricultural Producers Union"}</span>
+                  Seller: <strong className="text-slate-900">{product.farmerName}</strong>
+                  {product.cooperative && (
+                    <> &bull; <span className="text-teal-700 font-semibold">{product.cooperative}</span></>
+                  )}
                 </div>
 
                 <p className="text-xs text-slate-600 leading-relaxed mt-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
@@ -203,7 +272,7 @@ export default function ProductDetailPage() {
                       {product.quantityAvailable} {product.unit}
                     </p>
                     <span className="text-[10px] text-emerald-700 font-semibold">
-                      Atomic Inventory Locked
+                      Database Verified Inventory
                     </span>
                   </div>
                 </div>
@@ -269,7 +338,7 @@ export default function ProductDetailPage() {
                   className="flex-1 btn-brand py-3.5 px-6 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md transition"
                 >
                   <ShoppingBag className="h-4 w-4" />
-                  Instant Procure / Place Bid
+                  Instant Procure / Place Order
                 </button>
               </div>
             </div>
@@ -296,7 +365,7 @@ export default function ProductDetailPage() {
                     : "border-transparent text-slate-500 hover:text-slate-800"
                 }`}
               >
-                Producer & Cooperative Verification
+                Producer Verification
               </button>
               <button
                 onClick={() => setActiveTab("escrow")}
@@ -314,27 +383,27 @@ export default function ProductDetailPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs">
                 <div className="p-4 rounded-xl bg-white border border-slate-200">
                   <span className="text-slate-400 font-semibold block">Harvest Season</span>
-                  <span className="font-bold text-slate-900 mt-1 block">{product.harvestSeason || "Meher Season 2026"}</span>
+                  <span className="font-bold text-slate-900 mt-1 block">{product.harvestSeason || "Main Season"}</span>
                 </div>
                 <div className="p-4 rounded-xl bg-white border border-slate-200">
                   <span className="text-slate-400 font-semibold block">Moisture Assay Standard</span>
-                  <span className="font-bold text-slate-900 mt-1 block">{product.moistureContent || "11.2% Laboratory Tested"}</span>
+                  <span className="font-bold text-slate-900 mt-1 block">{product.moistureContent || "Tested Lot"}</span>
                 </div>
                 <div className="p-4 rounded-xl bg-white border border-slate-200">
-                  <span className="text-slate-400 font-semibold block">Clean Seed Purity</span>
-                  <span className="font-bold text-slate-900 mt-1 block">{product.purity || "99.2% Certified Clean"}</span>
+                  <span className="text-slate-400 font-semibold block">Purity</span>
+                  <span className="font-bold text-slate-900 mt-1 block">{product.purity || "Standard Purity"}</span>
                 </div>
                 <div className="p-4 rounded-xl bg-white border border-slate-200">
                   <span className="text-slate-400 font-semibold block">Storage Warehouse</span>
-                  <span className="font-bold text-slate-900 mt-1 block">{product.storageWarehouse || "WDRA Scientific Storage Bay #4"}</span>
+                  <span className="font-bold text-slate-900 mt-1 block">{product.storageWarehouse || "Certified Grain Terminal"}</span>
                 </div>
                 <div className="p-4 rounded-xl bg-white border border-slate-200">
                   <span className="text-slate-400 font-semibold block">Assaying Authority</span>
-                  <span className="font-bold text-slate-900 mt-1 block">ISO 9001:2015 Third Party Lab Assayed</span>
+                  <span className="font-bold text-slate-900 mt-1 block">Laboratory Assayed Lot</span>
                 </div>
                 <div className="p-4 rounded-xl bg-white border border-slate-200">
-                  <span className="text-slate-400 font-semibold block">Delivery Lead Time</span>
-                  <span className="font-bold text-slate-900 mt-1 block">Instant Mandi Pickup / 48hr Freight</span>
+                  <span className="text-slate-400 font-semibold block">Inventory Status</span>
+                  <span className="font-bold text-emerald-700 mt-1 block">Active in Database</span>
                 </div>
               </div>
             )}
@@ -343,15 +412,15 @@ export default function ProductDetailPage() {
               <div className="p-6 rounded-xl bg-white border border-slate-200 space-y-3 text-xs">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-teal-100 text-teal-800 flex items-center justify-center font-bold text-sm">
-                    {product.farmerName.slice(0, 2).toUpperCase()}
+                    {product.farmerName ? product.farmerName.slice(0, 2).toUpperCase() : "AG"}
                   </div>
                   <div>
                     <h4 className="font-bold text-sm text-slate-900">{product.farmerName}</h4>
-                    <p className="text-slate-500">{product.cooperative || "Agricultural Primary Cooperative Union"}</p>
+                    <p className="text-slate-500">{product.cooperative || "Verified Agricultural Producer"}</p>
                   </div>
                 </div>
                 <p className="text-slate-600 leading-relaxed pt-2">
-                  Verified grower operating across 240 hectares of rainfed & irrigated farmland. Registered with the National Agricultural Cooperative Syndicate since 2021 with over 180 successful completed trades.
+                  Verified grower operating in {product.location}. Registered producer in Agri Marketplace with verified contact details upon trade order confirmation.
                 </p>
               </div>
             )}
@@ -363,52 +432,56 @@ export default function ProductDetailPage() {
                   <span>100% Buyer Protection & Transparent Settlement</span>
                 </div>
                 <p className="text-slate-600 leading-relaxed">
-                  Funds are safely locked in an escrow account upon order confirmation. Payment is only released to the seller after the buyer completes on-site quality inspection and signs the handover certificate. If the lot fails moisture or grade assays, the order can be rejected with immediate refund.
+                  Funds are safely locked in an escrow account upon order confirmation. Payment is only released to the seller after the buyer completes on-site quality inspection and signs the handover certificate.
                 </p>
               </div>
             )}
           </div>
         </div>
 
-        {/* ── RELATED COMMODITIES ── */}
-        <div className="mb-12">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-slate-900">Similar Commodity Lots</h3>
-            <Link href="/products" className="text-xs font-bold text-teal-700 hover:underline">
-              View All Exchange &rarr;
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {related.map((item) => (
-              <Link
-                key={item.id}
-                href={`/products/${item.id}`}
-                className="agri-card p-5 group flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                      {item.categoryName}
-                    </span>
-                    <span className="text-[10px] font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
-                      {item.assayGrade}
-                    </span>
-                  </div>
-                  <h4 className="font-bold text-slate-900 group-hover:text-teal-700 transition">
-                    {item.name}
-                  </h4>
-                  <p className="text-xs text-slate-500 mt-1">{item.location}</p>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-base font-extrabold text-slate-900">{formatCurrency(item.unitPrice)}</span>
-                  <span className="text-xs font-semibold text-teal-700">View Specs &rarr;</span>
-                </div>
+        {/* ── RELATED COMMODITIES FROM DB ── */}
+        {relatedProducts.length > 0 && (
+          <div className="mb-12">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900">Similar Commodity Lots</h3>
+              <Link href="/products" className="text-xs font-bold text-teal-700 hover:underline">
+                View All Exchange &rarr;
               </Link>
-            ))}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {relatedProducts.map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/products/${item.id}`}
+                  className="agri-card p-5 group flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                        {item.categoryName}
+                      </span>
+                      {item.assayGrade && (
+                        <span className="text-[10px] font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
+                          {item.assayGrade}
+                        </span>
+                      )}
+                    </div>
+                    <h4 className="font-bold text-slate-900 group-hover:text-teal-700 transition">
+                      {item.name}
+                    </h4>
+                    <p className="text-xs text-slate-500 mt-1">{item.location}</p>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                    <span className="text-base font-extrabold text-slate-900">{formatCurrency(item.unitPrice)}</span>
+                    <span className="text-xs font-semibold text-teal-700">View Specs &rarr;</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* ── INSTANT ORDER MODAL ── */}
         {orderModalOpen && (
@@ -423,7 +496,7 @@ export default function ProductDetailPage() {
                     </div>
                     <h3 className="text-2xl font-bold text-slate-900">Trade Order Initiated!</h3>
                     <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                      Your trade order has been created in <strong>PENDING</strong> status. Funds are protected in AgriPay Escrow and the cooperative seller has been alerted for handover.
+                      Your trade order has been created in the database in <strong>PENDING</strong> status. Redirecting to your buyer order center...
                     </p>
                   </div>
                 ) : (
@@ -437,6 +510,13 @@ export default function ProductDetailPage() {
                         Seller: {product.farmerName} &bull; {product.location}
                       </p>
                     </div>
+
+                    {orderError && (
+                      <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700 flex items-center gap-2">
+                        <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                        <span>{orderError}</span>
+                      </div>
+                    )}
 
                     <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
                       <div>
@@ -473,15 +553,17 @@ export default function ProductDetailPage() {
                         <button
                           type="button"
                           onClick={() => setOrderModalOpen(false)}
+                          disabled={orderLoading}
                           className="px-4 py-2.5 rounded text-xs font-semibold text-slate-600 hover:bg-slate-100"
                         >
                           Cancel
                         </button>
                         <button
                           type="submit"
-                          className="btn-brand px-6 py-2.5 rounded text-sm font-semibold shadow-sm"
+                          disabled={orderLoading}
+                          className="btn-brand px-6 py-2.5 rounded text-sm font-semibold shadow-sm disabled:opacity-50"
                         >
-                          Confirm & Lock Escrow
+                          {orderLoading ? "Submitting..." : "Confirm & Lock Escrow"}
                         </button>
                       </div>
                     </div>

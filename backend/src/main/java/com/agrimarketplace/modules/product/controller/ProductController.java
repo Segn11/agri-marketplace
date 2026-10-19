@@ -34,15 +34,23 @@ public class ProductController {
     @Operation(summary = "Search, filter, and paginate products")
     public ResponseEntity<ApiResponse<PagedResponse<ProductResponse>>> searchProducts(
             @RequestParam(required = false) String q,
-            @RequestParam(required = false) UUID category,
+            @RequestParam(required = false) String category,
             @RequestParam(required = false) String location,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) String status,
             @PageableDefault(size = 12, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
+        UUID categoryId = null;
+        if (category != null && !category.trim().isEmpty() && !category.equalsIgnoreCase("all")) {
+            try {
+                categoryId = UUID.fromString(category.trim());
+            } catch (IllegalArgumentException e) {
+                categoryId = productService.findCategoryIdBySlug(category.trim());
+            }
+        }
         PagedResponse<ProductResponse> products = productService.searchProducts(
-                q, category, location, minPrice, maxPrice, status, pageable
+                q, categoryId, location, minPrice, maxPrice, status, pageable
         );
         return ResponseEntity.ok(ApiResponse.ok(products));
     }

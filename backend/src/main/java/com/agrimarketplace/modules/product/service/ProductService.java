@@ -32,6 +32,12 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
 
+    public UUID findCategoryIdBySlug(String slug) {
+        return categoryRepository.findBySlug(slug)
+                .map(Category::getId)
+                .orElse(null);
+    }
+
     public PagedResponse<ProductResponse> searchProducts(String keyword,
                                                          UUID categoryId,
                                                          String location,
@@ -39,9 +45,40 @@ public class ProductService {
                                                          BigDecimal maxPrice,
                                                          String status,
                                                          Pageable pageable) {
-        Page<Product> productPage = productRepository.searchProducts(
-                keyword, categoryId, location, minPrice, maxPrice, status != null ? status : "ACTIVE", pageable
-        );
+        org.springframework.data.jpa.domain.Specification<Product> spec = (root, query, cb) -> {
+            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                String pattern = "%" + keyword.trim().toLowerCase() + "%";
+                predicates.add(cb.or(
+                        cb.like(cb.lower(root.get("name")), pattern),
+                        cb.like(cb.lower(root.get("description")), pattern)
+                ));
+            }
+
+            if (categoryId != null) {
+                predicates.add(cb.equal(root.get("category").get("id"), categoryId));
+            }
+
+            if (location != null && !location.trim().isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("location")), "%" + location.trim().toLowerCase() + "%"));
+            }
+
+            if (minPrice != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("unitPrice"), minPrice));
+            }
+
+            if (maxPrice != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("unitPrice"), maxPrice));
+            }
+
+            String activeStatus = (status != null && !status.trim().isEmpty()) ? status : "ACTIVE";
+            predicates.add(cb.equal(root.get("status"), activeStatus));
+
+            return cb.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        };
+
+        Page<Product> productPage = productRepository.findAll(spec, pageable);
         return PagedResponse.from(productPage.map(this::mapToResponse));
     }
 
