@@ -34,42 +34,60 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full shadow-sm">
-      {/* ── TOP FOREST-NIGHT STRIP ── */}
-      <div className="topbar-strip text-xs py-2 px-4 sm:px-8 border-b border-teal-950/60">
-        <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
+    <header className="sticky top-0 z-50 w-full shadow-xs bg-white">
+      {/* ── TOP ROYAL NAVY BLUE STRIP (AGRIBAZAAR SIGNATURE) ── */}
+      <div className="bg-[#1c4482] text-white text-xs py-2 px-4 sm:px-8 border-b border-blue-900/40">
+        <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-2.5">
           <div className="flex items-center gap-6">
-            <Link href="/register" className="font-semibold uppercase tracking-wider text-amber-400 hover:text-white transition">
-              Partner With Us
+            <Link
+              href="/register"
+              className="font-bold tracking-wider text-white hover:text-amber-300 transition text-[11px] uppercase"
+            >
+              PARTNER WITH US
             </Link>
-            <span className="hidden sm:inline text-teal-700">|</span>
-            <span className="hidden sm:inline text-slate-300 font-medium">
-              National Integrated Agricultural Marketplace & Direct Trading Platform
+            <span className="hidden sm:inline text-blue-300/40">|</span>
+            <span className="hidden sm:inline text-blue-100/80 font-normal text-[11px]">
+              National Integrated Agritech Commodity Platform & Direct Trade Exchange
             </span>
           </div>
 
-          {/* Search in topbar */}
-          <div className="flex items-center gap-4 w-full md:w-auto justify-end">
+          {/* Search bar inside header top strip */}
+          <div className="flex items-center gap-5 w-full md:w-auto justify-end">
             <div className="relative w-full md:w-80">
               <input
                 type="text"
-                placeholder="Explore harvests by commodities and regions..."
+                placeholder="Explore trades by commodities and more"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-3 pr-8 py-1 rounded bg-slate-900/90 text-white placeholder:text-slate-400 border border-teal-800/60 text-xs focus:outline-none focus:ring-1 focus:ring-teal-400"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    window.location.href = `/products?q=${encodeURIComponent(searchQuery)}`;
+                  }
+                }}
+                className="w-full pl-3 pr-8 py-1.5 rounded bg-white text-slate-800 placeholder:text-slate-400 border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400"
               />
-              <Link href={`/products?q=${searchQuery}`}>
-                <Search className="h-3.5 w-3.5 text-slate-400 absolute right-2.5 top-2 cursor-pointer hover:text-teal-400" />
+              <Link href={`/products?q=${encodeURIComponent(searchQuery)}`}>
+                <Search className="h-3.5 w-3.5 text-slate-500 absolute right-2.5 top-2.5 cursor-pointer hover:text-blue-700" />
               </Link>
             </div>
 
+            <Link
+              href="/products"
+              className="text-white hover:text-amber-200 font-semibold text-xs whitespace-nowrap hidden sm:inline"
+            >
+              Create Your Trade
+            </Link>
+
             {user ? (
               <span className="text-amber-300 font-semibold text-xs whitespace-nowrap flex items-center gap-1">
-                <UserIcon className="h-3 w-3" />
+                <UserIcon className="h-3.5 w-3.5" />
                 {user.fullName || user.email}
               </span>
             ) : (
-              <Link href="/register" className="text-white hover:text-amber-300 font-semibold whitespace-nowrap">
+              <Link
+                href="/register"
+                className="text-white hover:text-amber-200 font-semibold text-xs underline whitespace-nowrap"
+              >
                 Register
               </Link>
             )}
@@ -77,48 +95,45 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* ── MAIN NAVIGATION HEADER ── */}
+      {/* ── MAIN NAVIGATION BAR ── */}
       <div className="bg-white border-b border-slate-200">
-        <div className="container mx-auto flex h-18 items-center justify-between px-4 sm:px-8 py-3.5">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-tr from-teal-800 via-teal-600 to-emerald-500 text-white shadow-sm group-hover:scale-105 transition-transform duration-200">
-              <Sprout className="h-6 w-6 text-white" />
-              <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-teal-500 border-2 border-white"></span>
-              </span>
+        <div className="container mx-auto flex h-18 items-center justify-between px-4 sm:px-8 py-3">
+          {/* AgriBazaar-style circular badge logo */}
+          <Link href="/" className="flex items-center space-x-2.5 group">
+            <div className="h-10 w-10 rounded-full bg-[#d81b60] flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
+              <Sprout className="h-5 w-5 text-white" />
             </div>
             <div className="flex flex-col">
-              <span className="text-2xl font-extrabold tracking-tight text-slate-900 leading-none">
-                Agri<span className="text-teal-600">Marketplace</span>
+              <span className="text-2xl font-bold tracking-tight text-slate-900 leading-none lowercase">
+                agri<span className="text-[#1c4482]">marketplace</span>
               </span>
-              <span className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mt-0.5">
-                Agricultural Commodity Exchange
+              <span className="text-[10px] uppercase tracking-widest text-slate-400 font-semibold mt-0.5">
+                Integrated Agritech Exchange
               </span>
             </div>
           </Link>
 
-          {/* Nav links */}
-          <nav className="hidden lg:flex items-center space-x-7 text-sm font-semibold text-slate-600">
-            <Link href="/" className="hover:text-teal-600 transition">Home</Link>
-            <Link href="/products" className="hover:text-teal-600 transition">Commodities</Link>
-            <Link href="/cart" className="hover:text-teal-600 transition">Procurement Cart</Link>
-            <Link href="/buyer" className="hover:text-teal-600 transition">Order Tracking</Link>
-            <Link href="/admin" className="hover:text-teal-600 transition">Admin Dashboard</Link>
+          {/* Navigation Links */}
+          <nav className="hidden lg:flex items-center space-x-7 text-sm font-medium text-slate-700">
+            <Link href="/" className="hover:text-[#1c4482] transition">About agrimarket</Link>
+            <Link href="/#services" className="hover:text-[#1c4482] transition">Our Products</Link>
+            <Link href="/#all-services" className="hover:text-[#1c4482] transition">Our Services</Link>
+            <Link href="/products" className="font-semibold text-[#1c4482] hover:text-blue-800 transition">Trades</Link>
+            <Link href="/buyer" className="hover:text-[#1c4482] transition">Orders</Link>
+            <Link href="/admin" className="hover:text-[#1c4482] transition">Admin</Link>
           </nav>
 
-          {/* Action buttons & Cart */}
-          <div className="hidden sm:flex items-center space-x-3">
+          {/* Action CTAs */}
+          <div className="hidden sm:flex items-center space-x-3.5">
             {/* Cart Trigger */}
             <button
               onClick={() => setIsCartDrawerOpen(true)}
-              className="relative p-2 rounded-xl text-slate-700 hover:text-teal-600 hover:bg-slate-100 transition"
+              className="relative p-2 rounded-xl text-slate-700 hover:text-[#1c4482] hover:bg-slate-100 transition"
               title="View Procurement Cart"
             >
               <ShoppingCart className="h-5 w-5" />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-amber-500 text-slate-900 font-black text-[10px] h-5 w-5 rounded-full flex items-center justify-center shadow-xs border-2 border-white">
+                <span className="absolute -top-1 -right-1 bg-[#d81b60] text-white font-bold text-[10px] h-5 w-5 rounded-full flex items-center justify-center shadow-xs border-2 border-white">
                   {totalItems}
                 </span>
               )}
@@ -134,22 +149,22 @@ export function Navbar() {
               </button>
             ) : (
               <Link href="/login">
-                <button className="btn-brand px-5 py-2 rounded-lg text-sm font-semibold shadow-sm">
-                  Sign In
+                <button className="bg-[#d81b60] hover:bg-[#c2185b] text-white px-7 py-2 rounded-lg text-sm font-semibold shadow-xs transition">
+                  Login
                 </button>
               </Link>
             )}
           </div>
 
-          {/* Mobile hamburger & cart */}
-          <div className="flex items-center gap-1 lg:hidden">
+          {/* Mobile toggle */}
+          <div className="flex items-center gap-2 lg:hidden">
             <button
               onClick={() => setIsCartDrawerOpen(true)}
               className="relative p-2 rounded-lg text-slate-700 hover:bg-slate-100"
             >
               <ShoppingCart className="h-5 w-5" />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-amber-500 text-slate-900 font-bold text-[10px] h-4 w-4 rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-[#d81b60] text-white font-bold text-[10px] h-4 w-4 rounded-full flex items-center justify-center">
                   {totalItems}
                 </span>
               )}
@@ -164,13 +179,13 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="lg:hidden bg-white border-b border-slate-200 px-6 py-4 space-y-3">
-          <Link href="/" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Home</Link>
-          <Link href="/products" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-teal-700 font-bold">Commodities Marketplace</Link>
-          <Link href="/cart" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Shopping Cart ({totalItems})</Link>
-          <Link href="/buyer" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Buyer Order Tracking</Link>
+          <Link href="/" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">About agrimarket</Link>
+          <Link href="/products" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-[#1c4482] font-bold">Commodity Trades</Link>
+          <Link href="/cart" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Procurement Cart ({totalItems})</Link>
+          <Link href="/buyer" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Order Tracking</Link>
           <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Admin Dashboard</Link>
           <div className="pt-3 border-t border-slate-100 flex gap-2">
             {user ? (
@@ -180,10 +195,10 @@ export function Navbar() {
             ) : (
               <>
                 <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="w-1/2">
-                  <button className="w-full btn-brand py-2 rounded-lg text-xs font-semibold">Sign In</button>
+                  <button className="w-full bg-[#d81b60] text-white py-2 rounded-lg text-xs font-semibold">Login</button>
                 </Link>
                 <Link href="/register" onClick={() => setMobileMenuOpen(false)} className="w-1/2">
-                  <button className="w-full bg-slate-900 text-white py-2 rounded-lg text-xs font-semibold">Register</button>
+                  <button className="w-full bg-[#1c4482] text-white py-2 rounded-lg text-xs font-semibold">Register</button>
                 </Link>
               </>
             )}

@@ -1,38 +1,35 @@
 import Link from "next/link";
-import { ShieldCheck, Award, MapPin, Mail, Phone, ExternalLink } from "lucide-react";
+import { ShieldCheck, Award, MapPin, Mail, Phone, Sprout } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="bg-slate-900 text-slate-300 text-xs border-t border-slate-800 pt-16 pb-12">
+    <footer className="bg-[#0b172a] text-slate-300 text-xs border-t border-slate-800 pt-16 pb-12">
       <div className="container mx-auto px-4 sm:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
           {/* Brand info */}
           <div className="lg:col-span-2 space-y-4">
             <Link href="/" className="flex items-center space-x-2.5">
-              <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-teal-700 to-teal-500 flex items-center justify-center text-white shadow-md">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="w-5 h-5">
-                  <path d="M12 2a9 9 0 0 1 9 9c0 4.97-4.03 9-9 9A9 9 0 0 1 3 11c0-4.97 4.03-9 9-9z" />
-                  <path d="M12 7c-2 2-3 4-3 6a3 3 0 0 0 6 0c0-2-1-4-3-6z" fill="currentColor" opacity="0.9" />
-                </svg>
+              <div className="h-9 w-9 rounded-full bg-[#d81b60] flex items-center justify-center text-white shadow-sm">
+                <Sprout className="h-5 w-5 text-white" />
               </div>
-              <span className="text-2xl font-bold tracking-tight text-white">
-                Agri<span className="text-teal-400">Marketplace</span>
+              <span className="text-2xl font-bold tracking-tight text-white lowercase">
+                agri<span className="text-blue-400">marketplace</span>
               </span>
             </Link>
             <p className="text-slate-400 leading-relaxed max-w-sm">
-              Empowering farmers, cooperatives, and institutional buyers with real-time digital discovery, certified quality grading, and transparent agricultural commodity trade.
+              Empowering farmers, cooperatives, and commercial buyers with real-time digital discovery, certified quality grading, and transparent agricultural commodity trade.
             </p>
             <div className="space-y-1.5 pt-2 text-slate-400">
               <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-teal-400 flex-shrink-0" />
+                <MapPin className="h-4 w-4 text-[#d81b60] flex-shrink-0" />
                 <span>Agricultural Trade Exchange Center, National Logistics Hub</span>
               </div>
               <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-teal-400 flex-shrink-0" />
+                <Mail className="h-4 w-4 text-blue-400 flex-shrink-0" />
                 <span>support@agrimarket.com &bull; trades@agrimarket.com</span>
               </div>
               <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-teal-400 flex-shrink-0" />
+                <Phone className="h-4 w-4 text-emerald-400 flex-shrink-0" />
                 <span>Customer Care: +251 911 00 22 44 / Toll Free: 8080</span>
               </div>
             </div>
@@ -42,12 +39,12 @@ export function Footer() {
           <div>
             <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-4">Commodity Categories</h4>
             <ul className="space-y-2.5 text-slate-400">
-              <li><Link href="/products" className="hover:text-teal-300 transition">All Commodities</Link></li>
-              <li><Link href="/products?q=Teff" className="hover:text-teal-300 transition">Cereals & Grains</Link></li>
-              <li><Link href="/products?q=Coffee" className="hover:text-teal-300 transition">Coffee & Spices</Link></li>
-              <li><Link href="/products?q=Sesame" className="hover:text-teal-300 transition">Pulses & Oilseeds</Link></li>
-              <li><Link href="/products?q=Onion" className="hover:text-teal-300 transition">Fresh Vegetables</Link></li>
-              <li><Link href="/products" className="hover:text-teal-300 transition">Live Market Catalog</Link></li>
+              <li><Link href="/products" className="hover:text-white transition">All Commodities</Link></li>
+              <li><Link href="/products?q=Teff" className="hover:text-white transition">Cereals & Grains</Link></li>
+              <li><Link href="/products?q=Coffee" className="hover:text-white transition">Coffee & Spices</Link></li>
+              <li><Link href="/products?q=Sesame" className="hover:text-white transition">Pulses & Oilseeds</Link></li>
+              <li><Link href="/products?q=Onion" className="hover:text-white transition">Fresh Vegetables</Link></li>
+              <li><Link href="/products" className="hover:text-white transition">Live Market Catalog</Link></li>
             </ul>
           </div>
 
@@ -55,12 +52,12 @@ export function Footer() {
           <div>
             <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-4">Platform Services</h4>
             <ul className="space-y-2.5 text-slate-400">
-              <li><Link href="/cart" className="hover:text-teal-300 transition">Procurement Cart & Settlement</Link></li>
-              <li><Link href="/cart" className="hover:text-teal-300 transition">AgriPay Escrow Guarantee</Link></li>
-              <li><Link href="/buyer" className="hover:text-teal-300 transition">4-Step Order Tracking</Link></li>
-              <li><Link href="/products" className="hover:text-teal-300 transition">Assayed Commodity Lots</Link></li>
-              <li><Link href="/register" className="hover:text-teal-300 transition">Cooperative Onboarding</Link></li>
-              <li><Link href="/cart" className="hover:text-teal-300 transition">Freight & Delivery Protocol</Link></li>
+              <li><Link href="/cart" className="hover:text-white transition">Procurement Cart & Settlement</Link></li>
+              <li><Link href="/cart" className="hover:text-white transition">AgriPay Escrow Guarantee</Link></li>
+              <li><Link href="/buyer" className="hover:text-white transition">4-Step Order Tracking</Link></li>
+              <li><Link href="/products" className="hover:text-white transition">Assayed Commodity Lots</Link></li>
+              <li><Link href="/register" className="hover:text-white transition">Cooperative Onboarding</Link></li>
+              <li><Link href="/cart" className="hover:text-white transition">Freight & Delivery Protocol</Link></li>
             </ul>
           </div>
 
@@ -68,12 +65,12 @@ export function Footer() {
           <div>
             <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-4">Portals & Access</h4>
             <ul className="space-y-2.5 text-slate-400">
-              <li><Link href="/buyer" className="hover:text-teal-300 transition">Buyer Order Tracking</Link></li>
-              <li><Link href="/admin" className="hover:text-teal-300 transition">Admin Dashboard</Link></li>
-              <li><Link href="/login" className="hover:text-teal-300 transition">Member Sign In</Link></li>
-              <li><Link href="/register" className="hover:text-teal-300 transition">Create Trade Account</Link></li>
-              <li><Link href="/products" className="hover:text-teal-300 transition">Search Database Lots</Link></li>
-              <li><Link href="/" className="hover:text-teal-300 transition">Home</Link></li>
+              <li><Link href="/buyer" className="hover:text-white transition">Buyer Order Tracking</Link></li>
+              <li><Link href="/admin" className="hover:text-white transition">Admin Dashboard</Link></li>
+              <li><Link href="/login" className="hover:text-white transition">Member Sign In</Link></li>
+              <li><Link href="/register" className="hover:text-white transition">Create Trade Account</Link></li>
+              <li><Link href="/products" className="hover:text-white transition">Search Database Lots</Link></li>
+              <li><Link href="/" className="hover:text-white transition">Home</Link></li>
             </ul>
           </div>
         </div>

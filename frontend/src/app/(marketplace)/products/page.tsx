@@ -111,13 +111,13 @@ export default function AgriMarketplacePage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* ── HEADER ── */}
+      {/* ── AGRIBAZAAR-STYLE HEADER ── */}
       <div
-        className="text-white py-12 border-b border-teal-900"
-        style={{ background: "linear-gradient(135deg, #041d1c 0%, #073330 50%, #0a4843 100%)" }}
+        className="text-white py-12 border-b border-blue-950"
+        style={{ background: "linear-gradient(135deg, #0e2a56 0%, #1c4482 60%, #153e77 100%)" }}
       >
         <div className="container mx-auto px-4 sm:px-8">
-          <div className="flex items-center gap-2 text-xs text-teal-300 mb-3">
+          <div className="flex items-center gap-2 text-xs text-blue-200 mb-3">
             <Link href="/" className="hover:underline">Home</Link>
             <ChevronRight className="h-3 w-3" />
             <span className="font-bold text-white">Commodity Marketplace</span>
@@ -126,7 +126,7 @@ export default function AgriMarketplacePage() {
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
             Agricultural Commodity Exchange
           </h1>
-          <p className="mt-2 text-sm text-slate-300 max-w-2xl leading-relaxed">
+          <p className="mt-2 text-sm text-blue-100 max-w-2xl leading-relaxed">
             Browse real-time verified commodity listings directly from Ethiopian farmers, primary unions, and cooperatives. All lots are stored and fetched live from the database.
           </p>
 
@@ -137,7 +137,7 @@ export default function AgriMarketplacePage() {
               placeholder="Search by commodity name, location, or cooperative union..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-5 py-3.5 pl-12 rounded-xl text-slate-900 placeholder:text-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 shadow-lg bg-white"
+              className="w-full px-5 py-3.5 pl-12 rounded-xl text-slate-900 placeholder:text-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-lg bg-white"
             />
             <Search className="h-5 w-5 text-slate-400 absolute left-4 top-3.5" />
           </div>
@@ -151,7 +151,7 @@ export default function AgriMarketplacePage() {
             onClick={() => setSelectedCategory("all")}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
               selectedCategory === "all"
-                ? "bg-teal-700 text-white shadow-sm"
+                ? "bg-[#1c4482] text-white shadow-xs"
                 : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100"
             }`}
           >
@@ -164,7 +164,7 @@ export default function AgriMarketplacePage() {
               onClick={() => setSelectedCategory(cat.id)}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
                 selectedCategory === cat.id
-                  ? "bg-teal-700 text-white shadow-sm"
+                  ? "bg-[#1c4482] text-white shadow-xs"
                   : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100"
               }`}
             >
@@ -262,7 +262,7 @@ export default function AgriMarketplacePage() {
 
                 <div className="mt-5 pt-4 border-t border-slate-100 space-y-3">
                   <div className="flex items-center justify-between text-xs text-slate-500">
-                    <Link href={`/products/${p.id}`} className="text-xs font-bold text-teal-700 hover:underline">
+                    <Link href={`/products/${p.id}`} className="text-xs font-bold text-[#1c4482] hover:underline">
                       View Specifications &rarr;
                     </Link>
                     <div className="flex items-center gap-1 text-amber-600 font-bold">
@@ -289,7 +289,7 @@ export default function AgriMarketplacePage() {
                           maxQuantity: p.quantityAvailable,
                         })
                       }
-                      className="px-3 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:text-teal-700 hover:border-teal-500 text-xs font-bold transition flex items-center justify-center gap-1.5"
+                      className="px-3 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:text-[#1c4482] hover:border-blue-400 text-xs font-bold transition flex items-center justify-center gap-1.5"
                     >
                       <ShoppingCart className="h-3.5 w-3.5" />
                       Add to Cart
@@ -301,7 +301,7 @@ export default function AgriMarketplacePage() {
                         setOrderQuantity(1);
                         setOrderError(null);
                       }}
-                      className="btn-brand py-2.5 rounded-xl text-xs font-bold shadow-xs flex items-center justify-center gap-1"
+                      className="bg-[#d81b60] hover:bg-[#c2185b] text-white py-2.5 rounded-xl text-xs font-bold shadow-xs flex items-center justify-center gap-1 transition"
                     >
                       Procure
                     </button>
