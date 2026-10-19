@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 
-export default function AgriBazaarBuyerDashboard() {
+export default function AgriBuyerDashboard() {
   const [reviewModalOrder, setReviewModalOrder] = useState<any | null>(null);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
@@ -30,7 +30,7 @@ export default function AgriBazaarBuyerDashboard() {
       farmerName: "Gemechu Desta",
       cooperative: "Oda Gida Agricultural Union",
       farmerPhone: "0911876543",
-      farmerLocation: "East Highland Mandi",
+      farmerLocation: "East Highland Market",
       quantity: 2,
       unit: "Quintal",
       totalPrice: 18800,
@@ -71,12 +71,12 @@ export default function AgriBazaarBuyerDashboard() {
         {/* ── TOP BANNER ── */}
         <div
           className="text-white p-8 sm:p-10 rounded-2xl shadow-md mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6"
-          style={{ background: 'linear-gradient(135deg, #091a36 0%, #11284d 50%, #0d381e 100%)' }}
+          style={{ background: 'linear-gradient(135deg, #041d1c 0%, #073330 50%, #0a4843 100%)' }}
         >
           <div>
-            <div className="inline-flex items-center gap-2 bg-agriNavy-800 text-blue-200 border border-blue-400/30 px-3 py-1 rounded text-xs font-semibold mb-3">
+            <div className="inline-flex items-center gap-2 bg-teal-900/80 text-teal-200 border border-teal-500/30 px-3 py-1 rounded text-xs font-semibold mb-3">
               <ShoppingCart className="h-3.5 w-3.5 text-amber-400" />
-              <span>AgriBazaar Buyer & Procurement Center</span>
+              <span>AgriMarket Buyer & Procurement Center</span>
             </div>
             <h1 className="text-3xl font-extrabold tracking-tight">
               Commodity Purchase Orders
@@ -87,7 +87,7 @@ export default function AgriBazaarBuyerDashboard() {
           </div>
 
           <Link href="/products">
-            <button className="btn-agri-red px-6 py-3 rounded text-sm font-semibold flex items-center justify-center gap-2 shadow-md">
+            <button className="btn-brand px-6 py-3 rounded text-sm font-semibold flex items-center justify-center gap-2 shadow-md">
               <ShoppingCart className="h-4 w-4" />
               Procure More Lots
             </button>
@@ -151,7 +151,7 @@ export default function AgriBazaarBuyerDashboard() {
                     ) : (
                       <button
                         onClick={() => setReviewModalOrder(ord)}
-                        className="btn-agri-amber text-xs px-4 py-2.5 rounded font-semibold flex items-center gap-1.5 shadow-sm"
+                        className="btn-amber text-xs px-4 py-2.5 rounded font-semibold flex items-center gap-1.5 shadow-sm"
                       >
                         <Star className="h-3.5 w-3.5 fill-white" />
                         Rate Quality & Handover
@@ -168,7 +168,7 @@ export default function AgriBazaarBuyerDashboard() {
         {reviewModalOrder && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
             <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl relative border border-slate-200 overflow-hidden">
-              <div className="h-1.5 w-full bg-agriRed" />
+              <div className="h-1.5 w-full bg-teal-600" />
               <div className="p-7">
                 <button
                   onClick={() => setReviewModalOrder(null)}
@@ -179,7 +179,7 @@ export default function AgriBazaarBuyerDashboard() {
 
                 <form onSubmit={handleSubmitReview} className="space-y-4">
                   <div>
-                    <span className="text-[10px] font-bold text-agriRed uppercase tracking-wider bg-red-50 px-2 py-0.5 rounded border border-red-200">
+                    <span className="text-[10px] font-bold text-teal-700 uppercase tracking-wider bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
                       Verified Trade Rating
                     </span>
                     <h3 className="text-xl font-bold text-slate-900 mt-2">
@@ -222,13 +222,13 @@ export default function AgriBazaarBuyerDashboard() {
                       value={comment}
                       onChange={(e) => setComment(e.target.value)}
                       placeholder="Moisture level and bag purity strictly aligned with the lab assay certificate."
-                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-red-500"
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full btn-agri-red py-2.5 rounded text-sm font-semibold shadow-sm"
+                    className="w-full btn-brand py-2.5 rounded text-sm font-semibold shadow-sm"
                   >
                     Submit Verified Rating
                   </button>

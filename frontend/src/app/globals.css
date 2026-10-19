@@ -15,58 +15,62 @@
 }
 
 @layer components {
-  /* AgriBazaar Primary Red Button */
-  .btn-agri-red {
-    background-color: #d32f2f;
+  /* AgriMarket Vibrant Emerald / Jade Button */
+  .btn-brand {
+    background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
     color: white;
     font-weight: 600;
     transition: all 0.2s ease;
   }
-  .btn-agri-red:hover {
-    background-color: #b71c1c;
-    box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+  .btn-brand:hover {
+    background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+    box-shadow: 0 4px 14px rgba(13, 148, 136, 0.35);
+    transform: translateY(-1px);
   }
 
-  /* AgriBazaar Orange/Amber Button */
-  .btn-agri-amber {
-    background-color: #e65100;
+  /* AgriMarket Golden Amber Button */
+  .btn-amber {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
     color: white;
     font-weight: 600;
     transition: all 0.2s ease;
   }
-  .btn-agri-amber:hover {
-    background-color: #bf360c;
+  .btn-amber:hover {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+    transform: translateY(-1px);
   }
 
-  /* AgriBazaar Top Navy Strip */
-  .agri-topbar {
-    background-color: #20407d;
-    color: white;
+  /* Top Bar Strip */
+  .topbar-strip {
+    background: #061a19;
+    color: #e2e8f0;
   }
 
   /* Service Tab Ribbon */
-  .agri-ribbon-tab {
+  .service-ribbon-tab {
     transition: all 0.2s ease;
     border-bottom: 3px solid transparent;
   }
-  .agri-ribbon-tab.active {
-    border-bottom-color: #d32f2f;
-    color: #d32f2f;
+  .service-ribbon-tab.active {
+    border-bottom-color: #0d9488;
+    color: #0d9488;
     background-color: #fff;
   }
-  .agri-ribbon-tab:hover {
+  .service-ribbon-tab:hover {
     background-color: #f8fafc;
   }
 
-  /* Cards */
-  .agri-card {
+  /* Premium Cards */
+  .market-card {
     background: white;
     border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    border-radius: 14px;
     transition: all 0.25s ease;
   }
-  .agri-card:hover {
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+  .market-card:hover {
+    box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.12);
+    border-color: #99f6e0;
     transform: translateY(-2px);
   }
 }
@@ -87,8 +91,8 @@
   animation-play-state: paused;
 }
 
-/* WhatsApp Floating Button */
-.whatsapp-float {
+/* Floating Widget */
+.floating-widget {
   position: fixed;
   bottom: 24px;
   right: 24px;

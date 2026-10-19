@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 
-export default function AgriBazaarMarketplacePage() {
+export default function AgriMarketplacePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [orderModalProduct, setOrderModalProduct] = useState<any | null>(null);
@@ -117,20 +117,20 @@ export default function AgriBazaarMarketplacePage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* ── AGRIBAZAAR MARKETPLACE HEADER ── */}
+      {/* ── AGRIMARKET PRODUCE EXCHANGE HEADER ── */}
       <div
-        className="text-white py-12 border-b border-blue-900"
-        style={{ background: 'linear-gradient(135deg, #091a36 0%, #11284d 50%, #0d381e 100%)' }}
+        className="text-white py-12 border-b border-teal-900"
+        style={{ background: 'linear-gradient(135deg, #041d1c 0%, #073330 50%, #0a4843 100%)' }}
       >
         <div className="container mx-auto px-4 sm:px-8">
           <div className="max-w-4xl">
-            <div className="inline-flex items-center gap-2 bg-agriNavy-800/90 text-blue-200 border border-blue-400/30 px-3 py-1 rounded text-xs font-semibold mb-3">
+            <div className="inline-flex items-center gap-2 bg-teal-900/80 text-teal-200 border border-teal-500/30 px-3 py-1 rounded text-xs font-semibold mb-3">
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>AgriBazaar e-Mandi & Spot Exchange</span>
+              <span>AgriMarket Produce Exchange & Spot Market</span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-              Commodity Trades & Live Mandi Auctions
+              Commodity Trades & Live Market Listings
             </h1>
 
             <p className="text-slate-300 text-sm mt-2 max-w-2xl leading-relaxed">
@@ -143,15 +143,15 @@ export default function AgriBazaarMarketplacePage() {
                 <Search className="h-4 w-4 text-slate-400 absolute left-3.5 top-3" />
                 <input
                   type="text"
-                  placeholder="Search by commodity, mandi location, or grower cooperative..."
+                  placeholder="Search by commodity, market location, or grower cooperative..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-white text-slate-900 placeholder:text-slate-400 rounded text-sm focus:outline-none focus:ring-2 focus:ring-red-500 shadow-sm"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white text-slate-900 placeholder:text-slate-400 rounded text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 shadow-sm"
                 />
               </div>
-              <button className="w-full sm:w-auto btn-agri-red px-6 py-2.5 rounded text-sm font-semibold flex items-center justify-center gap-2 shadow-sm">
+              <button className="w-full sm:w-auto btn-brand px-6 py-2.5 rounded text-sm font-semibold flex items-center justify-center gap-2 shadow-sm">
                 <Search className="h-4 w-4" />
-                Search Mandi
+                Search Marketplace
               </button>
             </div>
           </div>
@@ -168,7 +168,7 @@ export default function AgriBazaarMarketplacePage() {
                 onClick={() => setSelectedCategory(tab.value)}
                 className={`flex items-center gap-1.5 px-4 py-2 rounded text-xs font-semibold whitespace-nowrap transition ${
                   selectedCategory === tab.value
-                    ? "btn-agri-red shadow-sm"
+                    ? "btn-brand shadow-sm"
                     : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                 }`}
               >
@@ -206,7 +206,7 @@ export default function AgriBazaarMarketplacePage() {
                   <span className="text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded bg-slate-100 text-slate-700">
                     {p.categoryName}
                   </span>
-                  <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-red-50 text-agriRed border border-red-200">
+                  <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200">
                     {p.badge}
                   </span>
                 </div>
@@ -266,7 +266,7 @@ export default function AgriBazaarMarketplacePage() {
                     setOrderNote("");
                     setOrderSuccess(false);
                   }}
-                  className="w-full btn-agri-red py-2.5 rounded text-xs font-semibold flex items-center justify-center gap-2 shadow-sm"
+                  className="w-full btn-brand py-2.5 rounded text-xs font-semibold flex items-center justify-center gap-2 shadow-sm"
                 >
                   <ShoppingBag className="h-4 w-4" />
                   Place Bid / Order Trade
@@ -277,11 +277,11 @@ export default function AgriBazaarMarketplacePage() {
         </div>
       </div>
 
-      {/* ── AGRIBAZAAR ORDER & BID MODAL ── */}
+      {/* ── AGRIMARKET ORDER & BID MODAL ── */}
       {orderModalProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
           <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl relative border border-slate-200 overflow-hidden">
-            <div className="h-1.5 w-full bg-agriRed" />
+            <div className="h-1.5 w-full bg-teal-600" />
             <div className="p-7">
               <button
                 onClick={() => setOrderModalProduct(null)}
@@ -297,13 +297,13 @@ export default function AgriBazaarMarketplacePage() {
                   </div>
                   <h3 className="text-2xl font-bold text-slate-900">Trade Order Initiated!</h3>
                   <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                    Your trade order has been created in <strong>PENDING</strong> status. Funds are protected in AgriPay Escrow and the seller has been notified for handover.
+                    Your trade order has been created in <strong>PENDING</strong> status. Funds are protected in AgriMarket Escrow and the seller has been notified for handover.
                   </p>
                 </div>
               ) : (
                 <form onSubmit={handlePlaceOrder} className="space-y-4">
                   <div>
-                    <span className="text-[10px] font-bold text-agriRed uppercase tracking-wider bg-red-50 px-2 py-0.5 rounded border border-red-200">
+                    <span className="text-[10px] font-bold text-teal-700 uppercase tracking-wider bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
                       {orderModalProduct.categoryName}
                     </span>
                     <h3 className="text-xl font-bold text-slate-900 mt-2">{orderModalProduct.name}</h3>
@@ -337,7 +337,7 @@ export default function AgriBazaarMarketplacePage() {
                       max={orderModalProduct.quantityAvailable}
                       value={orderQuantity}
                       onChange={(e) => setOrderQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-red-500"
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500"
                       required
                     />
                   </div>
@@ -351,7 +351,7 @@ export default function AgriBazaarMarketplacePage() {
                       value={orderNote}
                       onChange={(e) => setOrderNote(e.target.value)}
                       placeholder="e.g. Need direct delivery to factory warehouse or scheduled pickup."
-                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-red-500"
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500"
                     />
                   </div>
 
@@ -362,7 +362,7 @@ export default function AgriBazaarMarketplacePage() {
                         {formatCurrency(orderModalProduct.unitPrice * orderQuantity)}
                       </p>
                     </div>
-                    <button type="submit" className="btn-agri-red px-6 py-2.5 rounded text-sm font-semibold shadow-sm">
+                    <button type="submit" className="btn-brand px-6 py-2.5 rounded text-sm font-semibold shadow-sm">
                       Confirm Trade
                     </button>
                   </div>

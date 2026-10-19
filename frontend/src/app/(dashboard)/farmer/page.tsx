@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 
-export default function AgriBazaarFarmerDashboard() {
+export default function AgriFarmerDashboard() {
   const [activeTab, setActiveTab] = useState<"orders" | "listings">("orders");
 
   const [orders, setOrders] = useState([
@@ -140,24 +140,24 @@ export default function AgriBazaarFarmerDashboard() {
         {/* ── TOP BANNER ── */}
         <div
           className="text-white p-8 sm:p-10 rounded-2xl shadow-md mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6"
-          style={{ background: 'linear-gradient(135deg, #091a36 0%, #11284d 50%, #0d381e 100%)' }}
+          style={{ background: 'linear-gradient(135deg, #041d1c 0%, #073330 50%, #0a4843 100%)' }}
         >
           <div>
-            <div className="inline-flex items-center gap-2 bg-agriNavy-800 text-blue-200 border border-blue-400/30 px-3 py-1 rounded text-xs font-semibold mb-3">
+            <div className="inline-flex items-center gap-2 bg-teal-900/80 text-teal-200 border border-teal-500/30 px-3 py-1 rounded text-xs font-semibold mb-3">
               <Boxes className="h-3.5 w-3.5 text-amber-400" />
-              <span>AgriBazaar Producer & Cooperative Hub</span>
+              <span>AgriMarket Producer & Cooperative Hub</span>
             </div>
             <h1 className="text-3xl font-extrabold tracking-tight">
               Farmer Trade & Stock Dashboard
             </h1>
             <p className="text-sm text-slate-300 mt-1 max-w-xl">
-              Manage your agricultural commodity listings, approve incoming institutional purchase orders, and release lots upon AgriPay escrow confirmation.
+              Manage your agricultural commodity listings, approve incoming institutional purchase orders, and release lots upon AgriMarket escrow confirmation.
             </p>
           </div>
 
           <button
             onClick={() => setShowAddModal(true)}
-            className="btn-agri-red px-6 py-3 rounded text-sm font-semibold flex items-center justify-center gap-2 shadow-md self-start md:self-auto"
+            className="btn-brand px-6 py-3 rounded text-sm font-semibold flex items-center justify-center gap-2 shadow-md self-start md:self-auto"
           >
             <PlusCircle className="h-4 w-4" />
             Create Produce Listing
@@ -169,13 +169,13 @@ export default function AgriBazaarFarmerDashboard() {
           <div className="agri-card p-6">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Active Listings</span>
-              <div className="h-10 w-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center">
                 <Package className="h-5 w-5" />
               </div>
             </div>
             <p className="text-3xl font-extrabold text-slate-900 mt-3">2 Active Lots</p>
-            <span className="text-xs font-semibold text-emerald-700 flex items-center mt-1">
-              <TrendingUp className="h-3.5 w-3.5 mr-1" /> Live on e-Mandi Spot Board
+            <span className="text-xs font-semibold text-teal-700 flex items-center mt-1">
+              <TrendingUp className="h-3.5 w-3.5 mr-1" /> Live on AgriMarket Board
             </span>
           </div>
 
@@ -194,8 +194,8 @@ export default function AgriBazaarFarmerDashboard() {
 
           <div className="agri-card p-6">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">AgriPay Settled Revenue</span>
-              <div className="h-10 w-10 rounded-lg bg-blue-50 text-agriNavy flex items-center justify-center">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Escrow Settled Revenue</span>
+              <div className="h-10 w-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
                 <ShoppingBag className="h-5 w-5" />
               </div>
             </div>
@@ -212,7 +212,7 @@ export default function AgriBazaarFarmerDashboard() {
             onClick={() => setActiveTab("orders")}
             className={`pb-3 px-4 text-sm font-bold border-b-2 transition ${
               activeTab === "orders"
-                ? "border-agriRed text-agriRed"
+                ? "border-teal-600 text-teal-700"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
@@ -222,7 +222,7 @@ export default function AgriBazaarFarmerDashboard() {
             onClick={() => setActiveTab("listings")}
             className={`pb-3 px-4 text-sm font-bold border-b-2 transition ${
               activeTab === "listings"
-                ? "border-agriRed text-agriRed"
+                ? "border-teal-600 text-teal-700"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
@@ -285,7 +285,7 @@ export default function AgriBazaarFarmerDashboard() {
                       <>
                         <button
                           onClick={() => handleUpdateStatus(ord.id, "ACCEPTED")}
-                          className="btn-agri-red text-xs px-4 py-2.5 rounded font-semibold flex items-center gap-1.5 shadow-sm"
+                          className="btn-brand text-xs px-4 py-2.5 rounded font-semibold flex items-center gap-1.5 shadow-sm"
                         >
                           <CheckCircle2 className="h-4 w-4" />
                           Accept Trade
@@ -311,7 +311,7 @@ export default function AgriBazaarFarmerDashboard() {
                     {ord.status === "READY" && (
                       <button
                         onClick={() => handleUpdateStatus(ord.id, "COMPLETED")}
-                        className="btn-agri-red text-xs px-4 py-2.5 rounded font-semibold"
+                        className="btn-brand text-xs px-4 py-2.5 rounded font-semibold"
                       >
                         Complete Handover
                       </button>
@@ -359,7 +359,7 @@ export default function AgriBazaarFarmerDashboard() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <button className="text-xs font-bold text-agriRed hover:underline">
+                        <button className="text-xs font-bold text-teal-700 hover:underline">
                           Update Stock
                         </button>
                       </td>
@@ -375,7 +375,7 @@ export default function AgriBazaarFarmerDashboard() {
         {showAddModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
             <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl relative border border-slate-200 overflow-hidden">
-              <div className="h-1.5 w-full bg-agriRed" />
+              <div className="h-1.5 w-full bg-teal-600" />
               <div className="p-7">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xl font-bold text-slate-900">List Commodity Lot</h3>
@@ -395,7 +395,7 @@ export default function AgriBazaarFarmerDashboard() {
                       value={newProduce.name}
                       onChange={(e) => setNewProduce({ ...newProduce, name: e.target.value })}
                       placeholder="e.g. Export White Sesame"
-                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-red-500"
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500"
                     />
                   </div>
 
@@ -407,7 +407,7 @@ export default function AgriBazaarFarmerDashboard() {
                       <select
                         value={newProduce.category}
                         onChange={(e) => setNewProduce({ ...newProduce, category: e.target.value })}
-                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-red-500"
+                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500"
                       >
                         <option value="Cereals & Grains">Cereals & Grains</option>
                         <option value="Vegetables">Vegetables</option>
@@ -423,7 +423,7 @@ export default function AgriBazaarFarmerDashboard() {
                       <select
                         value={newProduce.unit}
                         onChange={(e) => setNewProduce({ ...newProduce, unit: e.target.value })}
-                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-red-500"
+                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500"
                       >
                         <option value="KG">KG</option>
                         <option value="Quintal">Quintal (100kg)</option>
@@ -443,7 +443,7 @@ export default function AgriBazaarFarmerDashboard() {
                         min={1}
                         value={newProduce.unitPrice}
                         onChange={(e) => setNewProduce({ ...newProduce, unitPrice: Number(e.target.value) })}
-                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-red-500"
+                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500"
                       />
                     </div>
                     <div>
@@ -456,16 +456,16 @@ export default function AgriBazaarFarmerDashboard() {
                         min={1}
                         value={newProduce.quantityAvailable}
                         onChange={(e) => setNewProduce({ ...newProduce, quantityAvailable: Number(e.target.value) })}
-                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-red-500"
+                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500"
                       />
                     </div>
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full btn-agri-red py-2.5 rounded text-sm font-semibold shadow-sm mt-2"
+                    className="w-full btn-brand py-2.5 rounded text-sm font-semibold shadow-sm mt-2"
                   >
-                    Publish to e-Mandi Market
+                    Publish to AgriMarket Exchange
                   </button>
                 </form>
               </div>

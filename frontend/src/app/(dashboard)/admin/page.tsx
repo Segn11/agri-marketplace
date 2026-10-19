@@ -2,11 +2,11 @@
 
 import { ShieldAlert, Users, Package, ShoppingCart, CheckCircle, EyeOff, Building2, AlertTriangle } from "lucide-react";
 
-export default function AgriBazaarAdminDashboard() {
+export default function AgriAdminDashboard() {
   const metrics = [
     { title: "Registered Farm Cooperatives & Millers", value: "1,240", change: "+12% this month", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
-    { title: "Live e-Mandi Commodity Lots", value: "320", change: "+18 this week", icon: Package, color: "text-agriRed", bg: "bg-red-50" },
-    { title: "Settled Trades (AgriPay)", value: "890", change: "99.8% completion rate", icon: ShoppingCart, color: "text-emerald-600", bg: "bg-emerald-50" },
+    { title: "Live Produce Commodity Lots", value: "320", change: "+18 this week", icon: Package, color: "text-teal-700", bg: "bg-teal-50" },
+    { title: "Settled Trades (Escrow Protected)", value: "890", change: "99.8% completion rate", icon: ShoppingCart, color: "text-emerald-600", bg: "bg-emerald-50" },
     { title: "Open Dispute / Assay Reports", value: "3", change: "Action required", icon: ShieldAlert, color: "text-amber-600", bg: "bg-amber-50" },
   ];
 
@@ -35,14 +35,14 @@ export default function AgriBazaarAdminDashboard() {
         {/* ── TOP BANNER ── */}
         <div
           className="text-white p-8 sm:p-10 rounded-2xl shadow-md mb-8"
-          style={{ background: 'linear-gradient(135deg, #091a36 0%, #11284d 50%, #0d381e 100%)' }}
+          style={{ background: 'linear-gradient(135deg, #041d1c 0%, #073330 50%, #0a4843 100%)' }}
         >
-          <div className="inline-flex items-center gap-2 bg-agriNavy-800 text-blue-200 border border-blue-400/30 px-3 py-1 rounded text-xs font-semibold mb-3">
+          <div className="inline-flex items-center gap-2 bg-teal-900/80 text-teal-200 border border-teal-500/30 px-3 py-1 rounded text-xs font-semibold mb-3">
             <ShieldAlert className="h-3.5 w-3.5 text-amber-400" />
             <span>Platform Governance & Market Surveillance</span>
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight">
-            AgriBazaar Admin & Moderation Hub
+            AgriMarket Admin & Moderation Hub
           </h1>
           <p className="text-sm text-slate-300 mt-1 max-w-xl">
             Monitor trading volume, verify cooperative assay certificates, resolve trade disputes, and govern user accounts.
@@ -96,7 +96,7 @@ export default function AgriBazaarAdminDashboard() {
                 </div>
 
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <button className="btn-agri-red text-xs font-semibold px-4 py-2 rounded flex items-center gap-1.5 shadow-sm">
+                  <button className="btn-brand text-xs font-semibold px-4 py-2 rounded flex items-center gap-1.5 shadow-sm">
                     <CheckCircle className="h-3.5 w-3.5" />
                     Mediate & Settle
                   </button>
