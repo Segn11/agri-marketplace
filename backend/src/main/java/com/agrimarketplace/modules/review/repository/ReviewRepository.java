@@ -14,6 +14,7 @@ import java.util.UUID;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, UUID> {
     Page<Review> findByProductId(UUID productId, Pageable pageable);
+    Page<Review> findByProductFarmerId(UUID farmerId, Pageable pageable);
     boolean existsByOrderId(UUID orderId);
     Optional<Review> findByOrderId(UUID orderId);
 

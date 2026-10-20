@@ -11,6 +11,7 @@ coverage/
 frontend/.next/
 frontend/out/
 frontend/build/
+*.tsbuildinfo
 
 # Java / Maven
 backend/target/

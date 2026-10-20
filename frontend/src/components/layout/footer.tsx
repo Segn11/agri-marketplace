@@ -54,22 +54,22 @@ export function Footer() {
             <ul className="space-y-2.5 text-slate-400">
               <li><Link href="/cart" className="hover:text-white transition">Procurement Cart & Settlement</Link></li>
               <li><Link href="/cart" className="hover:text-white transition">AgriPay Escrow Guarantee</Link></li>
-              <li><Link href="/buyer" className="hover:text-white transition">4-Step Order Tracking</Link></li>
+              <li><Link href="/products" className="hover:text-white transition">Live Market Catalog</Link></li>
               <li><Link href="/products" className="hover:text-white transition">Assayed Commodity Lots</Link></li>
               <li><Link href="/register" className="hover:text-white transition">Cooperative Onboarding</Link></li>
               <li><Link href="/cart" className="hover:text-white transition">Freight & Delivery Protocol</Link></li>
             </ul>
           </div>
 
-          {/* Portals & Legal */}
+          {/* Account & Trading */}
           <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-4">Portals & Access</h4>
+            <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-4">Account & Trading</h4>
             <ul className="space-y-2.5 text-slate-400">
-              <li><Link href="/buyer" className="hover:text-white transition">Buyer Order Tracking</Link></li>
-              <li><Link href="/admin" className="hover:text-white transition">Admin Dashboard</Link></li>
               <li><Link href="/login" className="hover:text-white transition">Member Sign In</Link></li>
               <li><Link href="/register" className="hover:text-white transition">Create Trade Account</Link></li>
               <li><Link href="/products" className="hover:text-white transition">Search Database Lots</Link></li>
+              <li><Link href="/cart" className="hover:text-white transition">Procurement Drawer</Link></li>
+              <li><Link href="/#services" className="hover:text-white transition">Exchange Services</Link></li>
               <li><Link href="/" className="hover:text-white transition">Home</Link></li>
             </ul>
           </div>

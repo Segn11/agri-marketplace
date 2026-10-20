@@ -351,7 +351,7 @@ export default function ProductDetailPage() {
                 onClick={() => setActiveTab("specs")}
                 className={`text-xs font-bold uppercase tracking-wider pb-2 border-b-2 transition ${
                   activeTab === "specs"
-                    ? "border-teal-600 text-teal-700"
+                    ? "border-[#1c4482] text-[#1c4482]"
                     : "border-transparent text-slate-500 hover:text-slate-800"
                 }`}
               >
@@ -361,21 +361,21 @@ export default function ProductDetailPage() {
                 onClick={() => setActiveTab("cooperative")}
                 className={`text-xs font-bold uppercase tracking-wider pb-2 border-b-2 transition ${
                   activeTab === "cooperative"
-                    ? "border-teal-600 text-teal-700"
+                    ? "border-[#1c4482] text-[#1c4482]"
                     : "border-transparent text-slate-500 hover:text-slate-800"
                 }`}
               >
-                Producer Verification
+                Producer Profile
               </button>
               <button
                 onClick={() => setActiveTab("escrow")}
                 className={`text-xs font-bold uppercase tracking-wider pb-2 border-b-2 transition ${
                   activeTab === "escrow"
-                    ? "border-teal-600 text-teal-700"
+                    ? "border-[#1c4482] text-[#1c4482]"
                     : "border-transparent text-slate-500 hover:text-slate-800"
                 }`}
               >
-                AgriPay Escrow Guarantee
+                Direct Trade & Sourcing Protocol
               </button>
             </div>
 
@@ -395,11 +395,11 @@ export default function ProductDetailPage() {
                 </div>
                 <div className="p-4 rounded-xl bg-white border border-slate-200">
                   <span className="text-slate-400 font-semibold block">Storage Warehouse</span>
-                  <span className="font-bold text-slate-900 mt-1 block">{product.storageWarehouse || "Certified Grain Terminal"}</span>
+                  <span className="font-bold text-slate-900 mt-1 block">{product.storageWarehouse || "Regional Grain Hub"}</span>
                 </div>
                 <div className="p-4 rounded-xl bg-white border border-slate-200">
-                  <span className="text-slate-400 font-semibold block">Assaying Authority</span>
-                  <span className="font-bold text-slate-900 mt-1 block">Laboratory Assayed Lot</span>
+                  <span className="text-slate-400 font-semibold block">Target Market</span>
+                  <span className="font-bold text-slate-900 mt-1 block">{product.location || "Nekemte & Surrounding Woredas"}</span>
                 </div>
                 <div className="p-4 rounded-xl bg-white border border-slate-200">
                   <span className="text-slate-400 font-semibold block">Inventory Status</span>
@@ -411,7 +411,7 @@ export default function ProductDetailPage() {
             {activeTab === "cooperative" && (
               <div className="p-6 rounded-xl bg-white border border-slate-200 space-y-3 text-xs">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-teal-100 text-teal-800 flex items-center justify-center font-bold text-sm">
+                  <div className="h-10 w-10 rounded-full bg-blue-100 text-[#1c4482] flex items-center justify-center font-bold text-sm">
                     {product.farmerName ? product.farmerName.slice(0, 2).toUpperCase() : "AG"}
                   </div>
                   <div>
@@ -420,19 +420,19 @@ export default function ProductDetailPage() {
                   </div>
                 </div>
                 <p className="text-slate-600 leading-relaxed pt-2">
-                  Verified grower operating in {product.location}. Registered producer in Agri Marketplace with verified contact details upon trade order confirmation.
+                  Registered grower operating in {product.location}. Verified agricultural producer in the marketplace with phone contact disclosed upon order acceptance for offline coordination.
                 </p>
               </div>
             )}
 
             {activeTab === "escrow" && (
               <div className="p-6 rounded-xl bg-white border border-slate-200 space-y-2 text-xs">
-                <div className="flex items-center gap-2 text-teal-800 font-bold">
-                  <ShieldCheck className="h-5 w-5 text-teal-600" />
-                  <span>100% Buyer Protection & Transparent Settlement</span>
+                <div className="flex items-center gap-2 text-[#1c4482] font-bold">
+                  <ShieldCheck className="h-5 w-5 text-emerald-600" />
+                  <span>Version 1 Direct Sourcing & Offline Settlement</span>
                 </div>
                 <p className="text-slate-600 leading-relaxed">
-                  Funds are safely locked in an escrow account upon order confirmation. Payment is only released to the seller after the buyer completes on-site quality inspection and signs the handover certificate.
+                  Per the project requirements specification, Version 1 facilitates direct online order placement and inventory reservation. Payment and delivery are coordinated directly between the buyer and farmer once the farmer accepts the order and contact details are disclosed.
                 </p>
               </div>
             )}

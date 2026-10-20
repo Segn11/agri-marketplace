@@ -50,4 +50,23 @@ public class ReviewController {
         PagedResponse<ReviewResponse> response = reviewService.getProductReviews(productId, pageable);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
+
+    @GetMapping("/farmer")
+    @PreAuthorize("hasRole('FARMER')")
+    @Operation(summary = "Get reviews for farmer's products")
+    public ResponseEntity<ApiResponse<PagedResponse<ReviewResponse>>> getFarmerReviews(
+            @AuthenticationPrincipal UserPrincipal currentUser,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        PagedResponse<ReviewResponse> response = reviewService.getFarmerReviews(currentUser.getId(), pageable);
+        return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Remove an inappropriate review (Admin only)")
+    public ResponseEntity<ApiResponse<String>> deleteReview(@PathVariable UUID id) {
+        reviewService.deleteReview(id);
+        return ResponseEntity.ok(ApiResponse.ok("Review removed successfully", null));
+    }
 }

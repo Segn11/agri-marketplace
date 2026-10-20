@@ -55,6 +55,17 @@ public class ProductController {
         return ResponseEntity.ok(ApiResponse.ok(products));
     }
 
+    @GetMapping("/my-listings")
+    @PreAuthorize("hasRole('FARMER')")
+    @Operation(summary = "Get current farmer's listings")
+    public ResponseEntity<ApiResponse<PagedResponse<ProductResponse>>> getMyListings(
+            @AuthenticationPrincipal UserPrincipal currentUser,
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        PagedResponse<ProductResponse> products = productService.getFarmerProducts(currentUser.getId(), pageable);
+        return ResponseEntity.ok(ApiResponse.ok(products));
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Get product details by ID")
     public ResponseEntity<ApiResponse<ProductResponse>> getProductById(@PathVariable UUID id) {
@@ -86,5 +97,18 @@ public class ProductController {
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         ProductResponse response = productService.updateProduct(id, request, currentUser.getId(), isAdmin);
         return ResponseEntity.ok(ApiResponse.ok("Product listing updated successfully", response));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('FARMER') or hasRole('ADMIN')")
+    @Operation(summary = "Delete a product listing")
+    public ResponseEntity<ApiResponse<String>> deleteProduct(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserPrincipal currentUser
+    ) {
+        boolean isAdmin = currentUser.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        productService.deleteProduct(id, currentUser.getId(), isAdmin);
+        return ResponseEntity.ok(ApiResponse.ok("Product listing deleted successfully", null));
     }
 }

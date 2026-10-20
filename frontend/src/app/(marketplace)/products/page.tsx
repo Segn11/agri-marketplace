@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -16,12 +16,28 @@ import {
   ExternalLink,
   Loader2,
   AlertCircle,
+  SlidersHorizontal,
+  ArrowUpDown,
+  Truck,
+  RotateCcw,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { fetchProductsFromDb, fetchCategoriesFromDb } from "@/lib/commodities";
 import { useCart } from "@/context/CartContext";
 import { Product, Category } from "@/types";
 import { fetchApi } from "@/lib/api";
+
+const REGIONAL_LOCATIONS = [
+  "All Locations",
+  "Nekemte Central Market",
+  "Bako Agricultural Center",
+  "Gimbi Coffee Depot",
+  "Gutin Farmers Union",
+  "Dembi Dolo Terminal",
+  "Arjo Grain Depot",
+  "Sire Farmers Center",
+  "Debre Birhan Mandi Terminal",
+];
 
 export default function AgriMarketplacePage() {
   const { addToCart } = useCart();
@@ -30,16 +46,31 @@ export default function AgriMarketplacePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Filters (FR-3.1, FR-3.2)
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedLocation, setSelectedLocation] = useState("All Locations");
+  const [minPrice, setMinPrice] = useState<number | "">("");
+  const [maxPrice, setMaxPrice] = useState<number | "">("");
+  const [inStockOnly, setInStockOnly] = useState(false);
+
+  // Sorting (FR-3.3)
+  const [sortBy, setSortBy] = useState<"newest" | "price_asc" | "price_desc" | "rating">("newest");
+
+  // Pagination (FR-3.6)
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
+
+  // Instant Order Modal (FR-4.1)
   const [orderModalProduct, setOrderModalProduct] = useState<Product | null>(null);
   const [orderQuantity, setOrderQuantity] = useState(1);
+  const [deliveryPreference, setDeliveryPreference] = useState<"PICKUP" | "FREIGHT">("PICKUP");
   const [orderNote, setOrderNote] = useState("");
   const [orderSubmitting, setOrderSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderError, setOrderError] = useState<string | null>(null);
 
-  // 1. Load categories from database
+  // Load categories from database
   useEffect(() => {
     async function loadCategories() {
       try {
@@ -52,7 +83,7 @@ export default function AgriMarketplacePage() {
     loadCategories();
   }, []);
 
-  // 2. Load products from database
+  // Load products from database
   useEffect(() => {
     async function loadProducts() {
       setLoading(true);
@@ -61,11 +92,12 @@ export default function AgriMarketplacePage() {
         const response = await fetchProductsFromDb({
           q: searchTerm.trim() || undefined,
           category: selectedCategory !== "all" ? selectedCategory : undefined,
+          size: 50,
         });
         setProducts(response.content || []);
       } catch (err: any) {
         console.error("Database fetch failed:", err);
-        setError("Unable to connect to database or backend server. Please verify Spring Boot API is running on port 8080.");
+        setError("Unable to connect to database or backend server. Please verify Spring Boot API is running.");
         setProducts([]);
       } finally {
         setLoading(false);
@@ -79,12 +111,73 @@ export default function AgriMarketplacePage() {
     return () => clearTimeout(timer);
   }, [searchTerm, selectedCategory]);
 
+  // Client-side filtering & sorting
+  const filteredAndSortedProducts = useMemo(() => {
+    return products
+      .filter((p) => {
+        // Location filter
+        if (selectedLocation !== "All Locations") {
+          const locMatch = p.location?.toLowerCase().includes(selectedLocation.toLowerCase());
+          if (!locMatch) return false;
+        }
+        // Min Price
+        if (minPrice !== "" && p.unitPrice < Number(minPrice)) {
+          return false;
+        }
+        // Max Price
+        if (maxPrice !== "" && p.unitPrice > Number(maxPrice)) {
+          return false;
+        }
+        // In Stock Only
+        if (inStockOnly && (p.quantityAvailable <= 0 || p.status === "OUT_OF_STOCK")) {
+          return false;
+        }
+        return true;
+      })
+      .sort((a, b) => {
+        if (sortBy === "price_asc") return a.unitPrice - b.unitPrice;
+        if (sortBy === "price_desc") return b.unitPrice - a.unitPrice;
+        if (sortBy === "rating") return (b.averageRating || 5) - (a.averageRating || 5);
+        return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+      });
+  }, [products, selectedLocation, minPrice, maxPrice, inStockOnly, sortBy]);
+
+  // Paginated items
+  const totalPages = Math.ceil(filteredAndSortedProducts.length / itemsPerPage) || 1;
+  const paginatedProducts = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredAndSortedProducts.slice(start, start + itemsPerPage);
+  }, [filteredAndSortedProducts, currentPage]);
+
+  const handleResetFilters = () => {
+    setSearchTerm("");
+    setSelectedCategory("all");
+    setSelectedLocation("All Locations");
+    setMinPrice("");
+    setMaxPrice("");
+    setInStockOnly(false);
+    setSortBy("newest");
+    setCurrentPage(1);
+  };
+
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!orderModalProduct) return;
 
+    if (orderQuantity > orderModalProduct.quantityAvailable) {
+      setOrderError(`Quantity exceeds available stock. Maximum available is ${orderModalProduct.quantityAvailable} ${orderModalProduct.unit}.`);
+      return;
+    }
+
     setOrderSubmitting(true);
     setOrderError(null);
+
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (!token) {
+      setOrderError("Please sign in with a Buyer account to place an order.");
+      setOrderSubmitting(false);
+      return;
+    }
 
     try {
       await fetchApi("/orders", {
@@ -93,336 +186,516 @@ export default function AgriMarketplacePage() {
           productId: orderModalProduct.id,
           quantity: orderQuantity,
           note: orderNote,
-          deliveryPreference: "PICKUP",
+          deliveryPreference,
         }),
       });
 
       setOrderSuccess(true);
       setTimeout(() => {
-        setOrderSuccess(false);
         setOrderModalProduct(null);
+        setOrderSuccess(false);
+        setOrderNote("");
+        setOrderQuantity(1);
       }, 2000);
     } catch (err: any) {
-      setOrderError(err.message || "Failed to place order in database. Ensure you are logged in as a registered Buyer.");
+      setOrderError(err.message || "Failed to place order. Ensure you are signed in as a Buyer.");
     } finally {
       setOrderSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* ── AGRIBAZAAR-STYLE HEADER ── */}
-      <div
-        className="text-white py-12 border-b border-blue-950"
-        style={{ background: "linear-gradient(135deg, #0e2a56 0%, #1c4482 60%, #153e77 100%)" }}
-      >
-        <div className="container mx-auto px-4 sm:px-8">
-          <div className="flex items-center gap-2 text-xs text-blue-200 mb-3">
-            <Link href="/" className="hover:underline">Home</Link>
-            <ChevronRight className="h-3 w-3" />
-            <span className="font-bold text-white">Commodity Marketplace</span>
-          </div>
-
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-            Agricultural Commodity Exchange
-          </h1>
-          <p className="mt-2 text-sm text-blue-100 max-w-2xl leading-relaxed">
-            Browse real-time verified commodity listings directly from Ethiopian farmers, primary unions, and cooperatives. All lots are stored and fetched live from the database.
-          </p>
-
-          {/* Search Bar */}
-          <div className="mt-8 max-w-2xl relative">
-            <input
-              type="text"
-              placeholder="Search by commodity name, location, or cooperative union..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-5 py-3.5 pl-12 rounded-xl text-slate-900 placeholder:text-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-lg bg-white"
-            />
-            <Search className="h-5 w-5 text-slate-400 absolute left-4 top-3.5" />
-          </div>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 sm:px-8 py-8">
-        {/* Category Tabs from Database */}
-        <div className="flex items-center space-x-2 overflow-x-auto pb-4 mb-6 border-b border-slate-200">
-          <button
-            onClick={() => setSelectedCategory("all")}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-              selectedCategory === "all"
-                ? "bg-[#1c4482] text-white shadow-xs"
-                : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100"
-            }`}
-          >
-            All Commodities ({products.length})
-          </button>
-
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                selectedCategory === cat.id
-                  ? "bg-[#1c4482] text-white shadow-xs"
-                  : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100"
-              }`}
-            >
-              {cat.name}
-            </button>
-          ))}
+    <div className="bg-slate-50 min-h-screen py-8">
+      <div className="container mx-auto px-4 sm:px-8">
+        {/* Header Breadcrumb */}
+        <div className="flex items-center gap-2 text-xs text-slate-500 mb-6">
+          <Link href="/" className="hover:text-[#1c4482] transition">Home</Link>
+          <ChevronRight className="h-3 w-3" />
+          <span className="font-bold text-slate-900">Agricultural Commodity Marketplace</span>
         </div>
 
-        {/* Database Status or Error */}
-        {error && (
-          <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center gap-3">
-            <AlertCircle className="h-5 w-5 text-amber-600 shrink-0" />
-            <div>
-              <strong className="block font-bold">Database Notice:</strong>
-              <span>{error}</span>
-            </div>
-          </div>
-        )}
-
-        {/* Product Grid */}
-        {loading ? (
-          <div className="py-20 text-center space-y-3">
-            <Loader2 className="h-8 w-8 text-teal-600 animate-spin mx-auto" />
-            <p className="text-xs text-slate-500 font-semibold">Querying live database listings...</p>
-          </div>
-        ) : products.length === 0 ? (
-          <div className="py-16 text-center max-w-md mx-auto space-y-4">
-            <div className="h-16 w-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto">
-              <ShoppingBag className="h-8 w-8" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-800">No Commodities Found</h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              No product listings currently match your filter in the database. Ensure the PostgreSQL database has executed Flyway migrations.
+        {/* Top Banner */}
+        <div className="bg-gradient-to-r from-[#1c4482] via-blue-900 to-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-md mb-8">
+          <div className="max-w-2xl">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-300 bg-blue-950/60 px-3 py-1 rounded-full border border-blue-800">
+              Direct Farmer & Buyer Marketplace &bull; Nekemte & Regional Hubs
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-3">
+              Browse & Compare Agricultural Produce
+            </h1>
+            <p className="text-xs sm:text-sm text-blue-100/80 mt-1.5 leading-relaxed">
+              Find fresh crops, cereals, coffee, and livestock products directly from local farmers without intermediary markups. Orders are placed online with payment and delivery arranged directly.
             </p>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((p) => (
-              <div
-                key={p.id}
-                className="bg-white rounded-2xl border border-slate-200 shadow-xs hover:shadow-md transition-all p-6 flex flex-col justify-between group"
-              >
-                <div>
-                  <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded bg-slate-100 text-slate-700">
-                      {p.categoryName || "Agricultural Commodity"}
-                    </span>
-                    <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200">
-                      {p.badge || "Verified Lot"}
-                    </span>
-                  </div>
+        </div>
 
-                  <Link href={`/products/${p.id}`} className="block">
-                    <h3 className="text-lg font-bold text-slate-900 leading-snug group-hover:text-teal-700 transition flex items-center justify-between">
-                      <span>{p.name}</span>
-                      <ExternalLink className="h-4 w-4 text-slate-300 group-hover:text-teal-600 transition ml-1 flex-shrink-0" />
-                    </h3>
-                  </Link>
-
-                  <div className="mt-2 text-xs text-slate-500 flex items-center gap-1">
-                    <MapPin className="h-3.5 w-3.5 text-slate-400 flex-shrink-0" />
-                    <span>{p.location}</span>
-                  </div>
-
-                  <p className="text-xs text-slate-600 font-medium mt-1 truncate">
-                    Seller: <strong className="text-slate-800">{p.farmerName}</strong> ({p.cooperative || "Cooperative Union"})
-                  </p>
-
-                  {/* Quality Assay Certification Box */}
-                  <div className="mt-3.5 py-2 px-3 bg-emerald-50 rounded border border-emerald-200 text-xs font-semibold text-emerald-800 flex items-center justify-between">
-                    <div className="flex items-center gap-1.5">
-                      <Award className="h-4 w-4 text-emerald-600" />
-                      <span>{p.assayGrade || "Grade 1 Standard"}</span>
-                    </div>
-                    <span className="text-[10px] bg-emerald-200/70 text-emerald-900 px-1.5 py-0.2 rounded font-bold">
-                      LAB TESTED
-                    </span>
-                  </div>
-
-                  <p className="text-xs text-slate-500 mt-3 line-clamp-2 leading-relaxed">
-                    {p.description}
-                  </p>
-
-                  <div className="mt-5 pt-4 border-t border-slate-100 flex items-baseline justify-between">
-                    <div>
-                      <span className="text-2xl font-black text-slate-900">{formatCurrency(p.unitPrice)}</span>
-                      <span className="text-[11px] font-medium text-slate-400 ml-1">/{p.unit}</span>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-xs font-bold text-emerald-700 block">{p.quantityAvailable} {p.unit}</span>
-                      <span className="text-[10px] text-slate-400">Available Stock</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-5 pt-4 border-t border-slate-100 space-y-3">
-                  <div className="flex items-center justify-between text-xs text-slate-500">
-                    <Link href={`/products/${p.id}`} className="text-xs font-bold text-[#1c4482] hover:underline">
-                      View Specifications &rarr;
-                    </Link>
-                    <div className="flex items-center gap-1 text-amber-600 font-bold">
-                      <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
-                      <span>{p.averageRating || 4.9}</span>
-                      <span className="text-slate-400 font-normal">({p.totalReviews || 24})</span>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      onClick={() =>
-                        addToCart({
-                          productId: p.id,
-                          name: p.name,
-                          categoryName: p.categoryName || "Commodity",
-                          unitPrice: p.unitPrice,
-                          unit: p.unit,
-                          quantity: 1,
-                          farmerName: p.farmerName,
-                          cooperative: p.cooperative,
-                          location: p.location,
-                          assayGrade: p.assayGrade,
-                          maxQuantity: p.quantityAvailable,
-                        })
-                      }
-                      className="px-3 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:text-[#1c4482] hover:border-blue-400 text-xs font-bold transition flex items-center justify-center gap-1.5"
-                    >
-                      <ShoppingCart className="h-3.5 w-3.5" />
-                      Add to Cart
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setOrderModalProduct(p);
-                        setOrderQuantity(1);
-                        setOrderError(null);
-                      }}
-                      className="bg-[#d81b60] hover:bg-[#c2185b] text-white py-2.5 rounded-xl text-xs font-bold shadow-xs flex items-center justify-center gap-1 transition"
-                    >
-                      Procure
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Instant Procurement Modal */}
-      {orderModalProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl border border-slate-200 max-w-lg w-full p-6 sm:p-8 shadow-2xl relative animate-in fade-in zoom-in-95 duration-150">
-            <button
-              onClick={() => setOrderModalProduct(null)}
-              className="absolute top-5 right-5 text-slate-400 hover:text-slate-600"
-            >
-              <X className="h-5 w-5" />
-            </button>
-
-            <div className="flex items-center gap-2 mb-3">
-              <span className="p-2 rounded-xl bg-teal-100 text-teal-800">
-                <ShoppingBag className="h-5 w-5" />
-              </span>
-              <div>
-                <h3 className="text-lg font-black text-slate-900">Procure Commodity Lot</h3>
-                <p className="text-xs text-slate-500">{orderModalProduct.name}</p>
-              </div>
+        {/* Search & Sort Controls Bar */}
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs mb-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            {/* Search Input (FR-3.1) */}
+            <div className="relative w-full md:w-96">
+              <Search className="h-4 w-4 text-slate-400 absolute left-3.5 top-3" />
+              <input
+                type="text"
+                placeholder="Search products by crop name, farmer, or keyword..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full pl-10 pr-4 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
             </div>
 
-            {orderSuccess ? (
-              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-emerald-600 shrink-0" />
-                Order successfully recorded in the database! Funds held in Escrow.
+            {/* Sort Dropdown (FR-3.3) */}
+            <div className="flex items-center gap-3 w-full md:w-auto justify-end text-xs">
+              <label className="font-bold text-slate-600 flex items-center gap-1 shrink-0">
+                <ArrowUpDown className="h-3.5 w-3.5 text-[#1c4482]" />
+                Sort By:
+              </label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              >
+                <option value="newest">Newest Listed</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+                <option value="rating">Highest Rated</option>
+              </select>
+
+              {(searchTerm || selectedCategory !== "all" || selectedLocation !== "All Locations" || minPrice !== "" || maxPrice !== "" || inStockOnly) && (
+                <button
+                  onClick={handleResetFilters}
+                  className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-xl font-bold transition flex items-center gap-1"
+                  title="Reset all filters"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                  Reset
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Main Grid: Filters Sidebar + Products Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* ── FILTER SIDEBAR (FR-3.2) ── */}
+          <div className="lg:col-span-1 space-y-5">
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-5">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                  <SlidersHorizontal className="h-4 w-4 text-[#1c4482]" />
+                  Filters
+                </span>
+                <span className="text-[11px] text-slate-400 font-semibold">
+                  {filteredAndSortedProducts.length} lots found
+                </span>
               </div>
-            ) : (
-              <form onSubmit={handlePlaceOrder} className="space-y-4">
-                {orderError && (
-                  <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl">
-                    {orderError}
-                  </div>
-                )}
 
-                <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1.5 text-xs">
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Unit Price:</span>
-                    <strong className="text-slate-900">
-                      {formatCurrency(orderModalProduct.unitPrice)} / {orderModalProduct.unit}
-                    </strong>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Seller Origin:</span>
-                    <span className="text-slate-800 font-semibold">{orderModalProduct.location}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Assay Verification:</span>
-                    <span className="text-emerald-700 font-bold">{orderModalProduct.assayGrade || "Grade 1 Standard"}</span>
-                  </div>
+              {/* Category Filter */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-2">Commodity Category</label>
+                <div className="space-y-1">
+                  <button
+                    onClick={() => { setSelectedCategory("all"); setCurrentPage(1); }}
+                    className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                      selectedCategory === "all"
+                        ? "bg-[#1c4482] text-white shadow-xs"
+                        : "text-slate-600 hover:bg-slate-100"
+                    }`}
+                  >
+                    All Categories
+                  </button>
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => { setSelectedCategory(cat.slug); setCurrentPage(1); }}
+                      className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                        selectedCategory === cat.slug
+                          ? "bg-[#1c4482] text-white shadow-xs"
+                          : "text-slate-600 hover:bg-slate-100"
+                      }`}
+                    >
+                      {cat.name}
+                    </button>
+                  ))}
                 </div>
+              </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Order Quantity ({orderModalProduct.unit})
-                  </label>
+              {/* Location Filter (FR-3.2: Nekemte and regional communities) */}
+              <div className="pt-4 border-t border-slate-100">
+                <label className="block text-xs font-bold text-slate-700 mb-2 flex items-center gap-1">
+                  <MapPin className="h-3.5 w-3.5 text-red-500" />
+                  Location / Market
+                </label>
+                <select
+                  value={selectedLocation}
+                  onChange={(e) => { setSelectedLocation(e.target.value); setCurrentPage(1); }}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  {REGIONAL_LOCATIONS.map((loc) => (
+                    <option key={loc} value={loc}>{loc}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Price Range Filter (FR-3.2) */}
+              <div className="pt-4 border-t border-slate-100">
+                <label className="block text-xs font-bold text-slate-700 mb-2">Price Range (ETB)</label>
+                <div className="grid grid-cols-2 gap-2 text-xs">
                   <input
                     type="number"
-                    min={1}
-                    max={orderModalProduct.quantityAvailable}
-                    value={orderQuantity}
-                    onChange={(e) => setOrderQuantity(Math.max(1, Number(e.target.value)))}
-                    required
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    placeholder="Min"
+                    value={minPrice}
+                    onChange={(e) => {
+                      setMinPrice(e.target.value === "" ? "" : Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                    className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg"
                   />
-                  <span className="text-[10px] text-slate-400 mt-0.5 block">
-                    Max available stock: {orderModalProduct.quantityAvailable} {orderModalProduct.unit}
-                  </span>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Logistics / Delivery Note (Optional)
-                  </label>
-                  <textarea
-                    rows={2}
-                    value={orderNote}
-                    onChange={(e) => setOrderNote(e.target.value)}
-                    placeholder="Enter delivery instructions or receiving bay details."
-                    className="w-full px-4 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-teal-500"
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    value={maxPrice}
+                    onChange={(e) => {
+                      setMaxPrice(e.target.value === "" ? "" : Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                    className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg"
                   />
                 </div>
+              </div>
 
-                <div className="p-3 bg-teal-50 rounded-xl border border-teal-200 flex justify-between items-center text-xs">
-                  <span className="font-bold text-teal-900">Total Settlement Value:</span>
-                  <span className="text-lg font-black text-teal-900">
-                    {formatCurrency(orderModalProduct.unitPrice * orderQuantity)}
-                  </span>
-                </div>
+              {/* Availability Filter (FR-3.2) */}
+              <div className="pt-4 border-t border-slate-100">
+                <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700">
+                  <input
+                    type="checkbox"
+                    checked={inStockOnly}
+                    onChange={(e) => {
+                      setInStockOnly(e.target.checked);
+                      setCurrentPage(1);
+                    }}
+                    className="rounded text-[#1c4482] focus:ring-blue-500 h-4 w-4"
+                  />
+                  <span>In Stock Only</span>
+                </label>
+              </div>
+            </div>
+          </div>
 
-                <div className="pt-2 flex justify-end gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setOrderModalProduct(null)}
-                    className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={orderSubmitting}
-                    className="px-5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs disabled:opacity-50"
-                  >
-                    {orderSubmitting ? "Placing Order..." : "Confirm Procurement Order"}
-                  </button>
-                </div>
-              </form>
+          {/* ── PRODUCT LISTINGS GRID (FR-3.4) ── */}
+          <div className="lg:col-span-3 space-y-6">
+            {loading ? (
+              <div className="min-h-[50vh] flex flex-col items-center justify-center bg-white rounded-2xl border border-slate-200 p-12">
+                <Loader2 className="h-8 w-8 text-[#1c4482] animate-spin mb-2" />
+                <p className="text-xs text-slate-500 font-semibold">Loading verified crop listings from database...</p>
+              </div>
+            ) : error ? (
+              <div className="bg-red-50 border border-red-200 rounded-2xl p-8 text-center text-red-700">
+                <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
+                <p className="text-xs font-bold">{error}</p>
+              </div>
+            ) : paginatedProducts.length === 0 ? (
+              <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-xs">
+                <ShoppingBag className="h-10 w-10 text-slate-300 mx-auto mb-3" />
+                <h3 className="text-base font-bold text-slate-800">No Agricultural Lots Found</h3>
+                <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                  Try adjusting your search keywords, location filter, or price parameters to discover available produce.
+                </p>
+                <button
+                  onClick={handleResetFilters}
+                  className="mt-4 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition"
+                >
+                  Clear All Filters
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {paginatedProducts.map((product) => {
+                  const isOutOfStock = product.quantityAvailable <= 0 || product.status === "OUT_OF_STOCK";
+
+                  return (
+                    <div
+                      key={product.id}
+                      className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs hover:shadow-md transition flex flex-col justify-between"
+                    >
+                      <div>
+                        {/* Image & Badges */}
+                        <div className="h-44 bg-slate-100 relative overflow-hidden group">
+                          <img
+                            src={
+                              product.imageUrls?.[0] ||
+                              "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=800"
+                            }
+                            alt={product.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          <span className="absolute top-2.5 left-2.5 bg-white/95 text-slate-800 text-[10px] font-bold px-2 py-0.5 rounded shadow-xs">
+                            {product.categoryName}
+                          </span>
+                          {isOutOfStock ? (
+                            <span className="absolute top-2.5 right-2.5 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-xs">
+                              Out of Stock
+                            </span>
+                          ) : (
+                            <span className="absolute top-2.5 right-2.5 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-xs">
+                              In Stock
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-4 space-y-2">
+                          <Link href={`/products/${product.id}`}>
+                            <h3 className="font-bold text-slate-900 text-sm hover:text-[#1c4482] transition line-clamp-1">
+                              {product.name}
+                            </h3>
+                          </Link>
+
+                          <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                            <span className="font-semibold text-slate-800">{product.farmerName}</span>
+                          </div>
+
+                          <div className="flex items-center gap-1 text-[11px] text-slate-500">
+                            <MapPin className="h-3 w-3 text-red-500 shrink-0" />
+                            <span className="truncate">{product.location}</span>
+                          </div>
+
+                          <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                            {product.description}
+                          </p>
+
+                          {/* Price & Stock Display (FR-3.4, FR-3.5) */}
+                          <div className="pt-2 border-t border-slate-100 flex items-baseline justify-between">
+                            <div>
+                              <span className="text-[10px] text-slate-400 block uppercase font-bold">Price</span>
+                              <span className="text-base font-extrabold text-[#1c4482]">
+                                {formatCurrency(product.unitPrice)}
+                              </span>
+                              <span className="text-[10px] text-slate-500"> / {product.unit}</span>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-[10px] text-slate-400 block uppercase font-bold">Available</span>
+                              <span className="text-xs font-bold text-slate-700">
+                                {product.quantityAvailable} {product.unit}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="p-4 pt-0 grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => {
+                            setOrderModalProduct(product);
+                            setOrderQuantity(1);
+                            setOrderError(null);
+                          }}
+                          disabled={isOutOfStock}
+                          className="w-full bg-[#1c4482] hover:bg-blue-900 text-white py-2 rounded-xl text-xs font-bold shadow-xs transition disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                          Order Direct
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            addToCart({
+                              productId: product.id,
+                              name: product.name,
+                              categoryName: product.categoryName,
+                              unitPrice: product.unitPrice,
+                              unit: product.unit,
+                              quantity: 1,
+                              farmerName: product.farmerName,
+                              location: product.location,
+                              maxQuantity: product.quantityAvailable,
+                              image: product.imageUrls?.[0],
+                            });
+                          }}
+                          disabled={isOutOfStock}
+                          className="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 disabled:opacity-40"
+                          title="Add to procurement cart"
+                        >
+                          <ShoppingCart className="h-3.5 w-3.5" />
+                          <span>+ Cart</span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* ── PAGINATION CONTROLS (FR-3.6) ── */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 pt-6">
+                <button
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 transition disabled:opacity-40"
+                >
+                  Previous
+                </button>
+                <span className="text-xs text-slate-500 font-semibold px-2">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 transition disabled:opacity-40"
+                >
+                  Next
+                </button>
+              </div>
             )}
           </div>
         </div>
-      )}
+
+        {/* ── INSTANT ORDER PLACEMENT MODAL (FR-4.1) ── */}
+        {orderModalProduct && (
+          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl max-w-md w-full p-6 sm:p-7 shadow-2xl relative">
+              <button
+                onClick={() => setOrderModalProduct(null)}
+                className="absolute right-4 top-4 text-slate-400 hover:text-slate-600 text-lg font-bold"
+              >
+                &times;
+              </button>
+
+              <h3 className="text-lg font-bold text-slate-900">
+                Direct Order Placement
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Ordering from farmer: <strong>{orderModalProduct.farmerName}</strong>
+              </p>
+
+              {orderSuccess ? (
+                <div className="my-8 text-center space-y-2">
+                  <div className="h-12 w-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                    <CheckCircle className="h-6 w-6" />
+                  </div>
+                  <h4 className="text-base font-bold text-slate-900">Order Placed Successfully!</h4>
+                  <p className="text-xs text-slate-500">
+                    The farmer has been notified. You can track this order in your Buyer Portal.
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handlePlaceOrder} className="mt-4 space-y-3.5 text-xs">
+                  {orderError && (
+                    <div className="p-2.5 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4 shrink-0" />
+                      <span>{orderError}</span>
+                    </div>
+                  )}
+
+                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
+                    <div className="font-bold text-slate-900">{orderModalProduct.name}</div>
+                    <div className="flex justify-between text-slate-600">
+                      <span>Unit Price:</span>
+                      <strong className="text-[#1c4482]">{formatCurrency(orderModalProduct.unitPrice)} / {orderModalProduct.unit}</strong>
+                    </div>
+                    <div className="flex justify-between text-slate-600">
+                      <span>Available Stock:</span>
+                      <strong>{orderModalProduct.quantityAvailable} {orderModalProduct.unit}</strong>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">
+                      Order Quantity ({orderModalProduct.unit})
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      min="1"
+                      max={orderModalProduct.quantityAvailable}
+                      value={orderQuantity}
+                      onChange={(e) => setOrderQuantity(Math.max(1, Number(e.target.value)))}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-900 focus:bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">
+                      Delivery / Pickup Preference
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setDeliveryPreference("PICKUP")}
+                        className={`py-2 px-3 rounded-lg font-bold border transition ${
+                          deliveryPreference === "PICKUP"
+                            ? "bg-[#1c4482] text-white border-[#1c4482]"
+                            : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                        }`}
+                      >
+                        Farmer Pickup
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDeliveryPreference("FREIGHT")}
+                        className={`py-2 px-3 rounded-lg font-bold border transition ${
+                          deliveryPreference === "FREIGHT"
+                            ? "bg-[#1c4482] text-white border-[#1c4482]"
+                            : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                        }`}
+                      >
+                        Truck Delivery
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">
+                      Optional Note for Farmer
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={orderNote}
+                      onChange={(e) => setOrderNote(e.target.value)}
+                      placeholder="Specify preferred pickup time, delivery depot, or packing details..."
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs"
+                    />
+                  </div>
+
+                  <div className="bg-amber-50 border border-amber-200 p-2.5 rounded-lg text-[11px] text-amber-800 leading-relaxed">
+                    <strong>Version 1 Scope:</strong> Payment and delivery are coordinated directly with the farmer once accepted. The farmer&apos;s phone number will be revealed in your Buyer Portal upon order acceptance.
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-between border-t border-slate-100">
+                    <div>
+                      <span className="text-[10px] text-slate-400 block uppercase">Total Amount</span>
+                      <span className="text-base font-extrabold text-[#1c4482]">
+                        {formatCurrency(orderModalProduct.unitPrice * orderQuantity)}
+                      </span>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setOrderModalProduct(null)}
+                        className="px-3 py-2 text-slate-600 font-bold hover:text-slate-900"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={orderSubmitting}
+                        className="bg-[#1c4482] hover:bg-blue-900 text-white font-bold px-5 py-2 rounded-xl shadow-xs transition"
+                      >
+                        {orderSubmitting ? "Placing Order..." : "Confirm Order"}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

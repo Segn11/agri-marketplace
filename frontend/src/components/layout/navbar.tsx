@@ -79,10 +79,19 @@ export function Navbar() {
             </Link>
 
             {user ? (
-              <span className="text-amber-300 font-semibold text-xs whitespace-nowrap flex items-center gap-1">
+              <Link
+                href={
+                  user.role === "ROLE_ADMIN"
+                    ? "/admin"
+                    : user.role === "ROLE_FARMER"
+                    ? "/farmer"
+                    : "/buyer"
+                }
+                className="text-amber-300 hover:text-white font-semibold text-xs whitespace-nowrap flex items-center gap-1 transition"
+              >
                 <UserIcon className="h-3.5 w-3.5" />
                 {user.fullName || user.email}
-              </span>
+              </Link>
             ) : (
               <Link
                 href="/register"
@@ -119,8 +128,22 @@ export function Navbar() {
             <Link href="/#services" className="hover:text-[#1c4482] transition">Our Products</Link>
             <Link href="/#all-services" className="hover:text-[#1c4482] transition">Our Services</Link>
             <Link href="/products" className="font-semibold text-[#1c4482] hover:text-blue-800 transition">Trades</Link>
-            <Link href="/buyer" className="hover:text-[#1c4482] transition">Orders</Link>
-            <Link href="/admin" className="hover:text-[#1c4482] transition">Admin</Link>
+            {user && (
+              <Link
+                href={
+                  user.role === "ROLE_ADMIN"
+                    ? "/admin"
+                    : user.role === "ROLE_FARMER"
+                    ? "/farmer"
+                    : "/buyer"
+                }
+                className="font-bold text-[#1c4482] hover:text-[#d81b60] transition flex items-center gap-1.5"
+              >
+                {user.role === "ROLE_ADMIN" && "Admin Portal"}
+                {user.role === "ROLE_FARMER" && "Farmer Portal"}
+                {user.role === "ROLE_BUYER" && "Buyer Portal"}
+              </Link>
+            )}
           </nav>
 
           {/* Action CTAs */}
@@ -140,13 +163,28 @@ export function Navbar() {
             </button>
 
             {user ? (
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-red-600 border border-slate-200 hover:border-red-200 px-3.5 py-2 rounded-lg transition"
-              >
-                <LogOut className="h-3.5 w-3.5" />
-                Sign Out
-              </button>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={
+                    user.role === "ROLE_ADMIN"
+                      ? "/admin"
+                      : user.role === "ROLE_FARMER"
+                      ? "/farmer"
+                      : "/buyer"
+                  }
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-800 px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1"
+                >
+                  <UserIcon className="h-3.5 w-3.5 text-[#1c4482]" />
+                  My Portal
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-red-600 border border-slate-200 hover:border-red-200 px-3 py-1.5 rounded-lg transition"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  Sign Out
+                </button>
+              </div>
             ) : (
               <Link href="/login">
                 <button className="bg-[#d81b60] hover:bg-[#c2185b] text-white px-7 py-2 rounded-lg text-sm font-semibold shadow-xs transition">
@@ -185,12 +223,25 @@ export function Navbar() {
           <Link href="/" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">About agrimarket</Link>
           <Link href="/products" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-[#1c4482] font-bold">Commodity Trades</Link>
           <Link href="/cart" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Procurement Cart ({totalItems})</Link>
-          <Link href="/buyer" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Order Tracking</Link>
-          <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Admin Dashboard</Link>
+          {user && (
+            <Link
+              href={
+                user.role === "ROLE_ADMIN"
+                  ? "/admin"
+                  : user.role === "ROLE_FARMER"
+                  ? "/farmer"
+                  : "/buyer"
+              }
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-1.5 px-3 bg-blue-50 text-[#1c4482] font-bold rounded"
+            >
+              Go to {user.role === "ROLE_ADMIN" ? "Admin" : user.role === "ROLE_FARMER" ? "Farmer" : "Buyer"} Portal
+            </Link>
+          )}
           <div className="pt-3 border-t border-slate-100 flex gap-2">
             {user ? (
               <button onClick={handleLogout} className="w-full bg-red-50 text-red-700 py-2 rounded-lg text-xs font-semibold">
-                Sign Out ({user.fullName})
+                Sign Out ({user.fullName || user.email})
               </button>
             ) : (
               <>

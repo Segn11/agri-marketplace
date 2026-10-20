@@ -40,7 +40,11 @@ export default function AgriRegisterPage() {
       localStorage.setItem("token", data.data.token);
       localStorage.setItem("user", JSON.stringify(data.data));
 
-      router.push("/products");
+      if (role === "ROLE_FARMER") {
+        router.push("/farmer");
+      } else {
+        router.push("/buyer");
+      }
     } catch (err: any) {
       setError(err.message || "Registration failed. Please check your information.");
     } finally {

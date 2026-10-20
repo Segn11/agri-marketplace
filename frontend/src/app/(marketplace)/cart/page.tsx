@@ -319,7 +319,7 @@ export default function CartPage() {
             <div className="lg:col-span-4 space-y-4">
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4 sticky top-28">
                 <h3 className="text-sm font-bold text-slate-900 pb-3 border-b border-slate-100">
-                  Trade Escrow Settlement
+                  Order Summary & Confirmation
                 </h3>
 
                 <div className="space-y-2.5 text-xs text-slate-600">
@@ -328,38 +328,38 @@ export default function CartPage() {
                     <strong className="text-slate-900">{formatCurrency(subtotal)}</strong>
                   </div>
                   <div className="flex justify-between">
-                    <span>Logistics / Freight</span>
+                    <span>Logistics / Delivery Preference</span>
                     <strong className="text-slate-900">
-                      {freightCost === 0 ? "FREE (Pickup)" : formatCurrency(freightCost)}
+                      {freightCost === 0 ? "Pickup (Free)" : formatCurrency(freightCost)}
                     </strong>
                   </div>
                   <div className="flex justify-between text-emerald-700 font-semibold">
-                    <span>AgriPay Escrow Protection</span>
-                    <span>100% Free Guarantee</span>
+                    <span>Platform Service Fee</span>
+                    <span>Free (Version 1)</span>
                   </div>
                 </div>
 
                 <div className="pt-3 border-t border-slate-100 flex items-baseline justify-between">
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Total Settlement</span>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Total Order Value</span>
                     <span className="text-2xl font-black text-slate-900">{formatCurrency(grandTotal)}</span>
                   </div>
-                  <span className="text-[11px] text-slate-400">VAT Included</span>
+                  <span className="text-[11px] text-slate-400">Direct Settlement</span>
                 </div>
 
-                <div className="p-3 bg-teal-50 rounded-xl border border-teal-200 flex items-start gap-2 text-[11px] text-teal-900 leading-relaxed">
-                  <ShieldCheck className="h-4 w-4 text-teal-700 flex-shrink-0 mt-0.5" />
+                <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 flex items-start gap-2 text-[11px] text-amber-900 leading-relaxed">
+                  <ShieldCheck className="h-4 w-4 text-amber-700 flex-shrink-0 mt-0.5" />
                   <span>
-                    Your funds are locked safely in Escrow. Payment is only released to the cooperative when you inspect and accept the physical shipment.
+                    <strong>Direct Coordination:</strong> No online payment is processed on the platform. Your order will be sent to the farmer. When the farmer accepts, phone contact details will be disclosed in your Buyer Portal so payment and delivery can be arranged directly.
                   </span>
                 </div>
 
                 <button
                   onClick={handleCheckout}
                   disabled={isSubmitting}
-                  className="w-full btn-brand py-3.5 rounded-xl text-sm font-bold shadow-md flex items-center justify-center gap-2 disabled:opacity-50 transition"
+                  className="w-full bg-[#1c4482] hover:bg-blue-900 text-white py-3.5 rounded-xl text-sm font-bold shadow-md flex items-center justify-center gap-2 disabled:opacity-50 transition"
                 >
-                  {isSubmitting ? "Locking Escrow Order..." : "Confirm & Place Procurement Order"}
+                  {isSubmitting ? "Submitting Order..." : "Confirm & Place Direct Order"}
                   <ArrowRight className="h-4 w-4" />
                 </button>
               </div>

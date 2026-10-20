@@ -71,6 +71,18 @@ public class ReviewService {
         return PagedResponse.from(page.map(this::mapToResponse));
     }
 
+    public PagedResponse<ReviewResponse> getFarmerReviews(UUID farmerId, Pageable pageable) {
+        Page<Review> page = reviewRepository.findByProductFarmerId(farmerId, pageable);
+        return PagedResponse.from(page.map(this::mapToResponse));
+    }
+
+    @Transactional
+    public void deleteReview(UUID id) {
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + id));
+        reviewRepository.delete(review);
+    }
+
     private ReviewResponse mapToResponse(Review r) {
         return ReviewResponse.builder()
                 .id(r.getId())

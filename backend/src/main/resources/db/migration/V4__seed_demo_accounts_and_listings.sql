@@ -3,9 +3,9 @@
 
 -- 1. Insert Demo Users
 INSERT INTO users (id, full_name, email, phone, password_hash, role, location, status) VALUES
-('a0000000-0000-0000-0000-000000000001', 'System Administrator', 'admin@agri.com', '0911000001', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07xd00GDzPHsekpkS2', 'ROLE_ADMIN', 'Addis Ababa HQ', 'ACTIVE'),
-('a0000000-0000-0000-0000-000000000002', 'Gemechu Desta', 'farmer@agri.com', '0911000002', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07xd00GDzPHsekpkS2', 'ROLE_FARMER', 'Debre Birhan, North Shewa', 'ACTIVE'),
-('a0000000-0000-0000-0000-000000000003', 'Abebe Commercial Foods', 'buyer@agri.com', '0911000003', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07xd00GDzPHsekpkS2', 'ROLE_BUYER', 'Kality Logistics Park, Addis Ababa', 'ACTIVE')
+('a0000000-0000-0000-0000-000000000001', 'System Administrator', 'admin@agri.com', '0911000001', '$2a$10$mx5tQLZIEngHMEVGQwv6Su1SlQVCApbjg3FbKmm2/Go/fh4DZ7RUO', 'ROLE_ADMIN', 'Addis Ababa HQ', 'ACTIVE'),
+('a0000000-0000-0000-0000-000000000002', 'Gemechu Desta', 'farmer@agri.com', '0911000002', '$2a$10$mx5tQLZIEngHMEVGQwv6Su1SlQVCApbjg3FbKmm2/Go/fh4DZ7RUO', 'ROLE_FARMER', 'Debre Birhan, North Shewa', 'ACTIVE'),
+('a0000000-0000-0000-0000-000000000003', 'Abebe Commercial Foods', 'buyer@agri.com', '0911000003', '$2a$10$mx5tQLZIEngHMEVGQwv6Su1SlQVCApbjg3FbKmm2/Go/fh4DZ7RUO', 'ROLE_BUYER', 'Kality Logistics Park, Addis Ababa', 'ACTIVE')
 ON CONFLICT (email) DO NOTHING;
 
 -- 2. Insert Farmer Profile

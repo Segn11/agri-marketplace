@@ -88,6 +88,11 @@ public class ProductService {
         return mapToResponse(product);
     }
 
+    public PagedResponse<ProductResponse> getFarmerProducts(UUID farmerId, Pageable pageable) {
+        Page<Product> productPage = productRepository.findByFarmerId(farmerId, pageable);
+        return PagedResponse.from(productPage.map(this::mapToResponse));
+    }
+
     @Transactional
     public ProductResponse createProduct(ProductRequest request, UUID farmerId) {
         User farmer = userRepository.findById(farmerId)
@@ -165,6 +170,18 @@ public class ProductService {
         }
 
         return mapToResponse(productRepository.save(product));
+    }
+
+    @Transactional
+    public void deleteProduct(UUID id, UUID currentUserId, boolean isAdmin) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+
+        if (!product.getFarmer().getId().equals(currentUserId) && !isAdmin) {
+            throw new AccessDeniedException("You cannot delete another farmer's product");
+        }
+
+        productRepository.delete(product);
     }
 
     public ProductResponse mapToResponse(Product product) {
