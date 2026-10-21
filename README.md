@@ -44,6 +44,22 @@ The **Agricultural Marketplace** resolves this bottleneck through a direct, mode
                     └────────────────────────────────────────┘
 ```
 
+## 🔄 Request and Data Flow
+
+- A user interacts with the Next.js frontend and authenticates through the Spring Security/JWT API.
+- The frontend sends REST requests with JWT access tokens in Authorization headers to backend controllers.
+- Domain services validate permissions and business rules for products, orders, reviews, reports, notifications, and administration.
+- Repositories persist and retrieve data through JPA/Hibernate against PostgreSQL.
+- Flyway migrations manage schema evolution, while the frontend updates the user-facing state from API responses.
+
+## 🧭 Architecture Guidelines
+
+- Keep controllers focused on HTTP concerns and place business rules in module services.
+- Use DTOs/API response wrappers at the API boundary rather than exposing persistence entities directly.
+- Enforce authorization on protected endpoints and keep contact information masked until order acceptance.
+- Use transactional stock updates and optimistic locking to prevent overselling.
+- Add matching tests for module services, security rules, and important order-state transitions.
+
 ---
 
 ## 📂 Modern Folder Structure
@@ -171,6 +187,12 @@ npm run dev
 3. **Verified Reviews (FR-7.1, FR-7.2)**
    - Ratings (1 to 5) and feedback can only be submitted for completed orders.
    - Enforces exactly one review per order to preserve authentic marketplace trust.
+
+---
+
+## 📚 Documentation
+
+- See [`docs/SRS_ARCHITECTURE.md`](docs/SRS_ARCHITECTURE.md) for the detailed software requirements and ERD specifications.
 
 ---
 
