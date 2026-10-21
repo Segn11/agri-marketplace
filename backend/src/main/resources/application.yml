@@ -20,6 +20,13 @@ app:
     expiration-ms: ${JWT_EXPIRATION_MS:86400000} # 24 hours
   upload:
     dir: ${UPLOAD_DIR:uploads}
+  rag:
+    gemini:
+      api-key: ${GEMINI_API_KEY:}
+      model: ${GEMINI_MODEL:gemini-1.5-flash}
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      model: ${OPENAI_MODEL:gpt-4o-mini}
 
 # OpenAPI / Swagger
 springdoc:

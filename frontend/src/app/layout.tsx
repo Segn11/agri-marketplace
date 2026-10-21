@@ -4,6 +4,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { CartProvider } from "@/context/CartContext";
 import { CartDrawer } from "@/components/cart/CartDrawer";
+import { AgriCopilotWidget } from "@/components/ai/AgriCopilotWidget";
 
 export const metadata: Metadata = {
   title: "Agri Marketplace | Leading Integrated Agricultural Marketplace & Commodity Exchange",
@@ -22,6 +23,7 @@ export default function RootLayout({
           <Navbar />
           <CartDrawer />
           <main className="flex-1">{children}</main>
+          <AgriCopilotWidget />
           <Footer />
         </CartProvider>
       </body>

@@ -52,12 +52,12 @@ export function Footer() {
           <div>
             <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-4">Platform Services</h4>
             <ul className="space-y-2.5 text-slate-400">
+              <li><Link href="/assistant" className="hover:text-amber-300 text-teal-400 font-bold transition flex items-center gap-1">✨ AI Copilot Advisor (RAG)</Link></li>
               <li><Link href="/cart" className="hover:text-white transition">Procurement Cart & Settlement</Link></li>
               <li><Link href="/cart" className="hover:text-white transition">AgriPay Escrow Guarantee</Link></li>
               <li><Link href="/products" className="hover:text-white transition">Live Market Catalog</Link></li>
               <li><Link href="/products" className="hover:text-white transition">Assayed Commodity Lots</Link></li>
               <li><Link href="/register" className="hover:text-white transition">Cooperative Onboarding</Link></li>
-              <li><Link href="/cart" className="hover:text-white transition">Freight & Delivery Protocol</Link></li>
             </ul>
           </div>
 

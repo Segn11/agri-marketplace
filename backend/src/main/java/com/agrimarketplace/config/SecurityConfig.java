@@ -75,6 +75,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/categories", "/api/categories/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/rag/chat", "/api/rag/search").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/rag/**").permitAll()
 
                         // Role-based restrictions
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

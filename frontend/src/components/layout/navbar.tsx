@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Search, Menu, X, Sprout, ShoppingCart, LogOut, User as UserIcon } from "lucide-react";
+import { Search, Menu, X, Sprout, ShoppingCart, LogOut, User as UserIcon, Sparkles } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 
 export function Navbar() {
@@ -128,6 +128,14 @@ export function Navbar() {
             <Link href="/#services" className="hover:text-[#1c4482] transition">Our Products</Link>
             <Link href="/#all-services" className="hover:text-[#1c4482] transition">Our Services</Link>
             <Link href="/products" className="font-semibold text-[#1c4482] hover:text-blue-800 transition">Trades</Link>
+            <Link
+              href="/assistant"
+              className="inline-flex items-center gap-1.5 font-bold text-teal-700 hover:text-teal-900 bg-teal-50 hover:bg-teal-100 border border-teal-200/80 px-2.5 py-1 rounded-full transition text-xs"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-amber-500 animate-pulse" />
+              <span>AI Advisor</span>
+              <span className="bg-teal-600 text-white text-[9px] px-1 py-0.2 rounded font-extrabold uppercase">RAG</span>
+            </Link>
             {user && (
               <Link
                 href={
@@ -222,6 +230,14 @@ export function Navbar() {
         <div className="lg:hidden bg-white border-b border-slate-200 px-6 py-4 space-y-3">
           <Link href="/" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">About agrimarket</Link>
           <Link href="/products" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-[#1c4482] font-bold">Commodity Trades</Link>
+          <Link
+            href="/assistant"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center gap-2 py-1 text-teal-700 font-bold"
+          >
+            <Sparkles className="h-4 w-4 text-amber-500" />
+            <span>AI Advisor & RAG Hub</span>
+          </Link>
           <Link href="/cart" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 font-medium">Procurement Cart ({totalItems})</Link>
           {user && (
             <Link
