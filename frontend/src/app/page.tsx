@@ -854,19 +854,6 @@ export default function AgriMarketHomePage() {
 
       {/* ══════════ AGRIBAZAAR FLOATING ACTION WIDGETS (BOTTOM RIGHT) ══════════ */}
       <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5">
-        {/* WhatsApp Icon Circle */}
-        <a
-          href="https://wa.me/251911002244"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="h-12 w-12 rounded-full bg-[#25d366] text-white flex items-center justify-center shadow-lg hover:scale-105 transition-transform"
-          title="Chat on WhatsApp"
-        >
-          <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-            <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0012.04 2z" />
-          </svg>
-        </a>
-
         {/* Connect With Us Pill Button */}
         <Link href="/register">
           <button className="bg-[#d81b60] hover:bg-[#c2185b] text-white px-5 py-3 rounded-full text-xs font-bold shadow-lg flex items-center gap-2 transition-transform hover:scale-105">
