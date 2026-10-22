@@ -47,6 +47,16 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.ok("User status updated to " + status, null));
     }
 
+    @PatchMapping("/users/{userId}/verify")
+    @Operation(summary = "Verify or unverify farmer KYC status")
+    public ResponseEntity<ApiResponse<String>> verifyFarmer(
+            @PathVariable UUID userId,
+            @RequestParam boolean isVerified
+    ) {
+        adminService.verifyFarmer(userId, isVerified);
+        return ResponseEntity.ok(ApiResponse.ok("Farmer verification status updated to " + isVerified, null));
+    }
+
     @DeleteMapping("/users/{userId}")
     @Operation(summary = "Delete a user account")
     public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable UUID userId) {

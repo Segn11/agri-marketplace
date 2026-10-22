@@ -31,8 +31,14 @@ public class AdminService {
     public AdminDashboardStats getDashboardStats() {
         return AdminDashboardStats.builder()
                 .totalUsers(userRepository.count())
+                .totalFarmers(userRepository.countByRole(com.agrimarketplace.modules.user.entity.Role.ROLE_FARMER))
+                .totalBuyers(userRepository.countByRole(com.agrimarketplace.modules.user.entity.Role.ROLE_BUYER))
                 .totalProducts(productRepository.count())
+                .activeProducts(productRepository.countByStatus("ACTIVE"))
+                .pendingProducts(productRepository.countByStatus("PENDING_APPROVAL"))
                 .totalOrders(orderRepository.count())
+                .pendingOrders(orderRepository.countByStatus(com.agrimarketplace.modules.order.entity.OrderStatus.PENDING))
+                .completedOrders(orderRepository.countByStatus(com.agrimarketplace.modules.order.entity.OrderStatus.COMPLETED))
                 .openReports(reportRepository.countByStatus("OPEN"))
                 .build();
     }
@@ -48,8 +54,20 @@ public class AdminService {
                         .location(u.getLocation())
                         .status(u.getStatus())
                         .createdAt(u.getCreatedAt())
+                        .isVerified(u.getFarmerProfile() != null ? u.getFarmerProfile().isVerified() : null)
+                        .farmName(u.getFarmerProfile() != null ? u.getFarmerProfile().getFarmName() : null)
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void verifyFarmer(UUID userId, boolean isVerified) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if (user.getFarmerProfile() != null) {
+            user.getFarmerProfile().setVerified(isVerified);
+            userRepository.save(user);
+        }
     }
 
     @Transactional

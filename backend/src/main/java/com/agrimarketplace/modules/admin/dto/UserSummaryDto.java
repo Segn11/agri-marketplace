@@ -21,4 +21,6 @@ public class UserSummaryDto {
     private String location;
     private String status;
     private Instant createdAt;
+    private Boolean isVerified;
+    private String farmName;
 }

@@ -1,5 +1,6 @@
 package com.agrimarketplace.modules.user.repository;
 
+import com.agrimarketplace.modules.user.entity.Role;
 import com.agrimarketplace.modules.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -14,4 +15,5 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmailOrPhone(String email, String phone);
     boolean existsByEmail(String email);
     boolean existsByPhone(String phone);
+    long countByRole(Role role);
 }

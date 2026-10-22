@@ -8,6 +8,8 @@ export interface User {
   role: Role;
   location: string;
   status: 'ACTIVE' | 'SUSPENDED';
+  isVerified?: boolean;
+  farmName?: string;
 }
 
 export interface AuthResponse {
@@ -49,7 +51,7 @@ export interface Product {
   harvestSeason?: string;
   storageWarehouse?: string;
   badge?: string;
-  status: 'ACTIVE' | 'INACTIVE' | 'OUT_OF_STOCK';
+  status: 'ACTIVE' | 'INACTIVE' | 'OUT_OF_STOCK' | 'PENDING_APPROVAL' | 'REJECTED' | 'SUSPENDED';
   imageUrls: string[];
   averageRating?: number;
   totalReviews?: number;

@@ -15,4 +15,5 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     Page<Order> findByFarmerId(UUID farmerId, Pageable pageable);
     Page<Order> findByFarmerIdAndStatus(UUID farmerId, OrderStatus status, Pageable pageable);
     long countByFarmerIdAndStatus(UUID farmerId, OrderStatus status);
+    long countByStatus(OrderStatus status);
 }

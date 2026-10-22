@@ -15,6 +15,7 @@ public class AdminDashboardStats {
     private long totalBuyers;
     private long totalProducts;
     private long activeProducts;
+    private long pendingProducts;
     private long totalOrders;
     private long pendingOrders;
     private long completedOrders;

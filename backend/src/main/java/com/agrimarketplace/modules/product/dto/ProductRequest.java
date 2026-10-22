@@ -43,6 +43,7 @@ public class ProductRequest {
     private String storageWarehouse;
     private String cooperative;
     private String badge;
+    private String status;
 
     private List<String> imageUrls;
 }

@@ -72,8 +72,11 @@ public class ProductService {
                 predicates.add(cb.lessThanOrEqualTo(root.get("unitPrice"), maxPrice));
             }
 
-            String activeStatus = (status != null && !status.trim().isEmpty()) ? status : "ACTIVE";
-            predicates.add(cb.equal(root.get("status"), activeStatus));
+            if (status != null && !status.trim().isEmpty() && !status.equalsIgnoreCase("ALL")) {
+                predicates.add(cb.equal(root.get("status"), status.trim()));
+            } else if (status == null || status.trim().isEmpty()) {
+                predicates.add(cb.equal(root.get("status"), "ACTIVE"));
+            }
 
             return cb.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
         };
@@ -101,6 +104,13 @@ public class ProductService {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
+        String initialStatus = "PENDING_APPROVAL";
+        if (request.getStatus() != null && !request.getStatus().trim().isEmpty()) {
+            initialStatus = request.getStatus();
+        } else if (request.getQuantityAvailable() <= 0) {
+            initialStatus = "OUT_OF_STOCK";
+        }
+
         Product product = Product.builder()
                 .farmer(farmer)
                 .category(category)
@@ -110,7 +120,7 @@ public class ProductService {
                 .unit(request.getUnit())
                 .quantityAvailable(request.getQuantityAvailable())
                 .location(request.getLocation())
-                .status(request.getQuantityAvailable() > 0 ? "ACTIVE" : "OUT_OF_STOCK")
+                .status(initialStatus)
                 .assayGrade(request.getAssayGrade())
                 .moistureContent(request.getMoistureContent())
                 .purity(request.getPurity())
@@ -163,7 +173,9 @@ public class ProductService {
         product.setCooperative(request.getCooperative());
         product.setBadge(request.getBadge());
 
-        if (product.getQuantityAvailable() == 0) {
+        if (request.getStatus() != null && !request.getStatus().trim().isEmpty()) {
+            product.setStatus(request.getStatus().trim());
+        } else if (product.getQuantityAvailable() == 0) {
             product.setStatus("OUT_OF_STOCK");
         } else if ("OUT_OF_STOCK".equals(product.getStatus()) && product.getQuantityAvailable() > 0) {
             product.setStatus("ACTIVE");
