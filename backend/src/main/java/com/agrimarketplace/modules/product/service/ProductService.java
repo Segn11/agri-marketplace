@@ -134,6 +134,13 @@ public class ProductService {
                 .storageWarehouse(request.getStorageWarehouse())
                 .cooperative(request.getCooperative())
                 .badge(request.getBadge())
+                .tradeType(request.getTradeType() != null ? request.getTradeType() : "FIXED_PRICE")
+                .reservePrice(request.getReservePrice())
+                .minBidIncrement(request.getMinBidIncrement() != null ? request.getMinBidIncrement() : java.math.BigDecimal.valueOf(50))
+                .auctionEndAt(request.getAuctionEndAt())
+                .pickupDate(request.getPickupDate())
+                .pickupAddress(request.getPickupAddress())
+                .impurityPercentage(request.getImpurityPercentage())
                 .images(new ArrayList<>())
                 .build();
 
@@ -178,6 +185,13 @@ public class ProductService {
         product.setStorageWarehouse(request.getStorageWarehouse());
         product.setCooperative(request.getCooperative());
         product.setBadge(request.getBadge());
+        if (request.getTradeType() != null) product.setTradeType(request.getTradeType());
+        if (request.getReservePrice() != null) product.setReservePrice(request.getReservePrice());
+        if (request.getMinBidIncrement() != null) product.setMinBidIncrement(request.getMinBidIncrement());
+        if (request.getAuctionEndAt() != null) product.setAuctionEndAt(request.getAuctionEndAt());
+        if (request.getPickupDate() != null) product.setPickupDate(request.getPickupDate());
+        if (request.getPickupAddress() != null) product.setPickupAddress(request.getPickupAddress());
+        if (request.getImpurityPercentage() != null) product.setImpurityPercentage(request.getImpurityPercentage());
 
         if (request.getStatus() != null && !request.getStatus().trim().isEmpty()) {
             product.setStatus(request.getStatus().trim());
@@ -309,6 +323,14 @@ public class ProductService {
                 .approvalMethod(product.getApprovalMethod())
                 .approvedAt(product.getApprovedAt())
                 .approvalNotes(product.getApprovalNotes())
+                .tradeType(product.getTradeType())
+                .reservePrice(product.getReservePrice())
+                .minBidIncrement(product.getMinBidIncrement())
+                .currentHighestBid(product.getCurrentHighestBid())
+                .auctionEndAt(product.getAuctionEndAt())
+                .pickupDate(product.getPickupDate())
+                .pickupAddress(product.getPickupAddress())
+                .impurityPercentage(product.getImpurityPercentage())
                 .imageUrls(images)
                 .createdAt(product.getCreatedAt())
                 .build();

@@ -44,6 +44,9 @@ import {
   CheckCheck,
   FileCheck,
   Zap,
+  Truck,
+  Wallet as WalletIcon,
+  Gavel,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { fetchApi } from "@/lib/api";
@@ -126,7 +129,9 @@ export default function AgriAdminPortal() {
   const [authError, setAuthError] = useState("");
 
   // Navigation & Tabs
-  const [activeTab, setActiveTab] = useState<"overview" | "approvals" | "listings" | "users" | "reports" | "surveillance">("overview");
+  const [activeTab, setActiveTab] = useState<
+    "overview" | "approvals" | "listings" | "users" | "reports" | "finance" | "logistics" | "surveillance"
+  >("overview");
   const [approvalSubTab, setApprovalSubTab] = useState<"produce" | "kyc">("produce");
 
   // Moderation Policy Governance Mode
@@ -1258,6 +1263,30 @@ export default function AgriAdminPortal() {
             </button>
 
             <button
+              onClick={() => setActiveTab("finance")}
+              className={`px-4 py-3 text-xs sm:text-sm font-bold rounded-t-xl transition flex items-center gap-2 cursor-pointer border-b-2 whitespace-nowrap ${
+                activeTab === "finance"
+                  ? "border-emerald-400 text-emerald-300 bg-emerald-950/20"
+                  : "border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50"
+              }`}
+            >
+              <WalletIcon className="h-4 w-4 text-emerald-400" />
+              <span>Financial Ledger & Escrow</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("logistics")}
+              className={`px-4 py-3 text-xs sm:text-sm font-bold rounded-t-xl transition flex items-center gap-2 cursor-pointer border-b-2 whitespace-nowrap ${
+                activeTab === "logistics"
+                  ? "border-indigo-400 text-indigo-300 bg-indigo-950/20"
+                  : "border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50"
+              }`}
+            >
+              <Truck className="h-4 w-4 text-indigo-400" />
+              <span>Logistics & Transporters</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab("surveillance")}
               className={`px-4 py-3 text-xs sm:text-sm font-bold rounded-t-xl transition flex items-center gap-2 cursor-pointer border-b-2 whitespace-nowrap ${
                 activeTab === "surveillance"
@@ -2098,6 +2127,198 @@ export default function AgriAdminPortal() {
                   <div className="text-lg font-extrabold text-white">6,200 ETB / Quintal</div>
                   <span className="text-[11px] text-emerald-400 font-medium">Robe Grain Terminal • Reserve Ready</span>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            TAB 7: FINANCIAL LEDGER & ESCROW MONITOR (AgriPay)
+            ======================================================== */}
+        {activeTab === "finance" && (
+          <div className="space-y-6">
+            {/* Escrow & Finance KPI Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+              <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800">
+                <span className="text-xs font-semibold text-slate-400">Total Escrow in Custody</span>
+                <div className="mt-2 text-2xl font-extrabold text-emerald-400">{formatCurrency(4850000)}</div>
+                <span className="text-[11px] text-emerald-500 font-medium">Guaranteed by Partner Bank</span>
+              </div>
+              <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800">
+                <span className="text-xs font-semibold text-slate-400">Platform Trading Fees (1.5%)</span>
+                <div className="mt-2 text-2xl font-extrabold text-teal-300">{formatCurrency(72750)}</div>
+                <span className="text-[11px] text-teal-400 font-medium">Retained Commission</span>
+              </div>
+              <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800">
+                <span className="text-xs font-semibold text-slate-400">Disbursed to Farmers</span>
+                <div className="mt-2 text-2xl font-extrabold text-white">{formatCurrency(14200000)}</div>
+                <span className="text-[11px] text-slate-400 font-medium">Post-Inspection Settlements</span>
+              </div>
+              <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800">
+                <span className="text-xs font-semibold text-slate-400">Active Double-Entry Ledger</span>
+                <div className="mt-2 text-2xl font-extrabold text-purple-400">100% Balanced</div>
+                <span className="text-[11px] text-purple-400 font-medium">Audited Real-time</span>
+              </div>
+            </div>
+
+            {/* Double-Entry Ledger Table */}
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                <div>
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <WalletIcon className="h-5 w-5 text-emerald-400" />
+                    Double-Entry Financial Audit Trail (AgriPay Protocol)
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Immutable transactional record. Every wallet debit has a verified matching credit counter-party entry.
+                  </p>
+                </div>
+                <div className="text-xs text-slate-400 flex items-center gap-2">
+                  <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
+                    Reconciliation: Synchronized
+                  </span>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-800/60 text-slate-400 uppercase text-[10px] font-bold">
+                    <tr>
+                      <th className="p-3 rounded-l-xl">Transaction ID</th>
+                      <th className="p-3">Reference / Order</th>
+                      <th className="p-3">Posting Type</th>
+                      <th className="p-3">Amount</th>
+                      <th className="p-3">Balance After</th>
+                      <th className="p-3">Narrative Description</th>
+                      <th className="p-3 rounded-r-xl">Timestamp</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800 text-slate-200">
+                    {[
+                      { id: "TX-99042", ref: "ORD-9402", type: "CREDIT", amount: 940000, balance: 940000, desc: "Buyer escrow top-up for 100 Qtl White Teff consignment", time: "Just now" },
+                      { id: "TX-99041", ref: "FEE-9402", type: "DEBIT", amount: 14100, balance: 925900, desc: "Platform facilitation commission (1.5%) deducted", time: "10 mins ago" },
+                      { id: "TX-99040", ref: "SETTLE-881", type: "CREDIT", amount: 585000, balance: 1850000, desc: "Escrow release to Oda Gida Farmers Union (Consignment Accepted)", time: "1 hour ago" },
+                      { id: "TX-99039", ref: "ESCROW-881", type: "DEBIT", amount: 585000, balance: 0, desc: "Release of escrow hold upon buyer weighbridge confirmation", time: "1 hour ago" },
+                      { id: "TX-99038", ref: "INPUT-04", type: "DEBIT", amount: 37000, balance: 1265000, desc: "Farmer input purchase: Certified DAP & Urea via Kisan Safalta credit", time: "3 hours ago" },
+                    ].map((tx) => (
+                      <tr key={tx.id} className="hover:bg-slate-800/30 transition">
+                        <td className="p-3 font-mono text-slate-400">{tx.id}</td>
+                        <td className="p-3 font-bold text-white">{tx.ref}</td>
+                        <td className="p-3">
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            tx.type === "CREDIT"
+                              ? "bg-emerald-500/10 text-emerald-300 border border-emerald-500/20"
+                              : "bg-amber-500/10 text-amber-300 border border-amber-500/20"
+                          }`}>
+                            {tx.type}
+                          </span>
+                        </td>
+                        <td className="p-3 font-extrabold text-white">{formatCurrency(tx.amount)}</td>
+                        <td className="p-3 font-mono text-slate-400">{formatCurrency(tx.balance)}</td>
+                        <td className="p-3 text-slate-300">{tx.desc}</td>
+                        <td className="p-3 text-slate-500">{tx.time}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            TAB 8: LOGISTICS CONTROL & FLEET WEIGHBRIDGE MONITOR
+            ======================================================== */}
+        {activeTab === "logistics" && (
+          <div className="space-y-6">
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                <div>
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <Truck className="h-5 w-5 text-indigo-400" />
+                    Fleet Logistics & Mandi Weighbridge Reconciliation
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Monitors transporter assignment, GPS live tracking, source weighbridge slips vs destination delivery weigh slips to detect shrinkage or adulteration.
+                  </p>
+                </div>
+                <div className="text-xs text-slate-400">
+                  Active Fleet: <strong className="text-indigo-400">14 Heavy Haul Trucks in Transit</strong>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-800/60 text-slate-400 uppercase text-[10px] font-bold">
+                    <tr>
+                      <th className="p-3 rounded-l-xl">Consignment</th>
+                      <th className="p-3">Assigned Transporter</th>
+                      <th className="p-3">Vehicle Plate</th>
+                      <th className="p-3">Route Transit</th>
+                      <th className="p-3">Source Weight</th>
+                      <th className="p-3">Dest Weight</th>
+                      <th className="p-3">Variance</th>
+                      <th className="p-3 rounded-r-xl">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800 text-slate-200">
+                    {[
+                      {
+                        ref: "LOT #402 • White Teff",
+                        carrier: "Abyssinia Cargo Lines",
+                        plate: "ET-3-48212 (DAF 40T)",
+                        route: "Debre Birhan Silo ➔ Addis Terminal",
+                        sourceWt: "100.0 Qtl",
+                        destWt: "99.8 Qtl",
+                        variance: "-0.2% (Tolerable)",
+                        status: "IN_TRANSIT",
+                      },
+                      {
+                        ref: "LOT #109 • Durum Wheat",
+                        carrier: "Bale Freight Transport",
+                        plate: "ET-2-19803 (Isuzu FSR)",
+                        route: "Robe Silo ➔ Nazret Flour Mills",
+                        sourceWt: "85.0 Qtl",
+                        destWt: "85.0 Qtl",
+                        variance: "0.0% (Exact Match)",
+                        status: "DELIVERED",
+                      },
+                      {
+                        ref: "LOT #881 • Hybrid Maize",
+                        carrier: "Nekemte Haulers Coop",
+                        plate: "ET-3-90311 (Scania R500)",
+                        route: "Nekemte Mandi ➔ Hawassa Feed Plant",
+                        sourceWt: "200.0 Qtl",
+                        destWt: "Pending Reception",
+                        variance: "--",
+                        status: "PICKUP_SCHEDULED",
+                      },
+                    ].map((row, idx) => (
+                      <tr key={idx} className="hover:bg-slate-800/30 transition">
+                        <td className="p-3 font-bold text-white">{row.ref}</td>
+                        <td className="p-3 text-slate-300">{row.carrier}</td>
+                        <td className="p-3 font-mono text-indigo-300">{row.plate}</td>
+                        <td className="p-3 text-slate-400">{row.route}</td>
+                        <td className="p-3 font-bold text-white">{row.sourceWt}</td>
+                        <td className="p-3 font-bold text-slate-300">{row.destWt}</td>
+                        <td className="p-3">
+                          <span className="text-emerald-400 font-semibold">{row.variance}</span>
+                        </td>
+                        <td className="p-3">
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            row.status === "DELIVERED"
+                              ? "bg-emerald-500/10 text-emerald-300 border border-emerald-500/20"
+                              : row.status === "IN_TRANSIT"
+                              ? "bg-indigo-500/10 text-indigo-300 border border-indigo-500/20"
+                              : "bg-amber-500/10 text-amber-300 border border-amber-500/20"
+                          }`}>
+                            {row.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

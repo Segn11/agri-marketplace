@@ -123,18 +123,18 @@ export function Navbar() {
           </Link>
 
           {/* Navigation Links */}
-          <nav className="hidden lg:flex items-center space-x-7 text-sm font-medium text-slate-700">
-            <Link href="/" className="hover:text-[#1c4482] transition">About agrimarket</Link>
-            <Link href="/#services" className="hover:text-[#1c4482] transition">Our Products</Link>
-            <Link href="/#all-services" className="hover:text-[#1c4482] transition">Our Services</Link>
-            <Link href="/products" className="font-semibold text-[#1c4482] hover:text-blue-800 transition">Trades</Link>
+          <nav className="hidden lg:flex items-center space-x-5 text-sm font-medium text-slate-700">
+            <Link href="/products" className="font-bold text-[#1c4482] hover:text-blue-800 transition">Trades</Link>
+            <Link href="/mandi-bhav" className="hover:text-[#1c4482] font-semibold transition text-slate-700">Mandi Bhav</Link>
+            <Link href="/inputs" className="hover:text-[#1c4482] font-semibold transition text-slate-700">Inputs</Link>
+            <Link href="/crop-doctor" className="hover:text-[#1c4482] font-semibold transition text-slate-700">Crop Doctor</Link>
+            <Link href="/fertiliser-calculator" className="hover:text-[#1c4482] font-semibold transition text-slate-700">Fertiliser Calc</Link>
             <Link
               href="/assistant"
               className="inline-flex items-center gap-1.5 font-bold text-teal-700 hover:text-teal-900 bg-teal-50 hover:bg-teal-100 border border-teal-200/80 px-2.5 py-1 rounded-full transition text-xs"
             >
               <Sparkles className="h-3.5 w-3.5 text-amber-500 animate-pulse" />
               <span>AI Advisor</span>
-              <span className="bg-teal-600 text-white text-[9px] px-1 py-0.2 rounded font-extrabold uppercase">RAG</span>
             </Link>
             {user && (
               <Link
@@ -145,7 +145,7 @@ export function Navbar() {
                     ? "/farmer"
                     : "/buyer"
                 }
-                className="font-bold text-[#1c4482] hover:text-[#d81b60] transition flex items-center gap-1.5"
+                className="font-extrabold text-[#1c4482] hover:text-[#d81b60] transition flex items-center gap-1.5 border-l border-slate-200 pl-3"
               >
                 {user.role === "ROLE_ADMIN" && "Admin Portal"}
                 {user.role === "ROLE_FARMER" && "Farmer Portal"}

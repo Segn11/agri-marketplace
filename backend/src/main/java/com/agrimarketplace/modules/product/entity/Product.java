@@ -92,6 +92,28 @@ public class Product {
 
     private Instant otpExpiresAt;
 
+    @Column(length = 30)
+    @Builder.Default
+    private String tradeType = "FIXED_PRICE"; // FIXED_PRICE, AUCTION, NEGOTIABLE
+
+    private BigDecimal reservePrice;
+
+    @Builder.Default
+    private BigDecimal minBidIncrement = BigDecimal.valueOf(50);
+
+    private BigDecimal currentHighestBid;
+
+    private UUID highestBidderId;
+
+    private Instant auctionEndAt;
+
+    private java.time.LocalDate pickupDate;
+
+    @Column(length = 255)
+    private String pickupAddress;
+
+    private BigDecimal impurityPercentage;
+
     @Version
     @Builder.Default
     private Integer version = 0; // Optimistic locking to prevent overselling (FR-5.4)

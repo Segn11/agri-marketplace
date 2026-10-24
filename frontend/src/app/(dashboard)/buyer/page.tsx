@@ -40,11 +40,16 @@ import {
   TrendingUp,
   Receipt,
   CheckCheck,
+  Gavel,
+  Wallet as WalletIcon,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { fetchApi } from "@/lib/api";
 import { fetchProductsFromDb } from "@/lib/commodities";
 import { Product } from "@/types";
+import { BidsAndAuctionsModule } from "@/components/dashboard/BidsAndAuctionsModule";
+import { AgriPayWalletCard } from "@/components/dashboard/AgriPayWalletCard";
+import { ShipmentLogisticsTracker } from "@/components/dashboard/ShipmentLogisticsTracker";
 
 interface OrderItemDto {
   productId: string;
@@ -82,7 +87,9 @@ export default function AgriBuyerPortal() {
   const [authError, setAuthError] = useState("");
 
   // Navigation & Tabs
-  const [activeTab, setActiveTab] = useState<"overview" | "catalog" | "orders" | "reviews" | "watchlist">("overview");
+  const [activeTab, setActiveTab] = useState<
+    "overview" | "catalog" | "orders" | "bids" | "wallet" | "reviews" | "watchlist"
+  >("overview");
   const [orderFilter, setOrderFilter] = useState("ALL");
   const [orderSearch, setOrderSearch] = useState("");
 
@@ -845,6 +852,30 @@ export default function AgriBuyerPortal() {
             </button>
 
             <button
+              onClick={() => setActiveTab("bids")}
+              className={`px-4 py-3 text-xs sm:text-sm font-bold rounded-t-xl transition flex items-center gap-2 cursor-pointer border-b-2 whitespace-nowrap ${
+                activeTab === "bids"
+                  ? "border-purple-400 text-purple-300 bg-purple-950/20"
+                  : "border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50"
+              }`}
+            >
+              <Gavel className="h-4 w-4 text-purple-400" />
+              <span>e-Auctions & Offers</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("wallet")}
+              className={`px-4 py-3 text-xs sm:text-sm font-bold rounded-t-xl transition flex items-center gap-2 cursor-pointer border-b-2 whitespace-nowrap ${
+                activeTab === "wallet"
+                  ? "border-emerald-400 text-emerald-300 bg-emerald-950/20"
+                  : "border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50"
+              }`}
+            >
+              <WalletIcon className="h-4 w-4 text-emerald-400" />
+              <span>AgriPay Escrow Wallet</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab("reviews")}
               className={`px-4 py-3 text-xs sm:text-sm font-bold rounded-t-xl transition flex items-center gap-2 cursor-pointer border-b-2 whitespace-nowrap ${
                 activeTab === "reviews"
@@ -1331,6 +1362,19 @@ export default function AgriBuyerPortal() {
                         </div>
                       </div>
 
+                      {/* AgriBazaar 12-Stage Lifecycle & Shipment Logistics Tracker */}
+                      <div className="pt-2">
+                        <ShipmentLogisticsTracker
+                          order={order as any}
+                          userRole="ROLE_BUYER"
+                          onOpenDispute={() => {
+                            setReportModalOrder(order);
+                            setReportReason("");
+                          }}
+                          onConfirmAcceptance={() => loadBuyerData()}
+                        />
+                      </div>
+
                       {/* Actions */}
                       <div className="flex flex-wrap items-center justify-end gap-2.5 pt-2 border-t border-slate-800">
                         {isCompleted && !hasReviewed && (
@@ -1452,6 +1496,26 @@ export default function AgriBuyerPortal() {
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            TAB 6: LIVE e-AUCTIONS & COUNTER-OFFER DESK
+            ======================================================== */}
+        {activeTab === "bids" && (
+          <BidsAndAuctionsModule
+            products={catalogItems}
+            userRole="ROLE_BUYER"
+            onRefresh={loadBuyerData}
+          />
+        )}
+
+        {/* ========================================================
+            TAB 7: AGRIPAY ESCROW WALLET & TOP-UP DESK
+            ======================================================== */}
+        {activeTab === "wallet" && (
+          <div className="space-y-6">
+            <AgriPayWalletCard userRole="ROLE_BUYER" />
           </div>
         )}
       </main>

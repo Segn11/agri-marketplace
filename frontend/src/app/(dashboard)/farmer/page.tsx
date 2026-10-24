@@ -41,11 +41,23 @@ import {
   Layers,
   ArrowUpRight,
   CheckCheck,
+  Wallet as WalletIcon,
+  Gavel,
+  Stethoscope,
+  Calculator,
+  Satellite,
+  CreditCard,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { fetchApi } from "@/lib/api";
 import { fetchProductsFromDb } from "@/lib/commodities";
 import { Product, ProductOtpDto } from "@/types";
+import { AgriPayWalletCard } from "@/components/dashboard/AgriPayWalletCard";
+import { BidsAndAuctionsModule } from "@/components/dashboard/BidsAndAuctionsModule";
+import { CropDoctorModule } from "@/components/dashboard/CropDoctorModule";
+import { FertiliserCalculatorModule } from "@/components/dashboard/FertiliserCalculatorModule";
+import { SatelliteTelemetryModule } from "@/components/dashboard/SatelliteTelemetryModule";
+import { KisanFinanceModule } from "@/components/dashboard/KisanFinanceModule";
 
 interface OrderItemDto {
   productId: string;
@@ -143,7 +155,20 @@ export default function AgriFarmerPortal() {
   const [authError, setAuthError] = useState("");
 
   // Navigation & Tabs
-  const [activeTab, setActiveTab] = useState<"overview" | "inventory" | "add" | "orders" | "mandi" | "reviews">("overview");
+  const [activeTab, setActiveTab] = useState<
+    | "overview"
+    | "inventory"
+    | "add"
+    | "bids"
+    | "orders"
+    | "wallet"
+    | "crop_doctor"
+    | "fertiliser"
+    | "telemetry"
+    | "finance"
+    | "mandi"
+    | "reviews"
+  >("overview");
   const [orderFilter, setOrderFilter] = useState<string>("ALL");
   const [inventoryFilter, setInventoryFilter] = useState<string>("ALL");
   const [inventorySearch, setInventorySearch] = useState("");
@@ -168,6 +193,12 @@ export default function AgriFarmerPortal() {
     unit: "Quintal (100kg)",
     quantityAvailable: 150,
     location: "Debre Birhan Mandi Terminal, North Shewa",
+    tradeType: "FIXED_PRICE" as "FIXED_PRICE" | "AUCTION" | "NEGOTIABLE",
+    reservePrice: 9000,
+    minBidIncrement: 50,
+    pickupDate: "",
+    pickupAddress: "Debre Birhan Central Silo 4",
+    impurityPercentage: 0.8,
     assayGrade: "Grade 1 (99.2% Purity)",
     moistureContent: "11.2% (WDRA Standard Compliant)",
     purity: "99.2% Certified Clean",
@@ -1223,8 +1254,20 @@ export default function AgriFarmerPortal() {
             </button>
 
             <button
+              onClick={() => setActiveTab("bids")}
+              className={`px-3 py-3 text-xs sm:text-sm font-bold rounded-t-xl transition flex items-center gap-1.5 cursor-pointer border-b-2 whitespace-nowrap ${
+                activeTab === "bids"
+                  ? "border-amber-400 text-amber-300 bg-amber-950/20"
+                  : "border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50"
+              }`}
+            >
+              <Gavel className="h-4 w-4 text-amber-400" />
+              <span>Auctions & Offers</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab("orders")}
-              className={`px-4 py-3 text-xs sm:text-sm font-bold rounded-t-xl transition flex items-center gap-2 cursor-pointer border-b-2 whitespace-nowrap ${
+              className={`px-3 py-3 text-xs sm:text-sm font-bold rounded-t-xl transition flex items-center gap-1.5 cursor-pointer border-b-2 whitespace-nowrap ${
                 activeTab === "orders"
                   ? "border-blue-400 text-blue-300 bg-blue-950/20"
                   : "border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50"
@@ -1240,20 +1283,80 @@ export default function AgriFarmerPortal() {
             </button>
 
             <button
+              onClick={() => setActiveTab("wallet")}
+              className={`px-3 py-3 text-xs sm:text-sm font-bold rounded-t-xl transition flex items-center gap-1.5 cursor-pointer border-b-2 whitespace-nowrap ${
+                activeTab === "wallet"
+                  ? "border-emerald-400 text-emerald-300 bg-emerald-950/20"
+                  : "border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50"
+              }`}
+            >
+              <WalletIcon className="h-4 w-4 text-emerald-400" />
+              <span>AgriPay Wallet</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab("mandi")}
-              className={`px-4 py-3 text-xs sm:text-sm font-bold rounded-t-xl transition flex items-center gap-2 cursor-pointer border-b-2 whitespace-nowrap ${
+              className={`px-3 py-3 text-xs sm:text-sm font-bold rounded-t-xl transition flex items-center gap-1.5 cursor-pointer border-b-2 whitespace-nowrap ${
                 activeTab === "mandi"
                   ? "border-purple-400 text-purple-300 bg-purple-950/20"
                   : "border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50"
               }`}
             >
               <TrendingUp className="h-4 w-4 text-purple-400" />
-              <span>Mandi Price Index</span>
+              <span>Mandi Bhav</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("crop_doctor")}
+              className={`px-3 py-3 text-xs sm:text-sm font-bold rounded-t-xl transition flex items-center gap-1.5 cursor-pointer border-b-2 whitespace-nowrap ${
+                activeTab === "crop_doctor"
+                  ? "border-teal-400 text-teal-300 bg-teal-950/20"
+                  : "border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50"
+              }`}
+            >
+              <Stethoscope className="h-4 w-4 text-teal-400" />
+              <span>Crop Doctor</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("fertiliser")}
+              className={`px-3 py-3 text-xs sm:text-sm font-bold rounded-t-xl transition flex items-center gap-1.5 cursor-pointer border-b-2 whitespace-nowrap ${
+                activeTab === "fertiliser"
+                  ? "border-amber-400 text-amber-300 bg-amber-950/20"
+                  : "border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50"
+              }`}
+            >
+              <Calculator className="h-4 w-4 text-amber-400" />
+              <span>Fertiliser Calc</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("telemetry")}
+              className={`px-3 py-3 text-xs sm:text-sm font-bold rounded-t-xl transition flex items-center gap-1.5 cursor-pointer border-b-2 whitespace-nowrap ${
+                activeTab === "telemetry"
+                  ? "border-indigo-400 text-indigo-300 bg-indigo-950/20"
+                  : "border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50"
+              }`}
+            >
+              <Satellite className="h-4 w-4 text-indigo-400" />
+              <span>Satellite Telemetry</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("finance")}
+              className={`px-3 py-3 text-xs sm:text-sm font-bold rounded-t-xl transition flex items-center gap-1.5 cursor-pointer border-b-2 whitespace-nowrap ${
+                activeTab === "finance"
+                  ? "border-amber-400 text-amber-300 bg-amber-950/20"
+                  : "border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50"
+              }`}
+            >
+              <CreditCard className="h-4 w-4 text-amber-400" />
+              <span>Kisan Finance</span>
             </button>
 
             <button
               onClick={() => setActiveTab("reviews")}
-              className={`px-4 py-3 text-xs sm:text-sm font-bold rounded-t-xl transition flex items-center gap-2 cursor-pointer border-b-2 whitespace-nowrap ${
+              className={`px-3 py-3 text-xs sm:text-sm font-bold rounded-t-xl transition flex items-center gap-1.5 cursor-pointer border-b-2 whitespace-nowrap ${
                 activeTab === "reviews"
                   ? "border-amber-400 text-amber-300 bg-amber-950/20"
                   : "border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50"
@@ -1899,6 +2002,86 @@ export default function AgriFarmerPortal() {
                   />
                 </div>
 
+                {/* AgriBazaar Trade Mechanism Selector */}
+                <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/60 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                      <Gavel className="h-4 w-4 text-purple-400" /> Trading Mechanism (AgriBazaar Model)
+                    </label>
+                    <span className="text-[10px] text-purple-300 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20 font-semibold">
+                      {newProduce.tradeType === "AUCTION" ? "Live e-Auction" : newProduce.tradeType === "NEGOTIABLE" ? "Negotiable Offers" : "Spot / Fixed Price"}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => setNewProduce({ ...newProduce, tradeType: "FIXED_PRICE" })}
+                      className={`p-3 rounded-xl border text-left transition cursor-pointer ${
+                        newProduce.tradeType === "FIXED_PRICE"
+                          ? "bg-emerald-950/40 border-emerald-500 text-white"
+                          : "bg-slate-900 border-slate-700/60 text-slate-300 hover:bg-slate-800"
+                      }`}
+                    >
+                      <div className="text-xs font-bold">Spot / Fixed Price</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">Direct buyer checkout at your set unit price.</div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setNewProduce({ ...newProduce, tradeType: "AUCTION" })}
+                      className={`p-3 rounded-xl border text-left transition cursor-pointer ${
+                        newProduce.tradeType === "AUCTION"
+                          ? "bg-purple-950/40 border-purple-500 text-white"
+                          : "bg-slate-900 border-slate-700/60 text-slate-300 hover:bg-slate-800"
+                      }`}
+                    >
+                      <div className="text-xs font-bold text-purple-300">Live e-Auction</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">Competitive bidding with anti-sniping protection.</div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setNewProduce({ ...newProduce, tradeType: "NEGOTIABLE" })}
+                      className={`p-3 rounded-xl border text-left transition cursor-pointer ${
+                        newProduce.tradeType === "NEGOTIABLE"
+                          ? "bg-blue-950/40 border-blue-500 text-white"
+                          : "bg-slate-900 border-slate-700/60 text-slate-300 hover:bg-slate-800"
+                      }`}
+                    >
+                      <div className="text-xs font-bold text-blue-300">Negotiable Trade</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">Buyer submits offer; you counter or lock price.</div>
+                    </button>
+                  </div>
+
+                  {newProduce.tradeType === "AUCTION" && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-700/40">
+                      <div>
+                        <label className="block text-[11px] text-slate-300 mb-1 font-semibold">Reserve Price (ETB)</label>
+                        <input
+                          type="number"
+                          value={newProduce.reservePrice}
+                          onChange={(e) => setNewProduce({ ...newProduce, reservePrice: Number(e.target.value) })}
+                          className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs"
+                          placeholder="e.g. 9000"
+                        />
+                        <span className="text-[10px] text-slate-400">Minimum price to confirm sale</span>
+                      </div>
+                      <div>
+                        <label className="block text-[11px] text-slate-300 mb-1 font-semibold">Minimum Bid Increment (ETB)</label>
+                        <input
+                          type="number"
+                          value={newProduce.minBidIncrement}
+                          onChange={(e) => setNewProduce({ ...newProduce, minBidIncrement: Number(e.target.value) })}
+                          className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs"
+                          placeholder="e.g. 50"
+                        />
+                        <span className="text-[10px] text-slate-400">Step each buyer bid must increase by</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 {/* Category & Pricing */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
@@ -2485,6 +2668,54 @@ export default function AgriFarmerPortal() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* ========================================================
+            TAB 7: LIVE e-AUCTIONS & COUNTER-OFFER NEGOTIATION DESK
+            ======================================================== */}
+        {activeTab === "bids" && (
+          <BidsAndAuctionsModule
+            products={inventory}
+            userRole="ROLE_FARMER"
+            onRefresh={loadDashboardData}
+          />
+        )}
+
+        {/* ========================================================
+            TAB 8: AGRIPAY DIGITAL ESCROW WALLET & DOUBLE-ENTRY LEDGER
+            ======================================================== */}
+        {activeTab === "wallet" && (
+          <div className="space-y-6">
+            <AgriPayWalletCard userRole="ROLE_FARMER" />
+          </div>
+        )}
+
+        {/* ========================================================
+            TAB 9: CROP DOCTOR CLINICAL DIAGNOSIS & PATHOLOGY
+            ======================================================== */}
+        {activeTab === "crop_doctor" && (
+          <CropDoctorModule />
+        )}
+
+        {/* ========================================================
+            TAB 10: FERTILISER CALCULATOR & NUTRIENT OPTIMIZER
+            ======================================================== */}
+        {activeTab === "fertiliser" && (
+          <FertiliserCalculatorModule />
+        )}
+
+        {/* ========================================================
+            TAB 11: SATELLITE TELEMETRY & AGRIBHUMI CROP VIGOR
+            ======================================================== */}
+        {activeTab === "telemetry" && (
+          <SatelliteTelemetryModule />
+        )}
+
+        {/* ========================================================
+            TAB 12: KISAN SAFALTA SEASONAL INPUT CREDIT CARD
+            ======================================================== */}
+        {activeTab === "finance" && (
+          <KisanFinanceModule farmerName={user?.fullName || "Gemechu Desta"} />
         )}
       </main>
 

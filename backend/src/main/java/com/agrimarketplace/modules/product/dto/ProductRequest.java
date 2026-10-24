@@ -44,6 +44,13 @@ public class ProductRequest {
     private String cooperative;
     private String badge;
     private String status;
+    private String tradeType;
+    private BigDecimal reservePrice;
+    private BigDecimal minBidIncrement;
+    private java.time.Instant auctionEndAt;
+    private java.time.LocalDate pickupDate;
+    private String pickupAddress;
+    private BigDecimal impurityPercentage;
 
     private List<String> imageUrls;
 }

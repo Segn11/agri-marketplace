@@ -39,6 +39,14 @@ public class ProductResponse {
     private String approvalMethod;
     private Instant approvedAt;
     private String approvalNotes;
+    private String tradeType;
+    private BigDecimal reservePrice;
+    private BigDecimal minBidIncrement;
+    private BigDecimal currentHighestBid;
+    private Instant auctionEndAt;
+    private java.time.LocalDate pickupDate;
+    private String pickupAddress;
+    private BigDecimal impurityPercentage;
     private List<String> imageUrls;
     private Double averageRating;
     private Integer totalReviews;
