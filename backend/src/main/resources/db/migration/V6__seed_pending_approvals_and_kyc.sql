@@ -1,7 +1,10 @@
 -- Migration V6: Seed Pending Approvals (Produce Listings & Farmer KYC) for Admin Moderation
 -- Enables immediate real-world testing of administrative quality inspection and KYC verification workflows
+-- 0. Update status check constraint on products table to support pending approval
+ALTER TABLE products DROP CONSTRAINT IF EXISTS products_status_check;
+ALTER TABLE products ADD CONSTRAINT products_status_check 
+CHECK (status IN ('ACTIVE', 'INACTIVE', 'OUT_OF_STOCK', 'PENDING_APPROVAL', 'REJECTED', 'SUSPENDED'));
 
--- 1. Insert Farmer Awaiting KYC Verification
 INSERT INTO users (id, full_name, email, phone, password_hash, role, location, status) VALUES
 ('a0000000-0000-0000-0000-000000000004', 'Tirunesh Bekele', 'tirunesh@agri.com', '0911000004', '$2a$10$mx5tQLZIEngHMEVGQwv6Su1SlQVCApbjg3FbKmm2/Go/fh4DZ7RUO', 'ROLE_FARMER', 'Bokoji, Arsi Highlands', 'ACTIVE')
 ON CONFLICT (email) DO NOTHING;

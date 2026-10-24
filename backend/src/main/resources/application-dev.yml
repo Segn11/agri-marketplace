@@ -3,7 +3,7 @@ spring:
     activate:
       on-profile: dev
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${POSTGRES_DB:agri_marketplace}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:agri_marketplace}
     username: ${POSTGRES_USER:agri_user}
     password: ${POSTGRES_PASSWORD:agri_password}
     driver-class-name: org.postgresql.Driver
