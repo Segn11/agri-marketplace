@@ -2,6 +2,9 @@ package com.agrimarketplace.modules.product.service;
 
 import com.agrimarketplace.common.PagedResponse;
 import com.agrimarketplace.common.exception.ResourceNotFoundException;
+import com.agrimarketplace.modules.notification.entity.Notification;
+import com.agrimarketplace.modules.notification.repository.NotificationRepository;
+import com.agrimarketplace.modules.product.dto.ProductOtpDto;
 import com.agrimarketplace.modules.product.dto.ProductRequest;
 import com.agrimarketplace.modules.product.dto.ProductResponse;
 import com.agrimarketplace.modules.product.entity.Category;
@@ -19,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -31,6 +36,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
 
     public UUID findCategoryIdBySlug(String slug) {
         return categoryRepository.findBySlug(slug)
@@ -175,6 +181,10 @@ public class ProductService {
 
         if (request.getStatus() != null && !request.getStatus().trim().isEmpty()) {
             product.setStatus(request.getStatus().trim());
+        } else if ("REJECTED".equals(product.getStatus()) && !isAdmin) {
+            // Farmer edited a rejected lot -> reset to PENDING_APPROVAL for fresh review
+            product.setStatus("PENDING_APPROVAL");
+            product.setRejectionReason(null);
         } else if (product.getQuantityAvailable() == 0) {
             product.setStatus("OUT_OF_STOCK");
         } else if ("OUT_OF_STOCK".equals(product.getStatus()) && product.getQuantityAvailable() > 0) {
@@ -182,6 +192,79 @@ public class ProductService {
         }
 
         return mapToResponse(productRepository.save(product));
+    }
+
+    @Transactional
+    public ProductOtpDto generateVerificationOtp(UUID productId, UUID currentUserId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
+
+        if (!product.getFarmer().getId().equals(currentUserId)) {
+            throw new AccessDeniedException("You cannot request verification OTP for another farmer's product");
+        }
+
+        // Generate secure 6-digit verification code
+        int randomPin = 100000 + new SecureRandom().nextInt(900000);
+        String otp = String.valueOf(randomPin);
+
+        product.setOtpCode(otp);
+        product.setOtpExpiresAt(Instant.now().plusSeconds(600)); // 10 minutes expiry
+        productRepository.save(product);
+
+        String phone = product.getFarmer().getPhone();
+        if (phone == null || phone.isEmpty()) {
+            phone = "Registered Mobile";
+        }
+
+        return ProductOtpDto.builder()
+                .productId(productId)
+                .productName(product.getName())
+                .otpCode(otp)
+                .recipientPhone(phone)
+                .expiresInMinutes(10)
+                .message("Verification code generated for lot '" + product.getName() + "'. Use code: " + otp + " within 10 minutes.")
+                .build();
+    }
+
+    @Transactional
+    public ProductResponse verifyProductOtp(UUID productId, String otpCode, UUID currentUserId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
+
+        if (!product.getFarmer().getId().equals(currentUserId)) {
+            throw new AccessDeniedException("You cannot verify another farmer's product");
+        }
+
+        if (product.getOtpCode() == null || product.getOtpExpiresAt() == null) {
+            throw new IllegalArgumentException("No pending verification OTP found for this lot. Please request a new code.");
+        }
+
+        if (Instant.now().isAfter(product.getOtpExpiresAt())) {
+            throw new IllegalArgumentException("Verification OTP has expired. Please request a fresh code.");
+        }
+
+        if (!product.getOtpCode().trim().equals(otpCode != null ? otpCode.trim() : "")) {
+            throw new IllegalArgumentException("Invalid verification OTP. Please check the 6-digit code sent to your phone.");
+        }
+
+        product.setStatus("ACTIVE");
+        product.setApprovalMethod("OTP_VERIFIED");
+        product.setApprovedAt(Instant.now());
+        product.setBadge("Coop OTP Verified Lot");
+        product.setRejectionReason(null);
+        product.setOtpCode(null);
+        product.setOtpExpiresAt(null);
+
+        Product saved = productRepository.save(product);
+
+        notificationRepository.save(Notification.builder()
+                .user(product.getFarmer())
+                .message("Produce lot '" + product.getName() + "' has been fast-track verified via OTP and is now live on the marketplace.")
+                .type("SYSTEM")
+                .isRead(false)
+                .build());
+
+        return mapToResponse(saved);
     }
 
     @Transactional
@@ -222,6 +305,10 @@ public class ProductService {
                 .storageWarehouse(product.getStorageWarehouse())
                 .cooperative(product.getCooperative())
                 .badge(product.getBadge())
+                .rejectionReason(product.getRejectionReason())
+                .approvalMethod(product.getApprovalMethod())
+                .approvedAt(product.getApprovedAt())
+                .approvalNotes(product.getApprovalNotes())
                 .imageUrls(images)
                 .createdAt(product.getCreatedAt())
                 .build();

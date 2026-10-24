@@ -51,11 +51,24 @@ export interface Product {
   harvestSeason?: string;
   storageWarehouse?: string;
   badge?: string;
+  rejectionReason?: string;
+  approvalMethod?: 'ADMIN' | 'OTP_VERIFIED';
+  approvedAt?: string;
+  approvalNotes?: string;
   status: 'ACTIVE' | 'INACTIVE' | 'OUT_OF_STOCK' | 'PENDING_APPROVAL' | 'REJECTED' | 'SUSPENDED';
   imageUrls: string[];
   averageRating?: number;
   totalReviews?: number;
   createdAt: string;
+}
+
+export interface ProductOtpDto {
+  productId: string;
+  productName: string;
+  otpCode: string;
+  recipientPhone: string;
+  expiresInMinutes: number;
+  message: string;
 }
 
 export interface CartItem {

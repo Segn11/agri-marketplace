@@ -2,6 +2,7 @@ package com.agrimarketplace.modules.product.controller;
 
 import com.agrimarketplace.common.ApiResponse;
 import com.agrimarketplace.common.PagedResponse;
+import com.agrimarketplace.modules.product.dto.ProductOtpDto;
 import com.agrimarketplace.modules.product.dto.ProductRequest;
 import com.agrimarketplace.modules.product.dto.ProductResponse;
 import com.agrimarketplace.modules.product.service.ProductService;
@@ -110,5 +111,28 @@ public class ProductController {
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         productService.deleteProduct(id, currentUser.getId(), isAdmin);
         return ResponseEntity.ok(ApiResponse.ok("Product listing deleted successfully", null));
+    }
+
+    @PostMapping("/{id}/send-otp")
+    @PreAuthorize("hasRole('FARMER')")
+    @Operation(summary = "Generate and dispatch OTP to farmer for instant lot approval")
+    public ResponseEntity<ApiResponse<ProductOtpDto>> sendVerificationOtp(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserPrincipal currentUser
+    ) {
+        ProductOtpDto dto = productService.generateVerificationOtp(id, currentUser.getId());
+        return ResponseEntity.ok(ApiResponse.ok("Verification OTP dispatched successfully", dto));
+    }
+
+    @PostMapping("/{id}/verify-otp")
+    @PreAuthorize("hasRole('FARMER')")
+    @Operation(summary = "Submit OTP to verify and immediately approve produce lot")
+    public ResponseEntity<ApiResponse<ProductResponse>> verifyProductOtp(
+            @PathVariable UUID id,
+            @RequestParam String otp,
+            @AuthenticationPrincipal UserPrincipal currentUser
+    ) {
+        ProductResponse response = productService.verifyProductOtp(id, otp, currentUser.getId());
+        return ResponseEntity.ok(ApiResponse.ok("Produce lot successfully verified and published!", response));
     }
 }

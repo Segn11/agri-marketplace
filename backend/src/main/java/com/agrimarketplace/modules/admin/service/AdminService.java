@@ -4,6 +4,8 @@ import com.agrimarketplace.common.exception.ResourceNotFoundException;
 import com.agrimarketplace.modules.admin.dto.AdminDashboardStats;
 import com.agrimarketplace.modules.admin.dto.ReportSummaryDto;
 import com.agrimarketplace.modules.admin.dto.UserSummaryDto;
+import com.agrimarketplace.modules.notification.entity.Notification;
+import com.agrimarketplace.modules.notification.repository.NotificationRepository;
 import com.agrimarketplace.modules.order.repository.OrderRepository;
 import com.agrimarketplace.modules.product.entity.Product;
 import com.agrimarketplace.modules.product.repository.ProductRepository;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -27,6 +30,7 @@ public class AdminService {
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final ReportRepository reportRepository;
+    private final NotificationRepository notificationRepository;
 
     public AdminDashboardStats getDashboardStats() {
         return AdminDashboardStats.builder()
@@ -87,9 +91,48 @@ public class AdminService {
 
     @Transactional
     public void updateProductStatus(UUID productId, String status) {
+        updateProductStatus(productId, status, null, null, null);
+    }
+
+    @Transactional
+    public void updateProductStatus(UUID productId, String status, String rejectionReason, String badge, String notes) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
         product.setStatus(status);
+
+        if ("ACTIVE".equalsIgnoreCase(status)) {
+            product.setApprovalMethod("ADMIN");
+            product.setApprovedAt(Instant.now());
+            product.setRejectionReason(null);
+            if (badge != null && !badge.trim().isEmpty()) {
+                product.setBadge(badge.trim());
+            } else if (product.getBadge() == null || product.getBadge().contains("Pending") || product.getBadge().contains("Inspection")) {
+                product.setBadge("ECX Assayed Grade 1");
+            }
+            if (notes != null) {
+                product.setApprovalNotes(notes);
+            }
+            notificationRepository.save(Notification.builder()
+                    .user(product.getFarmer())
+                    .message("Congratulations! Your produce lot '" + product.getName() + "' has been approved by admin quality inspection and is now live on the marketplace.")
+                    .type("SYSTEM")
+                    .isRead(false)
+                    .build());
+        } else if ("REJECTED".equalsIgnoreCase(status)) {
+            product.setRejectionReason(rejectionReason != null && !rejectionReason.trim().isEmpty() 
+                    ? rejectionReason 
+                    : "Quality assay requirements not met. Please review moisture and purity specifications.");
+            if (notes != null) {
+                product.setApprovalNotes(notes);
+            }
+            notificationRepository.save(Notification.builder()
+                    .user(product.getFarmer())
+                    .message("Listing revision required for '" + product.getName() + "': " + product.getRejectionReason())
+                    .type("SYSTEM")
+                    .isRead(false)
+                    .build());
+        }
+
         productRepository.save(product);
     }
 

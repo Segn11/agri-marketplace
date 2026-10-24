@@ -65,12 +65,15 @@ public class AdminController {
     }
 
     @PatchMapping("/products/{productId}/status")
-    @Operation(summary = "Approve, hide or remove a listing")
+    @Operation(summary = "Approve, reject, hide or update produce listing status")
     public ResponseEntity<ApiResponse<String>> updateProductStatus(
             @PathVariable UUID productId,
-            @RequestParam String status
+            @RequestParam String status,
+            @RequestParam(required = false) String rejectionReason,
+            @RequestParam(required = false) String badge,
+            @RequestParam(required = false) String notes
     ) {
-        adminService.updateProductStatus(productId, status);
+        adminService.updateProductStatus(productId, status, rejectionReason, badge, notes);
         return ResponseEntity.ok(ApiResponse.ok("Product status updated to " + status, null));
     }
 

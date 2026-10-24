@@ -76,6 +76,22 @@ public class Product {
     @Column(length = 100)
     private String badge;
 
+    @Column(columnDefinition = "TEXT")
+    private String rejectionReason;
+
+    @Column(length = 50)
+    private String approvalMethod; // ADMIN, OTP_VERIFIED
+
+    private Instant approvedAt;
+
+    @Column(columnDefinition = "TEXT")
+    private String approvalNotes;
+
+    @Column(length = 10)
+    private String otpCode;
+
+    private Instant otpExpiresAt;
+
     @Version
     @Builder.Default
     private Integer version = 0; // Optimistic locking to prevent overselling (FR-5.4)

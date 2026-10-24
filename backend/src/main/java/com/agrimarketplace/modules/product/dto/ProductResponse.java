@@ -35,6 +35,10 @@ public class ProductResponse {
     private String storageWarehouse;
     private String cooperative;
     private String badge;
+    private String rejectionReason;
+    private String approvalMethod;
+    private Instant approvedAt;
+    private String approvalNotes;
     private List<String> imageUrls;
     private Double averageRating;
     private Integer totalReviews;
